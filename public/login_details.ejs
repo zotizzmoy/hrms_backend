@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Takshashila</title>
+    <style type="text/css">
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      body {
+        margin: 0;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td {
+        padding: 0;
+      }
+      .img {
+        border: 0;
+        object-fit: cover;
+      }
+      .wrapper {
+        width: 100%;
+        table-layout: fixed;
+      }
+      .content_box{
+        padding: 0px 100px;
+      }
+      .email_heading{
+        margin: 10px 0px;
+        font-size: 18px;
+      }
+      .para_1{
+        margin: 0px;
+        font-size: 13px;
+        margin-bottom: 20px;
+      }
+      .para_3{
+        margin: 0px;
+        border: 1px solid gray;
+        padding: 5px 10px;
+      }
+      .para_4{
+        margin: 0px;
+         border-left: 1px solid gray;
+         border-bottom: 1px solid gray;
+         border-right: 1px solid gray;
+        padding: 5px 10px;
+      }
+      .para_5{
+        font-size: 10px;
+        color:red;
+      }
+     .email_login_btn{
+        text-align: center;
+        margin-top: 35px;
+     }
+     .thank_you{
+        text-align: center;
+     }
+     .brand_name{
+       text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+          margin-bottom: 20px;
+     }
+     .email_login_btn>a{
+      text-decoration: none;
+        background-color: #14AE5C;
+        color:#fff;
+        border: none;
+        outline: none;
+        padding: 8px 25px;
+        border-radius: 20px;
+        cursor: pointer;
+     }
+     @media screen and (max-width:600px){
+        .content_box{
+        padding: 0px 15px;
+      }
+     }
+    </style>
+</head>
+<body>
+    <!-- <section class="wrapper"> -->
+    <table class="main" width="100%">
+        <tr>
+          <td>
+            <table width="100%">
+              <tr>
+                <td>
+                  <img src="https://i.ibb.co/WDj9gwb/email-banner.webp" alt="banner" width="100%" />
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- --------------------------------content section---------------------------- -->
+        <tr>
+          <td class="content_box">
+            <table width="100%">
+              <tr>
+                <td>
+                    <p class="email_heading">Welcome <strong><%=first_name%>,</strong></p>
+                    <p class="para_1">Your account has been created with the following login details:</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="content_box">
+            <table width="100%">
+              <tr>
+                <td>
+                    <p class="para_3"><span>EMPLOYEE ID : </span><span><strong><%=emp_id%></strong></span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    <p class="para_4"><span>PASSWORD : </span><span><strong><%=password%></strong></span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    <p class="para_5">*Please keep this information secure and do not share it with anyone.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- --------------------------------button section-------------------------- -->
+        <tr>
+          <td class="content_box">
+            <table width="100%">
+              <tr>
+                <td class="email_login_btn">
+                   <a href="https://attendance.takshashilascs.in">Login</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="thank_you" style="width:100%;text-align:center">
+                   <h3>Thank you</h3>
+                </td>
+              </tr>
+              <tr>
+                <td class="brand_name" style="width:100%;text-align:center">
+                    <p>© Gratia technology pvt ltd.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+    </table>
+    <!-- </section> -->
+</body>
+</html>
