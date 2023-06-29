@@ -521,7 +521,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                 const appliedLeavesCount = approvedLeaves.length;
 
                 // Calculate leave durations and subtract from total leaves
-                let remainingLeaves = totalLeaves;
+                let remainingLeaves = totalLeaves.leave_balance;
                 const leaveDurations = approvedLeaves.map((leave) => {
                     const startDate = new Date(leave.start_date);
                     const endDate = new Date(leave.end_date);
