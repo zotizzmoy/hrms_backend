@@ -31,7 +31,7 @@ jobs:
           script: |
             cd gratia_ams
             cd Gratia_attendance_web
-            git pull origin master
+            git pull origin main
             pm2 restart ams.js 
             
          
