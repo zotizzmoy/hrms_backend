@@ -277,7 +277,7 @@ module.exports.register = async function (req, res) {
             user: await UserModel.findOne({ where: { email: req.body.email } })
         });
 
-        // await sendMail(user.first_name, user.emp_id, user.email, autoPassword);
+        await sendMail(user.first_name, user.emp_id, user.email, autoPassword);
 
     } else {
         res.status(400).json({ error: "User already exists" });
