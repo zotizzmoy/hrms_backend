@@ -3,7 +3,7 @@ name: Deploy to AWS EC2
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
@@ -29,8 +29,8 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            cd ams
-            cd AMS-V8
+            cd gratia_ams
+            cd Gratia_attendance_web
             git pull origin master
             pm2 restart ams.js 
             

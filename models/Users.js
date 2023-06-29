@@ -62,6 +62,9 @@ const UserModel = sequelize_db.define(
     status: {
       type: DataTypes.STRING,
     },
+    leave_balance:{
+      type: DataTypes.INTEGER
+    },
     role: {
       type: DataTypes.INTEGER,
       defaultValue: 0

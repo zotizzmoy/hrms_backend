@@ -252,7 +252,7 @@ module.exports.register = async function (req, res) {
     if (!user) {
         const userObject = {
 
-
+            emp_id: req.body.emp_id,
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             email: req.body.email,
@@ -266,26 +266,18 @@ module.exports.register = async function (req, res) {
             dob: req.body.dob,
             gender: req.body.gender,
             religion: req.body.religion,
+            leave_balance:req.body.leave_balance
 
         }
 
         const user = await UserModel.create(userObject);
-
-        const date = new Date();
-        let year = date.getFullYear();
-
-        const emp_id = "TSCS" + year.toString() + "00" + (user.id + 1);
-
-        const empGen = await UserModel.update({ emp_id: emp_id }, { where: { email: req.body.email } })
-
-
 
 
         res.status(201).json({
             user: await UserModel.findOne({ where: { email: req.body.email } })
         });
 
-        await sendMail(user.first_name, emp_id, user.email, autoPassword);
+        // await sendMail(user.first_name, user.emp_id, user.email, autoPassword);
 
     } else {
         res.status(400).json({ error: "User already exists" });
@@ -327,11 +319,10 @@ module.exports.profileImage = async function (req, res, err) {
 
 
 
-        const url = "https://attendance.takshashilascs.in"
-        const localUrl = "http://localhost:9000"
+
 
         const update = {
-            user_image: url + "/uploads/" + req.file.filename
+            user_image: req.file.filename
         }
         created_user = await UserModel.update(update, { where: { emp_id: req.body.emp_id } });
         res.status(200).json({

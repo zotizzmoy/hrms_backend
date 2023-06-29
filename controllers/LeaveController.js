@@ -75,7 +75,11 @@ module.exports.calculateLeaves = async (req, res) => {
 
     try {
         // Retrieve total leaves
-        const totalLeaves = 12; // Assuming totalLeaves is 12
+        const totalLeaves = await UserModel.findAll({
+            where:{id:req.body.user_id},
+            attributes: ['leave_balance']
+        })
+        console.log(totalLeaves);
 
         // Retrieve applied leaves and join with User table
         const appliedLeaves = await UserLeave.findAll({
@@ -143,11 +147,10 @@ module.exports.calculateLeaves = async (req, res) => {
 module.exports.uploadDocument = async (req, res) => {
     try {
 
-        const url = "https://attendance.takshashilascs.in"
-        const localUrl = "http://localhost:9000"
+       
 
         const update = {
-            document: url + "/uploads/" + req.file.filename
+            document:   req.file.filename
         }
         created_user = await UserLeave.update(update, { where: { user_id: req.body.user_id } });
         res.status(200).json({
