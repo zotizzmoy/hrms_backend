@@ -506,6 +506,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         const totalLeaves = await UserModel.findAll({
             attributes: ['leave_balance']
         });
+        console.log(totalLeaves);
 
         // Retrieve all users
         const users = await UserModel.findAll();
@@ -521,7 +522,11 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                 const appliedLeavesCount = approvedLeaves.length;
 
                 // Calculate leave durations and subtract from total leaves
-                let remainingLeaves = totalLeaves[0].leave_balance;
+                let remainingLeaves = totalLeaves.map( (val) =>{
+                    return  val.leave_balance
+                }
+                    
+                )
                 const leaveDurations = approvedLeaves.map((leave) => {
                     const startDate = new Date(leave.start_date);
                     const endDate = new Date(leave.end_date);
