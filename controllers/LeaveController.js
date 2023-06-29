@@ -74,16 +74,22 @@ module.exports.calculateLeaves = async (req, res) => {
     // Assuming you have the User model imported
 
     try {
+        const { user_id } = req.body;
+        if (!user_id) {
+            return res.status(200).json({
+                error: "Pls provide user_id"
+            })
+        }
         // Retrieve total leaves
         const totalLeaves = await UserModel.findAll({
-            where:{id:req.body.user_id},
+            where: { id: user_id },
             attributes: ['leave_balance']
         })
-        console.log(totalLeaves);
+
 
         // Retrieve applied leaves and join with User table
         const appliedLeaves = await UserLeave.findAll({
-            where: { user_id: req.body.user_id, status: 'approved' },
+            where: { user_id: user_id, status: 'approved' },
             include: [
                 {
                     model: UserModel,
@@ -147,10 +153,10 @@ module.exports.calculateLeaves = async (req, res) => {
 module.exports.uploadDocument = async (req, res) => {
     try {
 
-       
+
 
         const update = {
-            document:   req.file.filename
+            document: req.file.filename
         }
         created_user = await UserLeave.update(update, { where: { user_id: req.body.user_id } });
         res.status(200).json({
