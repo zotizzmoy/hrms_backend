@@ -77,15 +77,15 @@ module.exports.calculateLeaves = async (req, res) => {
         const { user_id } = req.body;
         if (!user_id) {
             return res.status(200).json({
-                error: "Pls provide user_id"
-            })
+                error: "Please provide user_id"
+            });
         }
+
         // Retrieve total leaves
-        const totalLeaves = await UserModel.findAll({
+        const totalLeaves = await UserModel.findOne({
             where: { id: user_id },
             attributes: ['leave_balance']
-        })
-
+        });
 
         // Retrieve applied leaves and join with User table
         const appliedLeaves = await UserLeave.findAll({
@@ -98,14 +98,11 @@ module.exports.calculateLeaves = async (req, res) => {
             ]
         });
 
-
-
-        const appliedLeaveIds = appliedLeaves.map((leave) => leave.id);
         const appliedLeavesCount = appliedLeaves.length;
 
         // Calculate leave durations and subtract from total leaves
-        let remainingLeaves = totalLeaves;
-        let remainingHalfLeaves = totalLeaves;
+        let remainingLeaves = totalLeaves.leave_balance;
+        let remainingHalfLeaves = totalLeaves.leave_balance;
         const leaveDurations = appliedLeaves.map((leave) => {
             const startDate = new Date(leave.start_date);
             const endDate = new Date(leave.end_date);
@@ -131,11 +128,13 @@ module.exports.calculateLeaves = async (req, res) => {
 
         // Prepare response JSON
         const response = {
-            total_leaves: totalLeaves,
-            applied_leaves: appliedLeavesCount,
-            available_leaves: remainingHalfLeaves,
-
-
+            leaves: [
+                {
+                    leave_balance: totalLeaves.leave_balance,
+                    applied_leaves: appliedLeavesCount,
+                    available_leaves: remainingHalfLeaves
+                }
+            ]
         };
 
         res.status(200).json(response);
@@ -143,6 +142,7 @@ module.exports.calculateLeaves = async (req, res) => {
         console.error('Error calculating leaves:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+
 };
 
 
