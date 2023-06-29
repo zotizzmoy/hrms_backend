@@ -266,7 +266,7 @@ module.exports.register = async function (req, res) {
             dob: req.body.dob,
             gender: req.body.gender,
             religion: req.body.religion,
-            leave_balance:req.body.leave_balance
+            leave_balance: req.body.leave_balance
 
         }
 
@@ -274,7 +274,7 @@ module.exports.register = async function (req, res) {
 
 
         res.status(201).json({
-            user: await UserModel.findOne({ where: { email: req.body.email } })
+            message: "User successfully registered"
         });
 
         await sendMail(user.first_name, user.emp_id, user.email, autoPassword);

@@ -503,7 +503,9 @@ module.exports.onleaveCount = async function (req, res) {
 module.exports.calculateAllUsersleaveBalance = async function (req, res) {
     try {
         // Retrieve total leaves
-        const totalLeaves = 12; // Assuming totalLeaves is 12
+        const totalLeaves = await UserModel.findAll({
+            attributes: ['leave_balance']
+        }); 
 
         // Retrieve all users
         const users = await UserModel.findAll();
