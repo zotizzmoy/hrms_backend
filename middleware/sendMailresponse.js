@@ -45,8 +45,8 @@ const sendMailresponse = (
       // Create the request payload
       const payload = {
         sender: {
-          name: 'Admin -TSCS',
-          email: 'admin@takshashilascs.in'
+          name: 'Admin -Gratia Technology',
+          email: 'admin@gratiatechnology.in'
         },
         to: [
           {
@@ -54,7 +54,7 @@ const sendMailresponse = (
             name: first_name
           }
         ],
-        subject: 'Leave Application -TSCS',
+        subject: 'Leave Application -GRATIA',
         htmlContent: html
       };
   

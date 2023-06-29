@@ -34,8 +34,8 @@ const sendMail = (
         // Create the request payload
         const payload = {
             sender: {
-                name: "Mail from Takshashila",
-                email: 'admin@takshashilascs.in'
+                name: "Mail from Gratia Technology",
+                email: 'admin@gratiatechnology.in'
             },
             to: [
                 {
@@ -43,7 +43,7 @@ const sendMail = (
                     name: first_name
                 }
             ],
-            subject: 'Login Details -TSCS',
+            subject: 'Login Details -Gratia',
             htmlContent: html
         };
 
