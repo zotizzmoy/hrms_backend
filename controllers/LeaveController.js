@@ -130,7 +130,7 @@ module.exports.calculateLeaves = async (req, res) => {
         const response = {
             leaves: [
                 {
-                    leave_balance: totalLeaves.leave_balance,
+                    leave_balance: user.leave_balance,
                     applied_leaves: appliedLeavesCount,
                     available_leaves: remainingHalfLeaves
                 }
