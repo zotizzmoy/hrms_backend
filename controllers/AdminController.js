@@ -500,14 +500,8 @@ module.exports.onleaveCount = async function (req, res) {
 };
 
 
-module.exports.calculateAllUsersleaveBalance = async function (req, res) {
+module.exports.calculateAllUsersLeaveBalance = async function (req, res) {
     try {
-        // Retrieve total leaves
-        const totalLeaves = await UserModel.findAll({
-            attributes: ['leave_balance']
-        });
-        console.log(totalLeaves);
-
         // Retrieve all users
         const users = await UserModel.findAll();
 
@@ -521,12 +515,12 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
 
                 const appliedLeavesCount = approvedLeaves.length;
 
-                // Calculate leave durations and subtract from total leaves
-                let remainingLeaves = totalLeaves.map( (val) =>{
-                    return  val.leave_balance
-                }
-                    
-                )
+                // Retrieve total leaves for the user
+                const totalLeaves = user.leave_balance;
+
+                // Calculate remaining leaves
+                let remainingLeaves = totalLeaves;
+
                 const leaveDurations = approvedLeaves.map((leave) => {
                     const startDate = new Date(leave.start_date);
                     const endDate = new Date(leave.end_date);
@@ -554,17 +548,18 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     first_name: user.first_name,
                     last_name: user.last_name,
                     approved_leaves: appliedLeavesCount,
-                    available_leaves: remainingLeaves + " " + "days",
+                    available_leaves: remainingLeaves + " days",
                 };
             })
         );
 
-        res.status(200).json(leaveCalculations)
+        res.status(200).json(leaveCalculations);
     } catch (error) {
         console.error('Error calculating leaves:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 
 
