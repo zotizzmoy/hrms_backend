@@ -76,7 +76,7 @@ module.exports.calculateLeaves = async (req, res) => {
     try {
         const { user_id } = req.body;
         if (!user_id) {
-            return res.status(200).json({
+            return res.status(400).json({
                 error: "Please provide user_id"
             });
         }

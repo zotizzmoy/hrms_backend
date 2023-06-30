@@ -35,6 +35,9 @@ const UserAttendence = sequelize_db.define('user_attendence', {
         type: DataTypes.STRING,
 
     },
+    in_office:{
+        type:DataTypes.STRING
+    },
     out_date: {
         type: DataTypes.STRING,
     },
@@ -44,6 +47,9 @@ const UserAttendence = sequelize_db.define('user_attendence', {
     out_distance: {
         type: DataTypes.STRING,
 
+    },
+    out_office:{
+        type:DataTypes.STRING
     },
     status: {
         type: DataTypes.ENUM('on time', 'late'),

@@ -4,7 +4,7 @@
 const express = require("express");
 const router = express.Router();
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-const Auth = require('../middleware/auth.js');
+
 const { upload, compressImage } = require('../middleware/upload_middleware');
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const AuthController = require('../controllers/AuthController');
@@ -35,7 +35,6 @@ router.route('/change-password').post(AuthController.change_password);
 router.route('/add-attendance').post(AttendanceController.addAttendance);
 router.route('/list-attendance').post(AttendanceController.listAttendance);
 router.route('/list-all-attendance').post(AttendanceController.listAllAttendance);
-router.route('/add-student-attendance').post(AttendanceController.addStudentAttendance);
 router.route('/add-activities').post(AttendanceController.addActivities);
 router.route('/monthly-attendance-count').post(AttendanceController.countAttendanceBymonth);
 router.route('/monthly-late-users-count').post(AttendanceController.countLateUsersBymonth);

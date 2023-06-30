@@ -83,6 +83,7 @@ module.exports.addAttendance = async function (req, res) {
           status: req.body.status,
           in_time: time,
           attendance_status: 'present',
+          in_office:req.body.in_office,
           msg: msg,
           created_at: new Date(),
         };
@@ -123,6 +124,7 @@ module.exports.addAttendance = async function (req, res) {
                 out_time: time,
                 out_distance: req.body.out_distance,
                 activity: req.body.activity,
+                out_office:req.body.out_office,
 
                 updated_at: new Date(),
               };
@@ -183,177 +185,7 @@ module.exports.addAttendance = async function (req, res) {
     res.status(601).json(resData);
   }
 };
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//Route ALL ATTENDANCE FOR STUDENT
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-module.exports.addStudentAttendance = async function (req, res) {
-  let resData = {
-    status: false,
-    data: {},
-    message: "",
-  };
-  try {
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++
-    let user_id = null;
-    if (req.body.user_id) {
-      user_id = parseInt(req.body.user_id, 10) || "";
-    }
-    let student_id = null;
-    if (req.body.student_id) {
-      student_id = parseInt(req.body.student_id, 10) || "";
-    }
-    let date = null;
-    if (req.body.user_id) {
-      date = req.body.date;
-    }
-    let time = null;
-    if (req.body.user_id) {
-      time = req.body.time;
-    }
-    let location = null;
-    if (req.body.location) {
-      location = req.body.location;
-    }
-    let msg = req.body.msg;
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++
-    if (!user_id) {
-      resData.message = "User ID Is Required";
-      return res.status(200).json(resData);
-    }
-    if (!student_id) {
-      resData.message = "Student ID Is Required";
-      return res.status(200).json(resData);
-    }
-    if (!date) {
-      resData.message = "Date Is Required";
-      return res.status(200).json(resData);
-    }
-    if (!time) {
-      resData.message = "Time Is Required";
-      return res.status(200).json(resData);
-    }
-    if (!location) {
-      resData.message = "Location Is Required";
-      return res.status(200).json(resData);
-    }
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++
-    date = new Date(date);
-    date = moment(date).format("YYYY-MM-DD");
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++
-    const return_q_promis = UserAttendence.count({
-      where: {
-        user_id: user_id,
-        in_date: date,
-      },
-    });
-    //+++++++++++++++++++++++++++++++++++++++++
-    return_q_promis.then((r_obj) => {
-      if (r_obj == 0) {
-        //+++++++++++++++++++++++++++++++++++++++++
-        let main_data = {
-          user_id: user_id,
-          student_id: student_id,
-          location: location,
-          in_date: date,
-          in_time: time,
-          msg: msg,
-          created_at: new Date(),
-        };
-        UserAttendence.create(main_data)
-          .then(async (obj) => {
-            //+++++++++++++++++++++++++++++++++++++++++
-            resData.data.data_processing = await UserAttendence.findByPk(
-              obj.id
-            );
-            //+++++++++++++++++++++++++++++++++++++++++
-            resData.status = true;
-            resData.message = "Thank You For Your Attendance-IN";
-            return res.status(200).json(resData);
-          })
-          .catch((obj_error) => {
-            //+++++++++++++++++++++++++++++++++++++++++
-            resData.status = false;
-            resData.data.data_processing = obj_error;
-            resData.message =
-              "Sorry!! Something Went Wrong. Please Try After Sometime.";
-            return res.status(200).json(resData);
-          });
-      } else {
-        //+++++++++++++++++++++++++++++++++++++++++
-        const return_q_promis_2 = UserAttendence.findAndCountAll({
-          where: {
-            user_id: user_id,
-            in_date: date,
-          },
-        });
-        //+++++++++++++++++++++++++++++++++++++++++
-        return_q_promis_2
-          .then(async (r_obj) => {
-            if (r_obj.rows[0].status == 0) {
-              //+++++++++++++++++++++++++++++++++++++++++
-              let main_data = {
-                out_date: date,
-                out_time: time,
-                status: 1,
-                updated_at: new Date(),
-              };
-              //+++++++++++++++++++++++++++++++++++++++++
-              UserAttendence.update(main_data, {
-                where: {
-                  user_id: user_id,
-                  in_date: date,
-                },
-              })
-                .then(async (obj) => {
-                  //+++++++++++++++++++++++++++++++++++++++++
-                  resData.data.data_processing = await UserAttendence.findByPk(
-                    r_obj.rows[0].id
-                  );
-                  //+++++++++++++++++++++++++++++++++++++++++
-                  resData.status = true;
-                  resData.message = "Thank You For Your Attendance-OUT";
-                  return res.status(200).json(resData);
-                })
-                .catch((obj_error) => {
-                  //+++++++++++++++++++++++++++++++++++++++++
-                  console.log(obj_error);
-                  //+++++++++++++++++++++++++++++++++++++++++
-                  resData.status = false;
-                  resData.data.data_processing = obj_error;
-                  resData.message =
-                    "Sorry!! Something Went Wrong. Please Try After Sometime.";
-                  return res.status(200).json(resData);
-                });
-            } else {
-              resData.status = true;
-              resData.data.data_processing = await UserAttendence.findByPk(
-                r_obj.rows[0].id
-              );
-              resData.message = "Data Already Processed";
-              return res.status(200).json(resData);
-            }
-          })
-          .catch((obj_error) => {
-            //+++++++++++++++++++++++++++++++++++++++++
-            console.log(obj_error);
-            //+++++++++++++++++++++++++++++++++++++++++
-            resData.status = false;
-            resData.data.data_processing = obj_error;
-            resData.message =
-              "Sorry!! Something Went Wrong. Please Try After Sometime.";
-            return res.status(200).json(resData);
-          });
-      }
-    });
-    //+++++++++++++++++++++++++++++++++++++++++
-  } catch (e) {
-    console.log(e);
-    resData.status = false;
-    resData.message = "Error!!";
-    resData.data = e;
-    res.status(601).json(resData);
-  }
-};
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Route LIST ALL ATTENDANCE
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
