@@ -81,11 +81,7 @@ module.exports.calculateLeaves = async (req, res) => {
             });
         }
 
-        // Retrieve total leaves
-        const user = await UserModel.findOne({
-            where: { id: user_id },
-
-        });
+        
 
         // Retrieve applied leaves and join with User table
         const appliedLeaves = await UserLeave.findAll({
@@ -99,7 +95,12 @@ module.exports.calculateLeaves = async (req, res) => {
         });
 
         const appliedLeavesCount = appliedLeaves.length;
+        // Retrieve total leaves
+        const user = await UserModel.findOne({
+            where: { id: user_id },
 
+        });
+        console.log(user);
         // Calculate leave durations and subtract from total leaves
         let remainingLeaves = user.leave_balance;
         let remainingHalfLeaves = user.leave_balance;
