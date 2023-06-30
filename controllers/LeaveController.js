@@ -82,9 +82,9 @@ module.exports.calculateLeaves = async (req, res) => {
         }
 
         // Retrieve total leaves
-        const totalLeaves = await UserModel.findOne({
+        const user = await UserModel.findOne({
             where: { id: user_id },
-            attributes: ['leave_balance']
+           
         });
 
         // Retrieve applied leaves and join with User table
@@ -101,12 +101,12 @@ module.exports.calculateLeaves = async (req, res) => {
         const appliedLeavesCount = appliedLeaves.length;
 
         // Calculate leave durations and subtract from total leaves
-        let remainingLeaves = totalLeaves.leave_balance;
+        let remainingLeaves = user.leave_balance;
         let remainingHalfLeaves = totalLeaves.leave_balance;
         const leaveDurations = appliedLeaves.map((leave) => {
             const startDate = new Date(leave.start_date);
             const endDate = new Date(leave.end_date);
-            const duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Difference in days
+            const duration = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Difference in days
 
             remainingLeaves -= duration;
 

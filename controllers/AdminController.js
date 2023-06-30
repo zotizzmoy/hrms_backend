@@ -524,7 +524,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                 const leaveDurations = approvedLeaves.map((leave) => {
                     const startDate = new Date(leave.start_date);
                     const endDate = new Date(leave.end_date);
-                    const duration = (endDate - startDate) / (1000 * 60 * 60 * 24); // Difference in days
+                    const duration = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Difference in days
 
                     // Check if the leave is a half-day leave
                     if (leave.is_half_day === 'yes') {
