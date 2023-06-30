@@ -500,7 +500,7 @@ module.exports.onleaveCount = async function (req, res) {
 };
 
 
-module.exports.calculateAllUsersLeaveBalance = async function (req, res) {
+module.exports.calculateAllUsersleaveBalance = async function (req, res) {
     try {
         // Retrieve all users
         const users = await UserModel.findAll();
