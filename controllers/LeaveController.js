@@ -100,7 +100,7 @@ module.exports.calculateLeaves = async (req, res) => {
             where: { id: user_id },
 
         });
-        console.log(user);
+        
         // Calculate leave durations and subtract from total leaves
         let remainingLeaves = user.leave_balance;
         let remainingHalfLeaves = user.leave_balance;

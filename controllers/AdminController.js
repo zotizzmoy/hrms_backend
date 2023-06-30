@@ -547,6 +547,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     emp_id: user.emp_id,
                     first_name: user.first_name,
                     last_name: user.last_name,
+                    total_leaves:totalLeaves,
                     approved_leaves: appliedLeavesCount,
                     available_leaves: remainingLeaves + " days",
                 };
