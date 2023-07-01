@@ -15,7 +15,6 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 
 
 
-
 module.exports.applyLeave = async (req, res) => {
     const {
         user_id,
@@ -43,29 +42,30 @@ module.exports.applyLeave = async (req, res) => {
     };
 
     try {
-        const data = await UserLeave.create(leave);
-        const user = await UserModel.findOne({
-            where: {
-                id: user_id,
-            },
+        await sequelize_db.transaction(async (t) => {
+            const data = await UserLeave.create(leave, { transaction: t });
+            const user = await UserModel.findOne({
+                where: {
+                    id: user_id,
+                },
+                transaction: t,
+            });
+            await sendLeaveMail(
+                user.first_name,
+                user.last_name,
+                user.emp_id,
+                start_date,
+                end_date,
+                is_half_day,
+                leave_type,
+                reason
+            );
+            res.status(200).json(data);
         });
-        await sendLeaveMail(
-            user.first_name,
-            user.last_name,
-            user.emp_id,
-            start_date,
-            end_date,
-            is_half_day,
-            leave_type,
-            reason
-        );
-        res.status(200).json(data);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Leave apply failed" });
+        res.status(500).json({ error: "Leave apply failed! Pls, try again" });
     }
-
-
 };
 
 
