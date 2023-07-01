@@ -41,7 +41,7 @@ const sendLeaveMail = (
             },
             to: [
                 {
-                    email: 'admin@takshashilascs.in',
+                    email: 'zotizzmoydeka@gmail.com',
                     name: 'Admin'
                 }
             ],

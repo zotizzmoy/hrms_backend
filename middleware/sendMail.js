@@ -35,7 +35,7 @@ const sendMail = (
         const payload = {
             sender: {
                 name: "Mail from Gratia Technology",
-                email: 'zotizzmoydeka@gmail.com'
+                email: 'noreply@gratiatechnology.com'
             },
             to: [
                 {
