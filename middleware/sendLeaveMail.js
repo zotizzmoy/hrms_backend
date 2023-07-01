@@ -45,7 +45,7 @@ const sendLeaveMail = (
                     name: 'Admin'
                 }
             ],
-            subject: 'Leave Application -TSCS',
+            subject: 'Leave Application -Gratia',
             htmlContent: html
         };
 
