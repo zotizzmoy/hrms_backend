@@ -19,9 +19,7 @@ const UserAttendence = sequelize_db.define('user_attendence', {
     user_id: {
         type: DataTypes.INTEGER
     },
-    student_id: {
-        type: DataTypes.INTEGER
-    },
+   
     location: {
         type: DataTypes.STRING
     },

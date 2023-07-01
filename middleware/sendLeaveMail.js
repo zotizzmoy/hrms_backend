@@ -41,7 +41,7 @@ const sendLeaveMail = (
             },
             to: [
                 {
-                    email: 'zotizzmoydeka@gmail.com',
+                    email: 'hr@gratiatechnology.com',
                     name: 'Admin'
                 }
             ],
