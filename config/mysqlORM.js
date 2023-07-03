@@ -3,7 +3,7 @@ const ssh = require('ssh2').Client;
 const { Sequelize, DataTypes,Transaction } = require("sequelize");
 
 
-const { log } = require('console');
+
 const dotenv = require('dotenv').config();
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ORM CONNECTION
