@@ -292,7 +292,7 @@ module.exports.update = async function (req, res) {
     try {
 
         const userObject = {
-            user_id: req.body.user_id,
+            emp_id:req.body.emp_id,
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             guardian_name: req.body.guardian_name,
