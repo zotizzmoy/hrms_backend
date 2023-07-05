@@ -288,7 +288,9 @@ module.exports.deleteUser = async function (req, res) {
 
 
         // Delete the user
-        await user.destroy();
+        await user.destroy({
+            force: false, //soft delete
+        });
 
         res.json({ message: 'User, attendances, activities, leaves deleted successfully' });
     } catch (error) {

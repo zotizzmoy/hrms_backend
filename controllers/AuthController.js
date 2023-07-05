@@ -317,11 +317,7 @@ module.exports.update = async function (req, res) {
 module.exports.profileImage = async function (req, res, err) {
     try {
 
-
-
-
-
-        const update = {
+     const update = {
             user_image: req.file.filename
         }
         created_user = await UserModel.update(update, { where: { emp_id: req.body.emp_id } });
