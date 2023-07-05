@@ -17,7 +17,7 @@ const userSalaryStructure = sequelize_db.define('user_salary_structure', {
         autoIncrement: true,
     },
     user_id:{
-        type:DataTypes.STRING,
+        type:DataTypes.INTEGER,
     },
     basic:{
         type:DataTypes.INTEGER
