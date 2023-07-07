@@ -12,6 +12,7 @@ const AttendanceController = require('../controllers/AttendanceController');
 const LeaveController = require('../controllers/LeaveController');
 const AdminController = require('../controllers/AdminController');
 const HolidayController = require('../controllers/HolidayController');
+const SalaryController = require('../controllers/SalaryController');
 
 
 
@@ -65,6 +66,7 @@ router.route("/count-leave-applied").post(AdminController.leaveCountForSevenDays
 router.route("/on-leave-today").post(AdminController.onleaveCount);
 router.route("/all-leave-balance").post(AdminController.calculateAllUsersleaveBalance);
 
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //LeaveController
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -85,8 +87,10 @@ router.route('/delete-holiday/:id').post(HolidayController.deleteHoliday);
 router.route('/upcoming-holiday').post(HolidayController.upcomingHoliday);
 
 
-
-
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//SalaryController
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+router.route('/add-salary-structure').post(SalaryController.addSalaryStructure);
 
 
 

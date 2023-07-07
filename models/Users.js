@@ -6,6 +6,7 @@ const sequelize_db = require("../config/mysqlORM");
 const UserAttendence = require("./UsersAttendence");
 const UserActivity = require("./UsersActivity");
 const UserLeave = require("./UsersLeave");
+const UsersSalaryStructure = require("./UsersSalaryStructure");
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -62,7 +63,7 @@ const UserModel = sequelize_db.define(
     status: {
       type: DataTypes.STRING,
     },
-    leave_balance:{
+    leave_balance: {
       type: DataTypes.INTEGER
     },
     role: {
@@ -113,6 +114,13 @@ UserLeave.belongsTo(UserModel, {
   foreignkey: "user_id"
 });
 
+UserModel.hasMany(UsersSalaryStructure, {
+  foreignKey: "user_id",
+  as: "salary_structure"
+});
+UsersSalaryStructure.belongsTo(UserModel, {
+  foreignKey: "user_id"
+});
 
 
 

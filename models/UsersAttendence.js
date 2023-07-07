@@ -6,7 +6,7 @@ const {
     DataTypes
 } = require('sequelize');
 const sequelize_db = require('../config/mysqlORM');
-const UserModel = require("../models/Users")
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //MODEL DETAILS
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

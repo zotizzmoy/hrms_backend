@@ -3,8 +3,9 @@ const sequelize_db = require('../config/mysqlORM');
 
 
 //Models
-const UserLeave = require('../models/UsersLeave');
 const UserModel = require('../models/Users');
+const UserLeave = require('../models/UsersLeave');
+
 
 
 
