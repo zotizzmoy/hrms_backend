@@ -46,6 +46,9 @@ const userSalaryStructure = sequelize_db.define('user_salary_structure', {
     esic: {
         type: DataTypes.INTEGER
     },
+    professional_tax:{
+        type: DataTypes.INTEGER
+    },
     ctc_per_month: {
         type: DataTypes.INTEGER
     },
