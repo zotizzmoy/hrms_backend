@@ -5,116 +5,10 @@ const UserLeave = require("../models/UsersLeave");
 const UserSalaryStructure = require("../models/UsersSalaryStructure");
 // const UserSalary = require("../models/userSalary");
 
-const axios = require('axios');
-
-// const generateSalary = async (req, res) => {
-//   try {
-//     // Fetch all user salary structures from the database
-//     const userSalaryStructures = await userSalaryStructure.findAll();
-
-//     // Fetch all users from the database
-//     const users = await userModel.findAll();
-
-//     // Extract the necessary data from the request body
-//     const { month } = req.body;
-
-//     // Array to store the newly created salary records
-//     const newSalaries = [];
-
-//     // Fetch holidays from the external API
-//     const response = await axios.get('https://api.example.com/holidays');
-//     const holidays = response.data;
-
-//     // Generate salary record for each user
-//     for (const user of users) {
-//       const userId = user.id;
-
-//       // Find the corresponding user salary structure
-//       const userSalaryStructure = userSalaryStructures.find(
-//         (salaryStructure) => salaryStructure.user_id === userId
-//       );
-
-//       if (!userSalaryStructure) {
-//         // If salary structure doesn't exist for the user, skip generating salary
-//         continue;
-//       }
-
-//       // Extract necessary data from the user salary structure
-//       const {
-//         basic,
-//         hra,
-//         conveyance,
-//         special_allowance: specialAllowance,
-//       } = userSalaryStructure;
-
-//       // Calculate the gross monthly amount
-//       const grossMonthlyAmount =
-//         basic + hra + conveyance + specialAllowance;
-
-//       // Calculate the deductions for absent days and leaves
-//       const userAttendances = await userAttendance.findAll({
-//         where: { user_id: userId },
-//       });
-
-//       const userLeaves = await userLeave.findAll({
-//         where: { user_id: userId },
-//       });
-
-//       const workingDays = userAttendances.length;
-//       const leaves = userLeaves.length;
-
-//       // Filter holidays for the current month
-//       const holidaysInMonth = holidays.filter(
-//         (holiday) => holiday.month === month
-//       );
-
-//       // Count the total number of holidays in the month
-//       const holidayCount = holidaysInMonth.length;
-
-//       // Add holidays and Sundays to the working days
-//       const totalWorkingDays = workingDays + holidayCount;
-
-//       const workingDaysDeduction =
-//         (basic / totalWorkingDays) * (totalWorkingDays - leaves);
-
-//       // Other necessary calculations for deductions
-//       const lateComing = 0; // Placeholder for late coming deduction
-//       const lateComingDeduction = (basic / totalWorkingDays) * lateComing;
-
-//       // Calculate the net salary
-//       const netSalary =
-//         grossMonthlyAmount - workingDaysDeduction - lateComingDeduction;
-
-//       // Create a new salary record in the database
-//       const newSalary = await userSalary.create({
-//         user_id: userId,
-//         basic,
-//         hra,
-//         conveyance,
-//         special_allowance: specialAllowance,
-//         gross_monthly_amount: grossMonthlyAmount,
-//         bonus: 0, // Placeholder for bonus
-//         performance_allowance: 0, // Placeholder for performance allowance
-//         deductions_working_days: workingDaysDeduction,
-//         deductions_late_coming: lateComingDeduction,
-//         net_salary: netSalary,
-//         month,
-//         year: new Date().getFullYear(), // Get the current year
-//         created_at: new Date(),
-//         updated_at: new Date(),
-//       });
-
-//       newSalaries.push(newSalary);
-//     }
-
-//     // Return the newly created salary records
-//     res.json(newSalaries);
-//   } catch (error) {
-//     //
 
 
 module.exports.addSalaryStructure = async (req, res) => {
-try {
+  try {
     // Extract the data from the request body
     const {
       user_id,
@@ -133,7 +27,7 @@ try {
     } = req.body;
 
     // Create a new user salary structure entry in the database
-    const UserSalaryStructure = await UserSalaryStructure.create({
+    const UsersSalaryStructure = await UserSalaryStructure.create({
       user_id,
       basic,
       hra,
@@ -152,7 +46,7 @@ try {
     });
 
     // Return the newly created entry as the response
-    res.status(201).json(UserSalaryStructure);
+    res.status(201).json(UsersSalaryStructure);
   } catch (error) {
     // Handle any errors that occur during the process
     console.error(error);
@@ -163,3 +57,94 @@ try {
 
 
 
+
+
+// Controller function to calculate deductibles
+async function calculateDeductibles(req, res) {
+  try {
+    const userId = req.params.userId;
+
+    // Fetch user details
+    const user = await UserModel.findByPk(userId, {
+      include: [
+        {
+          model: UserSalaryStructure,
+          as: 'salary_structure',
+        },
+        {
+          model: UserLeave,
+          as: 'leaves',
+          where: {
+            status: 'Approved',
+            start_date: { [Op.lte]: new Date() }, // Consider only approved leaves that have started
+            end_date: { [Op.gte]: new Date() }, // and have not yet ended
+          },
+        },
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Calculate deductibles
+    const salaryStructure = user.salary_structure;
+    const leavesTaken = user.leaves.length;
+    const absentDays = getAbsentDays(); // Implement your own logic to get the number of absent days
+
+    const epfDeductible = calculateEPFDeductible(salaryStructure.basic);
+    const professionalTaxDeductible = calculateProfessionalTaxDeductible(salaryStructure.gross_monthly_amount);
+    const absentDaysDeductible = calculateAbsentDaysDeductible(salaryStructure.gross_monthly_amount, absentDays);
+    const leavesTakenDeductible = calculateLeavesTakenDeductible(salaryStructure.gross_monthly_amount, leavesTaken);
+
+    // Return the deductibles
+    return res.json({
+      epfDeductible,
+      professionalTaxDeductible,
+      absentDaysDeductible,
+      leavesTakenDeductible,
+    });
+  } catch (error) {
+    console.error('Error calculating deductibles:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+// Helper function to calculate EPF deductible
+function calculateEPFDeductible(basicSalary) {
+  // Implement your logic to calculate the EPF deductible based on the basic salary
+  const epfPercentage = 5; // Example EPF percentage
+  return (basicSalary * epfPercentage) / 100;
+}
+
+// Helper function to calculate professional tax deductible
+function calculateProfessionalTaxDeductible(grossSalary) {
+  // Implement your logic to calculate the professional tax deductible based on the gross salary
+  const professionalTaxPercentage = 2; // Example professional tax percentage
+  return (grossSalary * professionalTaxPercentage) / 100;
+}
+
+// Helper function to calculate absent days deductible
+function calculateAbsentDaysDeductible(grossSalary, absentDays) {
+  // Implement your logic to calculate the absent days deductible based on the gross salary and number of absent days
+  const perDayDeduction = 100; // Example deduction per absent day
+  return perDayDeduction * absentDays;
+}
+
+// Helper function to calculate leaves taken deductible
+function calculateLeavesTakenDeductible(grossSalary, leavesTaken) {
+  // Implement your logic to calculate the leaves taken deductible based on the gross salary and number of leaves taken
+  const perLeaveDeduction = 200; // Example deduction per leave taken
+  return perLeaveDeduction * leavesTaken;
+}
+
+// Helper function to get the number of absent days
+function getAbsentDays() {
+  // Implement your own logic to get the number of absent days for the user
+  // This could involve querying the attendance records or any other method specific to your application
+  // Return the number of absent days as an integer
+}
+
+module.exports = {
+  calculateDeductibles,
+};

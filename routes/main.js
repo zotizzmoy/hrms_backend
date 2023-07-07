@@ -65,6 +65,7 @@ router.route("/leave-applied-users").post(AdminController.leaveRequests);
 router.route("/count-leave-applied").post(AdminController.leaveCountForSevenDays);
 router.route("/on-leave-today").post(AdminController.onleaveCount);
 router.route("/all-leave-balance").post(AdminController.calculateAllUsersleaveBalance);
+router.route
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
