@@ -65,7 +65,6 @@ router.route("/leave-applied-users").post(AdminController.leaveRequests);
 router.route("/count-leave-applied").post(AdminController.leaveCountForSevenDays);
 router.route("/on-leave-today").post(AdminController.onleaveCount);
 router.route("/all-leave-balance").post(AdminController.calculateAllUsersleaveBalance);
-router.route
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -92,6 +91,7 @@ router.route('/upcoming-holiday').post(HolidayController.upcomingHoliday);
 //SalaryController
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 router.route('/add-salary-structure').post(SalaryController.addSalaryStructure);
+router.route("/salary-generate").post(SalaryController.generateSalarySlips);
 
 
 
