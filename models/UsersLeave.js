@@ -31,10 +31,10 @@ const UserLeave = sequelize_db.define('user_leave', {
         type: DataTypes.STRING
     },
     start_date: {
-        type: DataTypes.DATE
+        type: DataTypes.STRING
     },
     end_date: {
-        type: DataTypes.DATE
+        type: DataTypes.STRING
     },
 
     reason: {
