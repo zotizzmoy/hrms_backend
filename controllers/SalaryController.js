@@ -99,7 +99,7 @@ module.exports.generateSalarySlips = async (req, res) => {
               Sequelize.fn("YEAR", Sequelize.col("leaves.start_date")),
               year
             ),
-            { status: "Approved" }
+            { status: "approved" }
           ),
           required: false,
         },
@@ -120,8 +120,8 @@ module.exports.generateSalarySlips = async (req, res) => {
 
       // Calculate the total leaves taken by the user in the specified month
       let leavesTaken = 0;
-      //Here, if  leaves > 1 than only it is deductible, otherwise it is considered as paid leave.
-      if (leaves && leaves.length > 1) {
+
+      if (leaves && leaves.length > 0) {
         for (const leave of leaves) {
           const leaveStartDate = new Date(leave.start_date);
           const leaveEndDate = new Date(leave.end_date);
@@ -143,23 +143,25 @@ module.exports.generateSalarySlips = async (req, res) => {
           }
         }
       }
-
       // Calculate net salary based on deductions
       const { gross_monthly_amount, epf, esic, professional_tax, basic } =
         salary_structure;
-      if (leavesTaken > 1) {
-        var leaveDaysDeduction = (basic / 3) * (leavesTaken - 1);
-      } else {
-        var leaveDaysDeduction = (basic / 3) * leavesTaken;
+
+      let leaveDaysDeduction = 0;
+
+      if (leavesTaken > 0) {
+        leaveDaysDeduction = Math.round((basic / 3) * leavesTaken);
       }
-      const lateDaysDeduction = (basic / 3) * lateDays;
-      const netSalary =
+
+      const lateDaysDeduction = Math.round((basic / 3) * lateDays);
+      const netSalary = Math.round(
         gross_monthly_amount -
-        epf -
-        esic -
-        professional_tax -
-        lateDaysDeduction -
-        leaveDaysDeduction;
+          epf -
+          esic -
+          professional_tax -
+          lateDaysDeduction -
+          leaveDaysDeduction
+      );
 
       // Prepare the salary slip object
       const salarySlip = {
