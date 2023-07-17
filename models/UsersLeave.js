@@ -1,59 +1,64 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //IMPORT THINGS ON THE TOP
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-const {
-    Sequelize,
-    DataTypes
-} = require('sequelize');
-const sequelize_db = require('../config/mysqlORM');
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize_db = require("../config/mysqlORM");
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //MODEL DETAILS
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-const UserLeave = sequelize_db.define('user_leave', {
+const UserLeave = sequelize_db.define(
+  "user_leave",
+  {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
     user_id: {
-        type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
     },
 
     leave_type: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     is_half_day: {
-        type: DataTypes.STRING,
-       
+      type: DataTypes.STRING,
     },
     applied_on: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     start_date: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     end_date: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
 
     reason: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     status: {
-        type: DataTypes.ENUM("Awaiting", "Approved", "Cancelled"),
-
+      type: DataTypes.ENUM("Awaiting", "Approved", "Cancelled"),
     },
     document: {
-        type: DataTypes.STRING
-    }
-},
-    {
-        timestamps: false,
-        underscored: true,
-        paranoid: false,
-
-    });
+      type: DataTypes.STRING,
+    },
+  },
+  {
+    timestamps: false,
+    underscored: true,
+    paranoid: false,
+  }
+);
+sequelize_db
+  .sync({ force: false })
+  .then(() => {
+    console.log("");
+  })
+  .catch((error) => {
+    console.error("Error syncing models:", error);
+  });
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports = UserLeave;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

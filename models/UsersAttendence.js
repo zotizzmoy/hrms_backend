@@ -1,78 +1,83 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //IMPORT THINGS ON THE TOP
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-const {
-    Sequelize,
-    DataTypes
-} = require('sequelize');
-const sequelize_db = require('../config/mysqlORM');
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize_db = require("../config/mysqlORM");
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //MODEL DETAILS
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-const UserAttendence = sequelize_db.define('user_attendence', {
+const UserAttendence = sequelize_db.define(
+  "user_attendence",
+  {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
     user_id: {
-        type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
     },
-   
+
     location: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     in_date: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     in_time: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     in_distance: {
-        type: DataTypes.STRING,
-
+      type: DataTypes.STRING,
     },
-    in_office:{
-        type:DataTypes.STRING
+    in_office: {
+      type: DataTypes.STRING,
     },
     out_date: {
-        type: DataTypes.STRING,
+      type: DataTypes.STRING,
     },
     out_time: {
-        type: DataTypes.STRING,
+      type: DataTypes.STRING,
     },
     out_distance: {
-        type: DataTypes.STRING,
-
+      type: DataTypes.STRING,
     },
-    out_office:{
-        type:DataTypes.STRING
+    out_office: {
+      type: DataTypes.STRING,
     },
     status: {
-        type: DataTypes.ENUM('on time', 'late'),
-
+      type: DataTypes.ENUM("on time", "late"),
     },
     attendance_status: {
-        type: DataTypes.STRING,
-        defaultValue: 'absent',
+      type: DataTypes.STRING,
+      defaultValue: "absent",
     },
     type: {
-        type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
     },
     msg: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     created_at: {
-        type: DataTypes.DATE
+      type: DataTypes.DATE,
     },
     updated_at: {
-        type: DataTypes.DATE
-    }
-}, {
+      type: DataTypes.DATE,
+    },
+  },
+  {
     timestamps: false,
-});
-
+  }
+);
+sequelize_db
+  .sync({ force: false })
+  .then(() => {
+    console.log(" ");
+  })
+  .catch((error) => {
+    console.error("Error syncing models:", error);
+  });
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports = UserAttendence;

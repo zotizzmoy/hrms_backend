@@ -11,7 +11,7 @@ const dotenv = require('dotenv').config();
 const sequelize_db = new Sequelize(process.env.DB, process.env.DB_USER, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,
     dialect: 'mysql',
-    logging: false
+    logging: false,
 });
 try {
     sequelize_db.authenticate();
@@ -20,11 +20,7 @@ try {
     console.error('UNABLE TO CONNECT TO THE DATABASE', error);
 }
 
-sequelize_db.sync().then(() => {
-    console.log('');
-}).catch((error) => {
-    console.log('Error creating table:', error);
-});
+
 
 // Use this to  print the sql query on the terminal
 // sequelize_db.options.logging = console.log;

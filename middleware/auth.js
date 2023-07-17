@@ -16,7 +16,7 @@ const verifyToken = (req, res, next) => {
     }
     try {
         // decode the token 
-        // and thenm check in the db if the user id active or not , berofe that you have to add active filed in the model which have defaulkt 1 
+        
         const decoded = jwt.verify(token, config.JWT_SECRET);
         //req.user = decoded;
     } catch (err) {

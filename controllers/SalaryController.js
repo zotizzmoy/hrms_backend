@@ -4,7 +4,7 @@ const UserAttendance = require("../models/UsersAttendence");
 const UserLeave = require("../models/UsersLeave");
 const UserSalaryStructure = require("../models/UsersSalaryStructure");
 const dayjs = require("dayjs");
-const { Op, Sequelize } = require("sequelize");
+const { Sequelize } = require("sequelize");
 
 // const UserSalary = require("../models/userSalary");
 
@@ -169,6 +169,7 @@ module.exports.generateSalarySlips = async (req, res) => {
         user_name: `${user.first_name} ${user.last_name}`,
         emp_id: `${user.emp_id}`,
         user_image: `${user.user_image}`,
+        label: `${user.label}`,
         month,
         year,
         leaves: leavesTaken,
@@ -195,4 +196,8 @@ module.exports.generateSalarySlips = async (req, res) => {
       .status(500)
       .json({ error: "An error occurred while generating salary slips." });
   }
+};
+
+module.exports.saveFinalsalaries = async (req,res) => {
+  
 };

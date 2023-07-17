@@ -70,6 +70,10 @@ const UserModel = sequelize_db.define(
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
+    label:{
+      type: DataTypes.STRING
+    },
+   
     created_at: {
       type: DataTypes.DATE,
     },
@@ -122,7 +126,11 @@ UserSalaryStructure.belongsTo(UserModel, {
   foreignKey: "user_id"
 });
 
-
+sequelize_db.sync({ force: false }).then(() => {
+  console.log('');
+}).catch((error) => {
+  console.error('Error syncing models:', error);
+});
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports = UserModel;
