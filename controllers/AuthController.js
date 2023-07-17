@@ -264,6 +264,7 @@ module.exports.register = async function (req, res) {
             role: 0,
             guardian_name: req.body.guardian_name,
             dob: req.body.dob,
+            label: req.body.label,
             gender: req.body.gender,
             religion: req.body.religion,
             leave_balance: req.body.leave_balance

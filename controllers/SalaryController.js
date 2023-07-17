@@ -118,6 +118,12 @@ module.exports.generateSalarySlips = async (req, res) => {
             .length
         : 0;
 
+      // Calculate the total present days for the user
+        const presentDays = attendances
+        ? attendances.filter((attendance) => attendance)
+            .length
+        : 0;
+
       // Calculate the total leaves taken by the user in the specified month
       let leavesTaken = 0;
 
@@ -170,6 +176,7 @@ module.exports.generateSalarySlips = async (req, res) => {
         emp_id: `${user.emp_id}`,
         user_image: `${user.user_image}`,
         label: `${user.label}`,
+        present_days:presentDays,
         month,
         year,
         leaves: leavesTaken,
