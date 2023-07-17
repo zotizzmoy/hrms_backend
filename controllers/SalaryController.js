@@ -3,6 +3,7 @@ const UserModel = require("../models/Users");
 const UserAttendance = require("../models/UsersAttendence");
 const UserLeave = require("../models/UsersLeave");
 const UserSalaryStructure = require("../models/UsersSalaryStructure");
+const UserSalary = require("../models/UsersSalary");
 const dayjs = require("dayjs");
 const { Sequelize } = require("sequelize");
 
@@ -119,9 +120,8 @@ module.exports.generateSalarySlips = async (req, res) => {
         : 0;
 
       // Calculate the total present days for the user
-        const presentDays = attendances
-        ? attendances.filter((attendance) => attendance)
-            .length
+      const presentDays = attendances
+        ? attendances.filter((attendance) => attendance).length
         : 0;
 
       // Calculate the total leaves taken by the user in the specified month
@@ -176,12 +176,13 @@ module.exports.generateSalarySlips = async (req, res) => {
         emp_id: `${user.emp_id}`,
         user_image: `${user.user_image}`,
         label: `${user.label}`,
-        designation:`${user.designation}`,
-        present_days:presentDays,
+        designation: `${user.designation}`,
+        present_days: presentDays,
         month,
         year,
         leaves: leavesTaken,
         late: lateDays,
+        basic:basic,
         gross_salary: gross_monthly_amount,
         deductions: {
           epf,
@@ -206,6 +207,95 @@ module.exports.generateSalarySlips = async (req, res) => {
   }
 };
 
-module.exports.saveFinalsalaries = async (req,res) => {
-  
+module.exports.saveFinalsalaries = async (req, res) => {
+ 
+
+  try {
+    // Extract the array of user data from the request body
+    const userDataArray = req.body;
+
+    
+    const promises = [];
+
+    // Loop through each user data object
+    for (const userData of userDataArray) {
+      // Extract the user data from the object
+      const {
+        userId,
+        month,
+        year,
+        leaves,
+        late,
+        grossSalary,
+        epf,
+        esic,
+        professionalTax,
+        lateDaysDeduction,
+        leaveDaysDeduction,
+        totalDeductions,
+        netSalary,
+      } = userData;
+
+      // Create a new user salary entry and add the promise to the array
+      const promise = UserSalary.create({
+        user_id: userId,
+        month,
+        year,
+        leaves,
+        late,
+        gross_salary: grossSalary,
+        epf,
+        esic,
+        professional_tax: professionalTax,
+        late_days_deduction: lateDaysDeduction,
+        leave_days_deduction: leaveDaysDeduction,
+        total_deductions: totalDeductions,
+        net_salary: netSalary,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+
+      promises.push(promise);
+    }
+
+    // Execute all promises concurrently
+    const createdEntries = await Promise.all(promises);
+
+    // Send a success response with the created entries
+    res.status(200).json({
+      message: "User salary data saved successfully",
+      createdEntries,
+    });
+  } catch (error) {
+    // Handle any errors that occur during the process
+    console.error("Error saving user salary data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+module.exports.salariesByMonthAndYear = async (req,res) => {
+
+  try {
+    // Extract the month and year from the request parameters or query
+    const { month, year } = req.params; // or req.query, depending on your API design
+
+    // Query the user salaries table to fetch all matching entries
+    const userSalaries = await UserSalary.findAll({
+      where: {
+        month,
+        year,
+      },
+      raw: true,
+    });
+
+    // Send the user salaries as the response
+    res.status(200).json(userSalaries);
+  } catch (error) {
+    // Handle any errors that occur during the process
+    console.error("Error retrieving user salaries:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+
+
 };

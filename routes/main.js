@@ -93,6 +93,7 @@ router.route('/upcoming-holiday').post(HolidayController.upcomingHoliday);
 router.route('/add-salary-structure').post(SalaryController.addSalaryStructure);
 router.route("/salary-generate").post(SalaryController.generateSalarySlips);
 router.route("/save-salaries").post(SalaryController.saveFinalsalaries);
+router.route("/salaries-by-month").post(SalaryController.salariesByMonthAndYear);
 
 
 
