@@ -153,13 +153,15 @@ module.exports.generateSalarySlips = async (req, res) => {
       const { gross_monthly_amount, epf, esic, professional_tax, basic } =
         salary_structure;
 
+      const daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
+
       let leaveDaysDeduction = 0;
 
       if (leavesTaken > 0) {
-        leaveDaysDeduction = Math.round((basic / 30) * leavesTaken);
+        leaveDaysDeduction = Math.round(
+          (basic / daysInCurrentMonth) * leavesTaken
+        );
       }
-
-      const daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
 
       const lateDaysDeduction =
         Math.floor(basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
