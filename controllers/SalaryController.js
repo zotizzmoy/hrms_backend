@@ -158,26 +158,20 @@ module.exports.generateSalarySlips = async (req, res) => {
       if (leavesTaken > 0) {
         leaveDaysDeduction = Math.round((basic / 30) * leavesTaken);
       }
-      // Get the current month in the human-readable format
-      const currentMonth = dayjs().month() + 1; // Add 1 to the month index to get the desired format
 
-      // Get the number of days in the current month
-      const daysInCurrentMonth = dayjs()
-        .month(currentMonth - 1)
-        .daysInMonth(); // Subtract 1 from the currentMonth to get the zero-based index
+      const daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
 
-      console.log(daysInCurrentMonth);
       const lateDaysDeduction =
-        (basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
+        Math.floor(basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
       let afterLateDeduction = basic - lateDaysDeduction;
-      
+
       const netSalary = Math.round(
         gross_monthly_amount -
           epf -
           esic -
           professional_tax -
           lateDaysDeduction -
-          leaveDaysDeduction
+          afterLateDeduction
       );
 
       // Prepare the salary slip object
@@ -199,8 +193,8 @@ module.exports.generateSalarySlips = async (req, res) => {
           epf,
           esic,
           professional_tax,
-          late_days_deduction: lateDaysDeduction,
-          leave_days_deduction: afterLateDeduction,
+          late_days_deduction: afterLateDeduction,
+          leave_days_deduction: leaveDaysDeduction,
         },
         net_salary: netSalary,
       };
