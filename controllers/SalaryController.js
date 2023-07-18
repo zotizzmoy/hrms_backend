@@ -156,10 +156,21 @@ module.exports.generateSalarySlips = async (req, res) => {
       let leaveDaysDeduction = 0;
 
       if (leavesTaken > 0) {
-        leaveDaysDeduction = Math.round((basic / 3) * leavesTaken);
+        leaveDaysDeduction = Math.round((basic / 30) * leavesTaken);
       }
+      // Get the current month in the human-readable format
+      const currentMonth = dayjs().month() + 1; // Add 1 to the month index to get the desired format
 
-      const lateDaysDeduction = Math.round((basic / 3) * lateDays);
+      // Get the number of days in the current month
+      const daysInCurrentMonth = dayjs()
+        .month(currentMonth - 1)
+        .daysInMonth(); // Subtract 1 from the currentMonth to get the zero-based index
+
+      console.log(daysInCurrentMonth);
+      const lateDaysDeduction =
+        (basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
+      let afterLateDeduction = basic - lateDaysDeduction;
+      
       const netSalary = Math.round(
         gross_monthly_amount -
           epf -
@@ -182,14 +193,14 @@ module.exports.generateSalarySlips = async (req, res) => {
         year,
         leaves: leavesTaken,
         late: lateDays,
-        basic:basic,
+        basic: basic,
         gross_salary: gross_monthly_amount,
         deductions: {
           epf,
           esic,
           professional_tax,
           late_days_deduction: lateDaysDeduction,
-          leave_days_deduction: leaveDaysDeduction,
+          leave_days_deduction: afterLateDeduction,
         },
         net_salary: netSalary,
       };
@@ -208,13 +219,10 @@ module.exports.generateSalarySlips = async (req, res) => {
 };
 
 module.exports.saveFinalsalaries = async (req, res) => {
- 
-
   try {
     // Extract the array of user data from the request body
     const userDataArray = req.body;
 
-    
     const promises = [];
 
     // Loop through each user data object
@@ -273,9 +281,7 @@ module.exports.saveFinalsalaries = async (req, res) => {
   }
 };
 
-
-module.exports.salariesByMonthAndYear = async (req,res) => {
-
+module.exports.salariesByMonthAndYear = async (req, res) => {
   try {
     // Extract the month and year from the request parameters or query
     const { month, year } = req.params; // or req.query, depending on your API design
@@ -296,6 +302,4 @@ module.exports.salariesByMonthAndYear = async (req,res) => {
     console.error("Error retrieving user salaries:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-
-
 };
