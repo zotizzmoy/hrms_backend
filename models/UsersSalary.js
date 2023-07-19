@@ -18,6 +18,59 @@ const userSalary = sequelize_db.define(
     user_id: {
       type: DataTypes.INTEGER,
     },
+    first_name:{
+      type: DataTypes.STRING
+    },
+    last_name:{
+      type: DataTypes.STRING
+    },
+    label:{
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+      type: DataTypes.STRING
+    },
+    email:{
+      type: DataTypes.STRING
+    },
+    working_days:{
+      type: DataTypes.INTEGER
+    },
+    present_days:{
+      type: DataTypes.INTEGER
+    },
     month: {
       type: DataTypes.STRING,
     },

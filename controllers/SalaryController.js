@@ -176,7 +176,7 @@ module.exports.generateSalarySlips = async (req, res) => {
         user_id: user.id,
         user_name: `${user.first_name} ${user.last_name}`,
         emp_id: `${user.emp_id}`,
-        user_image: `${user.user_image}`,
+        email: `${user.email}`,
         label: `${user.label}`,
         designation: `${user.designation}`,
         present_days: presentDays,
@@ -220,36 +220,48 @@ module.exports.saveFinalsalaries = async (req, res) => {
     for (const userData of userDataArray) {
       // Extract the user data from the object
       const {
-        userId,
+        user_id,
+        first_name,
+        last_name,
+        emp_id,
+        email,
         month,
         year,
+        working_days,
+        present_days,
         leaves,
         late,
-        grossSalary,
+        gross_salary,
         epf,
         esic,
-        professionalTax,
-        lateDaysDeduction,
-        leaveDaysDeduction,
-        totalDeductions,
-        netSalary,
+        professional_tax,
+        late_days_deduction,
+        leave_days_deduction,
+        total_deduction,
+        net_salary,
       } = userData;
 
       // Create a new user salary entry and add the promise to the array
       const promise = UserSalary.create({
-        user_id: userId,
+        user_id: user_id,
+        first_name: first_name,
+        last_name: last_name,
+        email: email,
+        emp_id: emp_id,
+        working_days: working_days,
+        present_days: present_days,
         month,
         year,
         leaves,
         late,
-        gross_salary: grossSalary,
+        gross_salary: gross_salary,
         epf,
         esic,
-        professional_tax: professionalTax,
-        late_days_deduction: lateDaysDeduction,
-        leave_days_deduction: leaveDaysDeduction,
-        total_deductions: totalDeductions,
-        net_salary: netSalary,
+        professional_tax: professional_tax,
+        late_days_deduction: late_days_deduction,
+        leave_days_deduction: leave_days_deduction,
+        total_deductions: total_deduction,
+        net_salary: net_salary,
         created_at: new Date(),
         updated_at: new Date(),
       });
@@ -274,10 +286,8 @@ module.exports.saveFinalsalaries = async (req, res) => {
 
 module.exports.salariesByMonthAndYear = async (req, res) => {
   try {
-    // Extract the month and year from the request parameters or query
-    const { month, year } = req.params; // or req.query, depending on your API design
+    const { month, year } = req.params;
 
-    // Query the user salaries table to fetch all matching entries
     const userSalaries = await UserSalary.findAll({
       where: {
         month,
@@ -286,7 +296,6 @@ module.exports.salariesByMonthAndYear = async (req, res) => {
       raw: true,
     });
 
-    // Send the user salaries as the response
     res.status(200).json(userSalaries);
   } catch (error) {
     // Handle any errors that occur during the process
