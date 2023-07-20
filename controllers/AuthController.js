@@ -412,6 +412,9 @@ module.exports.resetPassword = async (req, res) => {
   }
 };
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//Route Update Password
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 module.exports.updatePasswordusingToken = async (req, res) => {
   const { token } = req.query;
