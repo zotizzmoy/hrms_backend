@@ -51,14 +51,7 @@ const UserLeave = sequelize_db.define(
     paranoid: false,
   }
 );
-sequelize_db
-  .sync({ force: false })
-  .then(() => {
-    console.log("");
-  })
-  .catch((error) => {
-    console.error("Error syncing models:", error);
-  });
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports = UserLeave;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

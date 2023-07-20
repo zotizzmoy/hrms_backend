@@ -29,6 +29,8 @@ router.post("/profile-img", upload.single('user_image'), compressImage, AuthCont
 router.route("/get-profile-url").post(AuthController.user_image);
 router.route('/resend-otp').post(AuthController.resend_opt);
 router.route('/change-password').post(AuthController.change_password);
+router.route('/reset-password').post(AuthController.resetPassword);
+router.route('/update-password').post(AuthController.updatePasswordusingToken);
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //AttendanceController

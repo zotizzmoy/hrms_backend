@@ -29,11 +29,7 @@ const AdminModel = sequelize_db.define(
 
 
 );
-sequelize_db.sync({ force: false }).then(() => {
-    console.log('');
-  }).catch((error) => {
-    console.error('Error syncing models:', error);
-});
+
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports = AdminModel;

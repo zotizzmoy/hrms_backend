@@ -1,22 +1,26 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { DataTypes } = require("sequelize");
 const sequelize_db = require("../config/mysqlORM");
 
-const Holiday = sequelize_db.define("Holiday", {
-  day: {
+const ResetToken = sequelize_db.define("reset_token", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  token: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  date: {
-    type: DataTypes.STRING,
+  user_id: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
-  name: {
-    type: DataTypes.STRING,
+  expires_at: {
+    type: DataTypes.DATE,
     allowNull: false,
   },
 });
 
-
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-module.exports = Holiday;
+module.exports = ResetToken;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

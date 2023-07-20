@@ -66,14 +66,7 @@ const userSalaryStructure = sequelize_db.define(
     timestamps: false,
   }
 );
-sequelize_db
-  .sync({ force: false })
-  .then(() => {
-    console.log(" ");
-  })
-  .catch((error) => {
-    console.error("Error syncing models:", error);
-  });
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports = userSalaryStructure;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
