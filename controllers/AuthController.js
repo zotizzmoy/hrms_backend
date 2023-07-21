@@ -417,7 +417,7 @@ module.exports.resetPassword = async (req, res) => {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 module.exports.updatePasswordusingToken = async (req, res) => {
-  const { token } = req.query;
+  const { token } = req.params.resetToken;
   const {newPassword} = req.body;
 
 try {
