@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "./static/css/main.18907da6.css",
-    "main.js": "./static/js/main.e43ccc99.js",
+    "main.css": "./static/css/main.e108dce5.css",
+    "main.js": "./static/js/main.c9c99975.js",
     "static/media/woman.png": "./static/media/woman.3f889d0af5f26871fbcc.png",
     "static/media/profile.png": "./static/media/profile.5faf09a7795d28bf5a2b.png",
     "static/media/no_data_img.webp": "./static/media/no_data_img.8b59de4eb8bcab819284.webp",
@@ -9,13 +9,14 @@
     "static/media/background_1.jpg": "./static/media/background_1.dd31861f21531f29f061.jpg",
     "static/media/checkin.png": "./static/media/checkin.f8c50ee53c04d67e0ba8.png",
     "static/media/checkout.png": "./static/media/checkout.91b3506d07a85476a75c.png",
+    "static/media/errboundary.jpg": "./static/media/errboundary.915b7e167f3e83ab3eb2.jpg",
     "static/media/gratia.webp": "./static/media/gratia.36db6bc4fd0b76e92622.webp",
     "index.html": "./index.html",
-    "main.18907da6.css.map": "./static/css/main.18907da6.css.map",
-    "main.e43ccc99.js.map": "./static/js/main.e43ccc99.js.map"
+    "main.e108dce5.css.map": "./static/css/main.e108dce5.css.map",
+    "main.c9c99975.js.map": "./static/js/main.c9c99975.js.map"
   },
   "entrypoints": [
-    "static/css/main.18907da6.css",
-    "static/js/main.e43ccc99.js"
+    "static/css/main.e108dce5.css",
+    "static/js/main.c9c99975.js"
   ]
 }
