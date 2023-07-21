@@ -13,7 +13,7 @@ const sendResetMail = (email, first_name, resetToken) => {
     const template = fs.readFileSync("./public/reset_password.ejs", "utf-8");
 
     // Render the template with the user's login details
-    const resetPasswordURL = `http://localhost:3000/reset-password?token=${resetToken}`;
+    const resetPasswordURL = `http://localhost:3000/reset-password/${resetToken}`;
 
     const html = ejs.render(template, {
       first_name: first_name,

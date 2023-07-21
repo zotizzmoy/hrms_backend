@@ -219,7 +219,7 @@ module.exports.saveFinalsalaries = async (req, res) => {
   try {
     // Extract the array of user data from the request body
     const userDataArray = req.body;
-    
+
     if (!req.body || !Array.isArray(req.body) || req.body.length === 0) {
       return res.status(400).json({ error: "Invalid request body format. Expecting an array of user data." });
     }
@@ -237,6 +237,7 @@ module.exports.saveFinalsalaries = async (req, res) => {
         email,
         month,
         year,
+        label,
         working_days,
         present_days,
         leaves,
@@ -260,6 +261,7 @@ module.exports.saveFinalsalaries = async (req, res) => {
         emp_id: emp_id,
         working_days: working_days,
         present_days: present_days,
+        label:label,
         month,
         year,
         leaves,
