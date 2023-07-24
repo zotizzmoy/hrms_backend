@@ -154,7 +154,7 @@ module.exports.generateSalarySlips = async (req, res) => {
         salary_structure;
 
       const daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
-      
+
       let leaveDaysDeduction = 0;
       if (user.leave_balance > 0) {
         leaveDaysDeduction = 0
@@ -177,13 +177,14 @@ module.exports.generateSalarySlips = async (req, res) => {
 
       // Prepare the salary slip object
       const salarySlip = {
-        user_id: user.id,
+        id: user.id,
         first_name: `${user.first_name} `,
         last_name: ` ${user.last_name}`,
         emp_id: `${user.emp_id}`,
         email: `${user.email}`,
         label: `${user.label}`,
         designation: `${user.designation}`,
+        working_days:daysInCurrentMonth,
         present_days: presentDays,
         month,
         year,
