@@ -215,7 +215,7 @@ module.exports.changeStatus = async (req, res) => {
             attributes: ["email", "first_name", "last_name", "emp_id", "total_leave", "leave_balance"],
         });
 
-        const { email, first_name, last_name, emp_id, total_leaves, leave_balance } = user;
+        const { email, first_name, last_name, emp_id, total_leave, leave_balance } = user;
 
         if (leave) {
             // Calculate the duration of the approved leave
