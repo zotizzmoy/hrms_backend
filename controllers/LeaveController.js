@@ -251,6 +251,7 @@ module.exports.changeStatus = async (req, res) => {
         res.status(200).json({ leave });
 
     } catch (error) {
+        console.error(error)
         res.status(422).json({
             error: error.message
         });
