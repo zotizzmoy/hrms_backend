@@ -192,13 +192,12 @@ module.exports.generateSalarySlips = async (req, res) => {
         late: lateDays,
         basic: basic,
         gross_salary: gross_monthly_amount,
-        deductions: {
-          epf,
-          esic,
-          professional_tax,
-          late_days_deduction: lateDaysDeduction,
-          leave_days_deduction: leaveDaysDeduction,
-        },
+        epf,
+        esic,
+        professional_tax,
+        late_days_deduction: lateDaysDeduction,
+        leave_days_deduction: leaveDaysDeduction,
+        
         net_salary: netSalary,
       };
 
