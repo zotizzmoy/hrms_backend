@@ -212,7 +212,7 @@ module.exports.changeStatus = async (req, res) => {
 
         const user = await UserModel.findOne({
             where: { id: user_id },
-            attributes: ["email", "first_name", "last_name", "emp_id", "total_leaves", "leave_balance"],
+            attributes: ["email", "first_name", "last_name", "emp_id", "total_leave", "leave_balance"],
         });
 
         const { email, first_name, last_name, emp_id, total_leaves, leave_balance } = user;
