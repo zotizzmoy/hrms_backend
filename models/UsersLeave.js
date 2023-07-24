@@ -34,6 +34,9 @@ const UserLeave = sequelize_db.define(
     end_date: {
       type: DataTypes.STRING,
     },
+    duration: {
+      type: DataTypes.INTEGER
+    },
 
     reason: {
       type: DataTypes.STRING,

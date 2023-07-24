@@ -116,7 +116,7 @@ module.exports.generateSalarySlips = async (req, res) => {
       // Calculate the total late days for the user
       const lateDays = attendances
         ? attendances.filter((attendance) => attendance.status === "late")
-            .length
+          .length
         : 0;
 
       // Calculate the total present days for the user
@@ -155,32 +155,27 @@ module.exports.generateSalarySlips = async (req, res) => {
 
       const daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
 
-      let leaveDaysDeduction = 0;
-      if (leavesTaken > 1) {
-        leaveDaysDeduction = Math.round(
-          (basic / daysInCurrentMonth) * (leavesTaken - 1) // Paid leave condition
-        );
-      } else {
-        leaveDaysDeduction = 0;
-      }
 
-      const lateDaysDeduction =
+      let leaveDaysDeduction = Math.round(
+        (basic / daysInCurrentMonth) * (leavesTaken)
+      );
+
+
+      let lateDaysDeduction =
         Math.floor(basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
 
-      const netSalary = Math.round(
-        gross_monthly_amount -
-          epf -
-          esic -
-          professional_tax -
-          leaveDaysDeduction -
-          lateDaysDeduction
-      );
+      let netSalary;
+      if (user.leave_balance > 0) {
+        netSalary = Math.round(gross_monthly_amount - epf - esic - professional_tax - lateDaysDeduction);
+      } else {
+        netSalary = Math.round(gross_monthly_amount - epf - esic - professional_tax - leaveDaysDeduction - lateDaysDeduction);
+      }
 
       // Prepare the salary slip object
       const salarySlip = {
         user_id: user.id,
         first_name: `${user.first_name} `,
-        last_name:` ${user.last_name}`,
+        last_name: ` ${user.last_name}`,
         emp_id: `${user.emp_id}`,
         email: `${user.email}`,
         label: `${user.label}`,
@@ -261,7 +256,7 @@ module.exports.saveFinalsalaries = async (req, res) => {
         emp_id: emp_id,
         working_days: working_days,
         present_days: present_days,
-        label:label,
+        label: label,
         month,
         year,
         leaves,

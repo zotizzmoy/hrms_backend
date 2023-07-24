@@ -14,8 +14,6 @@ const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
 
 
-
-
 module.exports.applyLeave = async (req, res) => {
     const {
         user_id,
@@ -31,26 +29,43 @@ module.exports.applyLeave = async (req, res) => {
         return res.status(422).json({ error: "Please enter all the data" });
     }
 
-    const leave = {
-        user_id: user_id,
-        applied_on: applied_on,
-        start_date: start_date,
-        leave_type: leave_type,
-        end_date: end_date,
-        is_half_day: is_half_day,
-        status: "awaiting",
-        reason: reason,
-    };
+
 
     try {
         await sequelize_db.transaction(async (t) => {
-            const data = await UserLeave.create(leave, { transaction: t });
             const user = await UserModel.findOne({
                 where: {
                     id: user_id,
                 },
                 transaction: t,
             });
+
+            // Calculate duration of leave
+            const startDate = new Date(start_date);
+            const endDate = new Date(end_date);
+            const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
+            const duration = Math.round(Math.abs((startDate - endDate) / oneDay)) + 1;
+
+            // Calculate leave deduction based on half-day or full-day leave
+
+            let leaveDeduction = is_half_day ? 0.5 : duration;
+
+            const leave = {
+                user_id: user_id,
+                applied_on: applied_on,
+                start_date: start_date,
+                leave_type: leave_type,
+                end_date: end_date,
+                is_half_day: is_half_day,
+                status: "awaiting", // Set the initial status to awaiting approval
+                duration: leaveDeduction,
+                reason: reason,
+            };
+
+
+
+            const data = await UserLeave.create(leave, { transaction: t });
+
             await sendLeaveMail(
                 user.first_name,
                 user.last_name,
@@ -61,13 +76,17 @@ module.exports.applyLeave = async (req, res) => {
                 leave_type,
                 reason
             );
+
             res.status(200).json(data);
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Leave apply failed! Pls, try again" });
+        res.status(500).json({ error: "Leave apply failed! Please try again" });
     }
 };
+
+
+
 
 
 
@@ -82,7 +101,7 @@ module.exports.calculateLeaves = async (req, res) => {
             });
         }
 
-        
+
 
         // Retrieve applied leaves and join with User table
         const appliedLeaves = await UserLeave.findAll({
@@ -101,7 +120,7 @@ module.exports.calculateLeaves = async (req, res) => {
             where: { id: user_id },
 
         });
-        
+
         // Calculate leave durations and subtract from total leaves
         let remainingLeaves = user.leave_balance;
         let remainingHalfLeaves = user.leave_balance;
@@ -184,18 +203,37 @@ module.exports.changeStatus = async (req, res) => {
         let leave;
 
         await sequelize_db.transaction(async (transaction) => {
-            await UserLeave.update(update, { where: { user_id, id: leave_id }, transaction });
+            // Find the leave details before updating the status
             leave = await UserLeave.findOne({ where: { user_id, id: leave_id }, transaction });
+
+            // Update the status of the leave to "approved"
+            await UserLeave.update(update, { where: { user_id, id: leave_id }, transaction });
         });
 
         const user = await UserModel.findOne({
             where: { id: user_id },
-            attributes: ["email", "first_name", "last_name", "emp_id"],
+            attributes: ["email", "first_name", "last_name", "emp_id", "total_leaves", "leave_balance"],
         });
 
-        const { email, first_name, last_name, emp_id } = user;
+        const { email, first_name, last_name, emp_id, total_leaves, leave_balance } = user;
 
         if (leave) {
+            // Calculate the duration of the approved leave
+            const startDate = new Date(leave.start_date);
+            const endDate = new Date(leave.end_date);
+            const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
+            const duration = Math.round(Math.abs((startDate - endDate) / oneDay)) + 1;
+
+            // Deduct the leave duration from the leave_balance
+            const updatedLeaveBalance = leave_balance - (leave.is_half_day ? 0.5 : duration);
+
+            // Update the leave_balance in the UserModel
+            await UserModel.update(
+                { leave_balance: updatedLeaveBalance },
+                { where: { id: user_id }, transaction }
+            );
+
+            // Send email with the updated leave status
             await sendMailresponse(
                 email,
                 first_name,
