@@ -230,7 +230,7 @@ module.exports.changeStatus = async (req, res) => {
             // Update the leave_balance in the UserModel
             await UserModel.update(
                 { leave_balance: updatedLeaveBalance },
-                { where: { id: user_id }, transaction }
+                { where: { id: user_id } }
             );
 
             // Send email with the updated leave status
