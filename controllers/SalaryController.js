@@ -155,12 +155,12 @@ module.exports.generateSalarySlips = async (req, res) => {
         }
       }
       // Calculate net salary based on deductions
-      const { gross_monthly_amount, epf, esic, professional_tax, basic } =
+      var { gross_monthly_amount, epf, esic, professional_tax, basic } =
         salary_structure;
 
       var daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
 
-      let leaveDaysDeduction = 0;
+      var leaveDaysDeduction = 0;
       if (user.leave_balance > 0) {
         leaveDaysDeduction = 0
       } else {
@@ -170,7 +170,7 @@ module.exports.generateSalarySlips = async (req, res) => {
       }
 
 
-      let lateDaysDeduction =
+      var lateDaysDeduction =
         Math.floor(basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
 
       let netSalary;
