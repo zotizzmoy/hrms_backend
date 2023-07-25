@@ -45,6 +45,12 @@ const userSalary = sequelize_db.define(
     leaves: {
       type: DataTypes.INTEGER,
     },
+    adjust_leaves:{
+      type: DataTypes.INTEGER
+    },
+    adjust_late:{
+      type:DataTypes.INTEGER
+    },
     late: {
       type: DataTypes.INTEGER,
     },

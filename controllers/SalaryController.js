@@ -113,8 +113,8 @@ module.exports.generateSalarySlips = async (req, res) => {
     for (const user of users) {
       const { salary_structure, attendances, leaves } = user;
 
-       // Add a validation to check if salary_structure is empty for any user
-       if (!salary_structure) {
+      // Add a validation to check if salary_structure is empty for any user
+      if (!salary_structure) {
         return res.status(500).json({ error: "Salary structure not found for a user." });
       }
 
@@ -193,6 +193,8 @@ module.exports.generateSalarySlips = async (req, res) => {
         month,
         year,
         leaves: leavesTaken,
+        adjust_leave: null,
+        adjust_leave: null,
         late: lateDays,
         basic: basic,
         gross_salary: gross_monthly_amount,
@@ -207,8 +209,47 @@ module.exports.generateSalarySlips = async (req, res) => {
       salarySlips.push(salarySlip);
     }
 
-    // Return the generated salary slips
-    res.status(200).json({ salaries: salarySlips });
+    // Save the salary slip for the current user in the userSalary table
+    try {
+      await UserSalary.create({
+        user_id: users.id,
+        first_name: users.first_name,
+        last_name: users.last_name,
+        label: users.label,
+        email: users.email,
+        working_days: daysInCurrentMonth,
+        present_days: presentDays,
+        month: month,
+        year: year,
+        leaves: leavesTaken,
+        adjust_leaves: null,
+        adjust_late: null,
+        late: lateDays,
+        gross_salary: gross_monthly_amount,
+        epf: epf,
+        esic: esic,
+        professional_tax: professional_tax,
+        late_days_deduction: lateDaysDeduction,
+        leave_days_deduction: leaveDaysDeduction,
+        total_deductions: lateDaysDeduction + leaveDaysDeduction, // Add any other deductions here if applicable
+        net_salary: netSalary,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+    } catch (error) {
+      console.error(error);
+      // Handle the error if the salary slip couldn't be saved
+      return res.status(500).json({ error: "An error occurred while saving the salary slip too db." });
+    }
+
+
+    const userSalaries = await UserSalary.findAll({
+      where: {
+        month: month,
+        year: year,
+      },
+    });
+    res.status(200).json({ salaries: userSalaries });
   } catch (error) {
     console.error(error);
     res
