@@ -178,13 +178,12 @@ module.exports.generateSalarySlips = async (req, res) => {
       // Prepare the salary slip object
       const salarySlip = {
         id: user.id,
-        first_name: `${user.first_name} `,
-        last_name: ` ${user.last_name}`,
+        user_name: `${user.first_name} ${user.last_name} `,
         emp_id: `${user.emp_id}`,
         email: `${user.email}`,
         label: `${user.label}`,
         designation: `${user.designation}`,
-        working_days:daysInCurrentMonth,
+        working_days: daysInCurrentMonth,
         present_days: presentDays,
         month,
         year,
@@ -197,7 +196,6 @@ module.exports.generateSalarySlips = async (req, res) => {
         professional_tax,
         late_days_deduction: lateDaysDeduction,
         leave_days_deduction: leaveDaysDeduction,
-        
         net_salary: netSalary,
       };
 
