@@ -208,39 +208,8 @@ module.exports.generateSalarySlips = async (req, res) => {
 
       salarySlips.push(salarySlip);
     }
-
-    // Save the salary slip for the current user in the userSalary table
-    try {
-      await UserSalary.create({
-        user_id: users.id,
-        first_name: `${users.first_name}`,
-        last_name: `${users.last_name}`,
-        label: null,
-        email: null,
-        working_days: daysInCurrentMonth,
-        present_days: presentDays,
-        month: month,
-        year: year,
-        leaves: leavesTaken,
-        adjust_leaves: null,
-        adjust_late: null,
-        late: lateDays,
-        gross_salary: gross_monthly_amount,
-        epf: epf,
-        esic: esic,
-        professional_tax: professional_tax,
-        late_days_deduction: lateDaysDeduction,
-        leave_days_deduction: leaveDaysDeduction,
-        total_deductions: lateDaysDeduction + leaveDaysDeduction, // Add any other deductions here if applicable
-        net_salary: netSalary,
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
-    } catch (error) {
-      console.error(error);
-      // Handle the error if the salary slip couldn't be saved
-      return res.status(500).json({ error: "An error occurred while saving the salary slip too db." });
-    }
+    // Save all the salary slips for all users in a single database operation
+    await UserSalary.bulkCreate(salarySlips);
 
 
     const userSalaries = await UserSalary.findAll({
