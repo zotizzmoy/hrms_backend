@@ -119,13 +119,13 @@ module.exports.generateSalarySlips = async (req, res) => {
       }
 
       // Calculate the total late days for the user
-      const lateDays = attendances
+      var lateDays = attendances
         ? attendances.filter((attendance) => attendance.status === "late")
           .length
         : 0;
 
       // Calculate the total present days for the user
-      const presentDays = attendances
+      var presentDays = attendances
         ? attendances.filter((attendance) => attendance).length
         : 0;
 
