@@ -135,13 +135,7 @@ UserModel.hasOne(UserSalaryStructure, {
 UserSalaryStructure.belongsTo(UserModel, {
   foreignKey: "user_id"
 });
-// UserModel.hasMany(UserSalary, {
-//   foreignkey: "user_id",
-//   as: "salary"
-// });
-// UserSalary.belongsTo(UserModel, {
-//   foreignkey: "user_id"
-// });
+
 
 
 
