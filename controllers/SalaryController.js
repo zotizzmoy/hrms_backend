@@ -213,10 +213,10 @@ module.exports.generateSalarySlips = async (req, res) => {
     try {
       await UserSalary.create({
         user_id: users.id,
-        first_name: users.first_name,
-        last_name: users.last_name,
-        label: users.label,
-        email: users.email,
+        first_name: `${users.first_name}`,
+        last_name: `${users.last_name}`,
+        label: null,
+        email: null,
         working_days: daysInCurrentMonth,
         present_days: presentDays,
         month: month,
@@ -248,7 +248,9 @@ module.exports.generateSalarySlips = async (req, res) => {
         month: month,
         year: year,
       },
+
     });
+    console.log(userSalaries)
     res.status(200).json({ salaries: userSalaries });
   } catch (error) {
     console.error(error);
