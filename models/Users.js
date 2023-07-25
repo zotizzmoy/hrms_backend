@@ -7,6 +7,7 @@ const UserAttendence = require("./UsersAttendence");
 const UserActivity = require("./UsersActivity");
 const UserLeave = require("./UsersLeave");
 const UserSalaryStructure = require("./UsersSalaryStructure");
+const UserSalary = require("./UsersSalary");
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -63,7 +64,7 @@ const UserModel = sequelize_db.define(
     status: {
       type: DataTypes.STRING,
     },
-    
+
     leave_balance: {
       type: DataTypes.INTEGER
     },
@@ -71,10 +72,10 @@ const UserModel = sequelize_db.define(
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
-    label:{
+    label: {
       type: DataTypes.STRING
     },
-   
+
     created_at: {
       type: DataTypes.DATE,
     },
@@ -126,6 +127,21 @@ UserModel.hasOne(UserSalaryStructure, {
 UserSalaryStructure.belongsTo(UserModel, {
   foreignKey: "user_id"
 });
+
+UserModel.hasOne(UserSalaryStructure, {
+  foreignKey: "user_id",
+  as: "salary_structure"
+});
+UserSalaryStructure.belongsTo(UserModel, {
+  foreignKey: "user_id"
+});
+// UserModel.hasMany(UserSalary, {
+//   foreignkey: "user_id",
+//   as: "salary"
+// });
+// UserSalary.belongsTo(UserModel, {
+//   foreignkey: "user_id"
+// });
 
 
 

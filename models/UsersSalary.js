@@ -66,6 +66,9 @@ const userSalary = sequelize_db.define(
     professional_tax: {
       type: DataTypes.INTEGER,
     },
+    basic:{
+      type: DataTypes.INTEGER,
+    },
     late_days_deduction: {
       type: DataTypes.INTEGER,
     },

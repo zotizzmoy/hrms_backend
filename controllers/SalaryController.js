@@ -61,13 +61,14 @@ module.exports.addSalaryStructure = async (req, res) => {
 module.exports.generateSalarySlips = async (req, res) => {
   const { month, year } = req.body;
 
-  if (!month || !year) {
-    return res.status(400).json({ error: "Month and year are required." });
+  if (!month || !year || !label) {
+    return res.status(400).json({ error: "Month, year, and label are required." });
   }
   try {
     // Retrieve all users with their salary structures, attendances, and leaves
 
     const users = await UserModel.findAll({
+      where: { label },
       include: [
         {
           model: UserSalaryStructure,
@@ -223,7 +224,7 @@ module.exports.generateSalarySlips = async (req, res) => {
       },
 
     });
-    console.log(userSalaries)
+
     res.status(200).json({ salaries: userSalaries });
   } catch (error) {
     console.error(error);
