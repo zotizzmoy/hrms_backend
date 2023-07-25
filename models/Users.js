@@ -63,9 +63,7 @@ const UserModel = sequelize_db.define(
     status: {
       type: DataTypes.STRING,
     },
-    total_leave:{
-      type: DataTypes.INTEGER
-    },
+    
     leave_balance: {
       type: DataTypes.INTEGER
     },
