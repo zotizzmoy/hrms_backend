@@ -173,7 +173,7 @@ module.exports.generateSalarySlips = async (req, res) => {
       var lateDaysDeduction =
         Math.floor(basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
 
-      let netSalary;
+      var netSalary;
       if (user.leave_balance > 0) {
         netSalary = Math.round(gross_monthly_amount - epf - esic - professional_tax - lateDaysDeduction);
       } else {
