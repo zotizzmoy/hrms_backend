@@ -113,6 +113,11 @@ module.exports.generateSalarySlips = async (req, res) => {
     for (const user of users) {
       const { salary_structure, attendances, leaves } = user;
 
+       // Add a validation to check if salary_structure is empty for any user
+       if (!salary_structure) {
+        return res.status(500).json({ error: "Salary structure not found for a user." });
+      }
+
       // Calculate the total late days for the user
       const lateDays = attendances
         ? attendances.filter((attendance) => attendance.status === "late")
@@ -212,79 +217,68 @@ module.exports.generateSalarySlips = async (req, res) => {
   }
 };
 
-module.exports.saveFinalsalaries = async (req, res) => {
+
+module.exports.saveFinalsalary = async (req, res) => {
   try {
-    // Extract the array of user data from the request body
-    const userDataArray = req.body;
+    // Extract the user data from the request body
+    const {
+      user_id,
+      first_name,
+      last_name,
+      emp_id,
+      email,
+      month,
+      year,
+      label,
+      working_days,
+      present_days,
+      leaves,
+      late,
+      gross_salary,
+      epf,
+      esic,
+      professional_tax,
+      late_days_deduction,
+      leave_days_deduction,
+      total_deduction,
+      net_salary,
+    } = req.body;
 
-    if (!req.body || !Array.isArray(req.body) || req.body.length === 0) {
-      return res.status(400).json({ error: "Invalid request body format. Expecting an array of user data." });
+    // Check if the request body contains the required fields
+    if (!user_id || !first_name || !last_name || !emp_id || !email || !month || !year || !label || !working_days || !present_days || !leaves || !late || !gross_salary || !epf || !esic || !professional_tax || !late_days_deduction || !leave_days_deduction || !total_deduction || !net_salary) {
+      return res.status(400).json({ error: "Invalid request body format. Please provide all required fields." });
     }
 
-    const promises = [];
+    // Create a new user salary entry
+    const createdEntry = await UserSalary.create({
+      user_id: user_id,
+      first_name: first_name,
+      last_name: last_name,
+      email: email,
+      emp_id: emp_id,
+      working_days: working_days,
+      present_days: present_days,
+      label: label,
+      month: month,
+      year: year,
+      leaves: leaves,
+      late: late,
+      gross_salary: gross_salary,
+      epf: epf,
+      esic: esic,
+      professional_tax: professional_tax,
+      late_days_deduction: late_days_deduction,
+      leave_days_deduction: leave_days_deduction,
+      total_deductions: total_deduction,
+      net_salary: net_salary,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
 
-    // Loop through each user data object
-    for (const userData of userDataArray) {
-      // Extract the user data from the object
-      const {
-        user_id,
-        first_name,
-        last_name,
-        emp_id,
-        email,
-        month,
-        year,
-        label,
-        working_days,
-        present_days,
-        leaves,
-        late,
-        gross_salary,
-        epf,
-        esic,
-        professional_tax,
-        late_days_deduction,
-        leave_days_deduction,
-        total_deduction,
-        net_salary,
-      } = userData;
-
-      // Create a new user salary entry and add the promise to the array
-      const promise = UserSalary.create({
-        user_id: user_id,
-        first_name: first_name,
-        last_name: last_name,
-        email: email,
-        emp_id: emp_id,
-        working_days: working_days,
-        present_days: present_days,
-        label: label,
-        month,
-        year,
-        leaves,
-        late,
-        gross_salary: gross_salary,
-        epf,
-        esic,
-        professional_tax: professional_tax,
-        late_days_deduction: late_days_deduction,
-        leave_days_deduction: leave_days_deduction,
-        total_deductions: total_deduction,
-        net_salary: net_salary,
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
-
-      promises.push(promise);
-    }
-
-    // Execute all promises concurrently
-    const createdEntries = await Promise.all(promises);
-
-    // Send a success response with the created entries
+    // Send a success response with the created entry
     res.status(200).json({
       message: "User salary data saved successfully",
-      createdEntries,
+      createdEntry,
     });
   } catch (error) {
     // Handle any errors that occur during the process
@@ -292,6 +286,8 @@ module.exports.saveFinalsalaries = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
 
 module.exports.salariesByMonthAndYear = async (req, res) => {
   try {
