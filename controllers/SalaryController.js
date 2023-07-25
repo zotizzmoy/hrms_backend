@@ -59,7 +59,7 @@ module.exports.addSalaryStructure = async (req, res) => {
 };
 
 module.exports.generateSalarySlips = async (req, res) => {
-  const { month, year } = req.body;
+  const { month, year, label } = req.body;
 
   if (!month || !year || !label) {
     return res.status(400).json({ error: "Month, year, and label are required." });
