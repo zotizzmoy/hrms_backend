@@ -204,6 +204,7 @@ module.exports.generateSalarySlips = async (req, res) => {
         professional_tax,
         late_days_deduction: lateDaysDeduction,
         leave_days_deduction: leaveDaysDeduction,
+        total_deductions: (lateDaysDeduction + leaveDaysDeduction),
         net_salary: netSalary,
         created_at: new Date(),
         updated_at: new Date(),
@@ -232,75 +233,50 @@ module.exports.generateSalarySlips = async (req, res) => {
   }
 };
 
+module.exports.updateUserSalaryEntry = async (req, res) => {
+  const id = req.params.id;
 
-module.exports.saveFinalsalary = async (req, res) => {
   try {
-    // Extract the user data from the request body
-    const {
-      user_id,
-      first_name,
-      last_name,
-      emp_id,
-      email,
-      month,
-      year,
-      label,
-      working_days,
-      present_days,
-      leaves,
-      late,
-      gross_salary,
-      epf,
-      esic,
-      professional_tax,
-      late_days_deduction,
-      leave_days_deduction,
-      total_deduction,
-      net_salary,
-    } = req.body;
 
-    // Check if the request body contains the required fields
-    if (!user_id || !first_name || !last_name || !emp_id || !email || !month || !year || !label || !working_days || !present_days || !leaves || !late || !gross_salary || !epf || !esic || !professional_tax || !late_days_deduction || !leave_days_deduction || !total_deduction || !net_salary) {
-      return res.status(400).json({ error: "Invalid request body format. Please provide all required fields." });
+
+    // Find the existing user salary entry by its id
+    const existingEntry = await UserSalary.findByPk(id);
+
+    if (!existingEntry) {
+      return res.status(404).json({ error: "User salary entry not found." });
     }
 
-    // Create a new user salary entry
-    const createdEntry = await UserSalary.create({
-      user_id: user_id,
-      first_name: first_name,
-      last_name: last_name,
-      email: email,
-      emp_id: emp_id,
-      working_days: working_days,
-      present_days: present_days,
-      label: label,
-      month: month,
-      year: year,
-      leaves: leaves,
-      late: late,
-      gross_salary: gross_salary,
-      epf: epf,
-      esic: esic,
-      professional_tax: professional_tax,
-      late_days_deduction: late_days_deduction,
-      leave_days_deduction: leave_days_deduction,
-      total_deductions: total_deduction,
-      net_salary: net_salary,
-      created_at: new Date(),
+    // Update the user salary entry
+    await existingEntry.update({
+      working_days: req.body.working_days,
+      present_days: req.body.present_days,
+      label: req.body.label,
+      month: req.body.month,
+      year: req.body.year,
+      leaves: req.body.leaves,
+      late: req.body.late,
+      gross_salary: req.body.gross_salary,
+      adjust_leaves: req.body.adjust_leaves,
+      adjust_late: req.body.adjust_leave,
+      late_days_deduction: req.body.late_days_deduction,
+      leave_days_deduction: req.body.leave_days_deduction,
+      total_deductions: req.body.total_deductions,
+      net_salary: req.body.net_salary,
       updated_at: new Date(),
     });
 
-    // Send a success response with the created entry
+    // Send a success response with the updated entry
     res.status(200).json({
-      message: "User salary data saved successfully",
-      createdEntry,
+      message: "Salary Generated",
+      updatedEntry: existingEntry,
     });
   } catch (error) {
     // Handle any errors that occur during the process
-    console.error("Error saving user salary data:", error);
+    console.error("Error updating user salary data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 
