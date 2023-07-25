@@ -205,6 +205,8 @@ module.exports.generateSalarySlips = async (req, res) => {
         late_days_deduction: lateDaysDeduction,
         leave_days_deduction: leaveDaysDeduction,
         net_salary: netSalary,
+        created_at: new Date(),
+        updated_at: new Date(),
       };
 
       salarySlips.push(salarySlip);
