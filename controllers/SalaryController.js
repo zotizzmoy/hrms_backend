@@ -290,8 +290,13 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
     // Send a success response with the updated entry
     res.status(200).json({
       message: "Salary Generated",
-      updatedEntry: existingEntry,
-    });
+      data: await UserSalary.findAll({
+        where: {
+          month: req.body.month,
+          year: req.body.year,
+        },
+      })
+    })
   } catch (error) {
     // Handle any errors that occur during the process
     console.error("Error updating user salary data:", error);
