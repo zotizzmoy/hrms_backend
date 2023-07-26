@@ -120,18 +120,18 @@ module.exports.generateSalarySlips = async (req, res) => {
       }
 
       // Calculate the total late days for the user
-      var lateDays = attendances
+      let lateDays = attendances
         ? attendances.filter((attendance) => attendance.status === "late")
           .length
         : 0;
 
       // Calculate the total present days for the user
-      var presentDays = attendances
+      let presentDays = attendances
         ? attendances.filter((attendance) => attendance).length
         : 0;
 
       // Calculate the total leaves taken by the user in the specified month
-      var leavesTaken = 0;
+      let leavesTaken = 0;
 
       if (leaves && leaves.length > 0) {
         for (const leave of leaves) {
@@ -156,12 +156,12 @@ module.exports.generateSalarySlips = async (req, res) => {
         }
       }
       // Calculate net salary based on deductions
-      var { gross_monthly_amount, epf, esic, professional_tax, basic } =
+      let { gross_monthly_amount, epf, esic, professional_tax, basic } =
         salary_structure;
 
-      var daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
+      let daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
 
-      var leaveDaysDeduction = 0;
+      let leaveDaysDeduction = 0;
       if (user.leave_balance > 0) {
         leaveDaysDeduction = 0
       } else {
@@ -171,14 +171,27 @@ module.exports.generateSalarySlips = async (req, res) => {
       }
 
 
-      var lateDaysDeduction =
+      let lateDaysDeduction =
         Math.floor(basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
 
-      var netSalary;
+      let netSalary;
       if (user.leave_balance > 0) {
         netSalary = Math.round(gross_monthly_amount - epf - esic - professional_tax - lateDaysDeduction);
       } else {
         netSalary = Math.round(gross_monthly_amount - epf - esic - professional_tax - leaveDaysDeduction - lateDaysDeduction);
+      }
+      // Check if the salary slip for the user with the same month and year already exists
+      const existingSalarySlip = await UserSalary.findOne({
+        where: {
+          user_id: user.id,
+          month: month,
+          year: year,
+        },
+      });
+      if (existingSalarySlip) {
+        return res.status(500).json({
+          error: `Salary slip for user with ID ${user.id}, month ${month}, and year ${year} already exists.`,
+        });
       }
 
       // Prepare the salary slip object
@@ -213,6 +226,14 @@ module.exports.generateSalarySlips = async (req, res) => {
 
       salarySlips.push(salarySlip);
     }
+
+    // Check if any salary slip data exists for any user with the given month and year
+    if (salarySlips.length === 0) {
+      return res.status(500).json({
+        error: `Salary for all users with month ${month} and year ${year} already exist.`,
+      });
+    }
+
     // Save all the salary slips for all users in a single database operation
     await UserSalary.bulkCreate(salarySlips);
 
