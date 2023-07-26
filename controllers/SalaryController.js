@@ -229,7 +229,7 @@ module.exports.generateSalarySlips = async (req, res) => {
 
     // Check if any salary slip data exists for any user with the given month and year
     if (salarySlips.length === 0) {
-      return res.status(422).json({
+      return res.status(200).json({
         error: `Salary for all users with month ${month} and year ${year} already exist.`,
       });
     }
