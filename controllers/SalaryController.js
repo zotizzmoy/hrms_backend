@@ -279,7 +279,7 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
       late: req.body.late,
       gross_salary: req.body.gross_salary,
       adjust_leaves: req.body.adjust_leaves,
-      adjust_late: req.body.adjust_leave,
+      adjust_late: req.body.adjust_late,
       late_days_deduction: req.body.late_days_deduction,
       leave_days_deduction: req.body.leave_days_deduction,
       total_deductions: req.body.total_deductions,
