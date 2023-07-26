@@ -256,7 +256,7 @@ module.exports.generateSalarySlips = async (req, res) => {
 };
 
 module.exports.updateUserSalaryEntry = async (req, res) => {
-  const id = req.params.id;
+  const id = req.body.id;
 
   try {
 
