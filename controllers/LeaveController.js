@@ -7,8 +7,6 @@ const UserModel = require('../models/Users');
 const UserLeave = require('../models/UsersLeave');
 
 
-
-
 // Middlewares
 const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
