@@ -76,7 +76,7 @@ if (process.env.NODE_ENV === "production") {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // FOR FRONTEND
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-app.get('*', (req, res, next) => {
+app.get('/*', (req, res, next) => {
     res.sendFile(path.join(__dirname, './client/index.html'))
     //use index.maintenance.html for maintenance mode.
 });
