@@ -160,6 +160,13 @@ module.exports.generateSalarySlips = async (req, res) => {
         salary_structure;
 
       let daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
+      console.log('================= days in current month===================');
+      console.log(daysInCurrentMonth);
+      console.log('====================================');
+
+      console.log('======= basic salary =============================');
+      console.log(basic);
+      console.log('====================================');
 
       let leaveDaysDeduction = 0;
       if (user.leave_balance > 0) {
