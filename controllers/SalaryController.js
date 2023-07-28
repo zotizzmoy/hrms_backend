@@ -160,33 +160,17 @@ module.exports.generateSalarySlips = async (req, res) => {
         salary_structure;
 
       let daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
-      console.log('================= days in current month===================');
-      console.log(daysInCurrentMonth);
-      console.log('====================================');
 
-      console.log('======= basic salary =============================');
-      console.log(basic);
-      console.log('====================================');
-
-      let daysalary = basic / daysInCurrentMonth;
-
-      console.log('================ Per day salary ====================');
-      console.log(daysalary);
-      console.log('====================================');
-
-      console.log('=============== leaves taken =====================');
-      console.log(leavesTaken);
-      console.log('====================================');
 
       let leaveDaysDeduction = 0;
       if (user.leave_balance > 0) {
         leaveDaysDeduction = 0
-        console.log(leaveDaysDeduction);
+
       } else {
         leaveDaysDeduction = Math.floor(
-          (basic / daysInCurrentMonth) * leavesTaken
-        );
-        console.log(leaveDaysDeduction);
+          (basic / daysInCurrentMonth)) * leavesTaken;
+
+
       }
 
 
