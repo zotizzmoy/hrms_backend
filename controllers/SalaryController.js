@@ -168,6 +168,16 @@ module.exports.generateSalarySlips = async (req, res) => {
       console.log(basic);
       console.log('====================================');
 
+      let daysalary = basic / daysInCurrentMonth;
+
+      console.log('================ Per day salary ====================');
+      console.log(daysalary);
+      console.log('====================================');
+
+      console.log('=============== leaves taken =====================');
+      console.log(leavesTaken);
+      console.log('====================================');
+
       let leaveDaysDeduction = 0;
       if (user.leave_balance > 0) {
         leaveDaysDeduction = 0
