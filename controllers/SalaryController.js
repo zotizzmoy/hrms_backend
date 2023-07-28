@@ -156,7 +156,7 @@ module.exports.generateSalarySlips = async (req, res) => {
         }
       }
       // Calculate net salary based on deductions
-      let { gross_monthly_amount, epf, esic, professional_tax, basic } =
+      let { ctc_per_month, epf, esic, professional_tax, basic } =
         salary_structure;
 
       let daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
@@ -176,9 +176,9 @@ module.exports.generateSalarySlips = async (req, res) => {
 
       let netSalary;
       if (user.leave_balance > 0) {
-        netSalary = Math.round(gross_monthly_amount - epf - esic - professional_tax - lateDaysDeduction);
+        netSalary = Math.round(ctc_per_month - epf - esic - professional_tax - lateDaysDeduction);
       } else {
-        netSalary = Math.round(gross_monthly_amount - epf - esic - professional_tax - leaveDaysDeduction - lateDaysDeduction);
+        netSalary = Math.round(ctc_per_month - epf - esic - professional_tax - leaveDaysDeduction - lateDaysDeduction);
       }
       // Check if the salary slip for the user with the same month and year already exists
       const existingSalarySlip = await UserSalary.findOne({
@@ -212,7 +212,7 @@ module.exports.generateSalarySlips = async (req, res) => {
         adjust_leave: null,
         late: lateDays,
         basic: basic,
-        gross_salary: gross_monthly_amount,
+        ctc_per_month: ctc_per_month,
         epf,
         esic,
         professional_tax,
@@ -276,7 +276,7 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
 
     // Calculate net salary with adjustments and deductions
     const netSalary = Math.round(
-      req.body.gross_monthly_amount - req.body.epf - req.body.esic - req.body.professional_tax - leaveDaysDeduction - lateDaysDeduction
+      req.body.ctc_per_month - req.body.epf - req.body.esic - req.body.professional_tax - leaveDaysDeduction - lateDaysDeduction
     );
 
 
@@ -289,7 +289,7 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
       year: req.body.year,
       leaves: req.body.leaves,
       late: req.body.late,
-      gross_salary: req.body.gross_salary,
+      ctc_per_month: req.body.ctc_per_month,
       adjust_leaves: req.body.adjust_leaves,
       adjust_late: req.body.adjust_late,
       late_days_deduction: lateDaysDeduction,

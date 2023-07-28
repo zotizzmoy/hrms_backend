@@ -54,7 +54,7 @@ const userSalary = sequelize_db.define(
     late: {
       type: DataTypes.INTEGER,
     },
-    gross_salary: {
+    ctc_per_month: {
       type: DataTypes.INTEGER,
     },
     epf: {
