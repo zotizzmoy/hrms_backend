@@ -259,14 +259,26 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
   const id = req.body.id;
 
   try {
-
-
     // Find the existing user salary entry by its id
     const existingEntry = await UserSalary.findByPk(id);
 
     if (!existingEntry) {
       return res.status(404).json({ error: "User salary entry not found." });
     }
+
+    // Additional calculations for adjustments
+    const basic = existingEntry.basic;
+
+    let daysInCurrentMonth = dayjs(req.body.month, "MM").daysInMonth();
+
+    const leaveDaysDeduction = Math.round((basic / daysInCurrentMonth) * req.body.adjust_leaves);
+    const lateDaysDeduction = Math.floor(basic / daysInCurrentMonth) * Math.floor(req.body.adjust_late / 3);
+
+    // Calculate net salary with adjustments and deductions
+    const netSalary = Math.round(
+      req.body.gross_monthly_amount - req.body.epf - req.body.esic - req.body.professional_tax - leaveDaysDeduction - lateDaysDeduction
+    );
+
 
     // Update the user salary entry
     await existingEntry.update({
@@ -280,10 +292,10 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
       gross_salary: req.body.gross_salary,
       adjust_leaves: req.body.adjust_leaves,
       adjust_late: req.body.adjust_late,
-      late_days_deduction: req.body.late_days_deduction,
-      leave_days_deduction: req.body.leave_days_deduction,
-      total_deductions: req.body.total_deductions,
-      net_salary: req.body.net_salary,
+      late_days_deduction: lateDaysDeduction,
+      leave_days_deduction: leaveDaysDeduction,
+      total_deductions: leaveDaysDeduction + lateDaysDeduction,
+      net_salary: netSalary,
       updated_at: new Date(),
     });
 
@@ -294,14 +306,18 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
         where: {
           month: req.body.month,
           year: req.body.year,
+          label: req.body.label,
         },
-      })
-    })
+      }),
+    });
   } catch (error) {
     // Handle any errors that occur during the process
     console.error("Error updating user salary data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+
+
+
 };
 
 
@@ -309,7 +325,7 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
 
 module.exports.salariesByMonthAndYear = async (req, res) => {
   try {
-    const { month, year,label } = req.body;
+    const { month, year, label } = req.body;
 
     const userSalaries = await UserSalary.findAll({
       where: {
