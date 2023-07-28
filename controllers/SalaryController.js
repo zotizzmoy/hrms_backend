@@ -164,10 +164,12 @@ module.exports.generateSalarySlips = async (req, res) => {
       let leaveDaysDeduction = 0;
       if (user.leave_balance > 0) {
         leaveDaysDeduction = 0
+        console.log(leaveDaysDeduction);
       } else {
-        leaveDaysDeduction = Math.round(
+        leaveDaysDeduction = Math.floor(
           (basic / daysInCurrentMonth) * (leavesTaken)
         );
+        console.log(leaveDaysDeduction);
       }
 
 
