@@ -155,9 +155,7 @@ module.exports.generateSalarySlips = async (req, res) => {
           }
         }
       }
-      console.log('============= leaveTaken=======================');
-      console.log(leavesTaken);
-      console.log('====================================');
+
       // Calculate net salary based on deductions
       let { ctc_per_month, epf, esic, professional_tax, basic } =
         salary_structure;
@@ -172,6 +170,7 @@ module.exports.generateSalarySlips = async (req, res) => {
       } else {
         leaveDaysDeduction = Math.floor(
           (basic / daysInCurrentMonth)) * leavesTaken;
+
 
 
       }
@@ -205,7 +204,7 @@ module.exports.generateSalarySlips = async (req, res) => {
         user_id: `${user.id}`,
         working_days: daysInCurrentMonth,
         present_days: presentDays,
-        label:`${user.label}`,
+        label: `${user.label}`,
         month,
         year,
         leaves: leavesTaken,
