@@ -148,11 +148,12 @@ module.exports.generateSalarySlips = async (req, res) => {
             if (leave.is_half_day === "yes") {
               leavesTaken += 0.5; // Increment by 0.5 for each half-day leave
             } else {
-              leavesTaken += Math.floor(leaveDuration); // Increment by the total duration for full-day leaves
+              leavesTaken += leaveDuration; // Increment by the total duration for full-day leaves
             }
           }
         }
       }
+
 
 
 
