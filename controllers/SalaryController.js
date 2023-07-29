@@ -319,6 +319,7 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
             as: 'user',
           },
         ],
+        raw: true,
 
       }),
     });
@@ -327,9 +328,6 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
     console.error("Error updating user salary data:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-
-
-
 };
 
 
