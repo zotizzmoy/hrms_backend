@@ -316,7 +316,7 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
           {
             model: UserModel,
             attributes: ['first_name', 'last_name', 'emp_id', 'designation'],
-            as: 'salary',
+            as: 'user',
           },
         ],
       }),
@@ -348,7 +348,7 @@ module.exports.salariesByMonthAndYear = async (req, res) => {
         {
           model: UserModel,
           attributes: ['first_name', 'last_name', 'email', 'emp_id', 'designation'],
-          as: 'salary',
+          as: 'user',
         },
       ],
       raw: true,
