@@ -155,6 +155,9 @@ module.exports.generateSalarySlips = async (req, res) => {
           }
         }
       }
+      console.log('============= leaveTaken=======================');
+      console.log(leavesTaken);
+      console.log('====================================');
       // Calculate net salary based on deductions
       let { ctc_per_month, epf, esic, professional_tax, basic } =
         salary_structure;
@@ -200,12 +203,6 @@ module.exports.generateSalarySlips = async (req, res) => {
       // Prepare the salary slip object
       const salarySlip = {
         user_id: `${user.id}`,
-        first_name: `${user.first_name}`,
-        last_name: `${user.last_name}`,
-        emp_id: `${user.emp_id}`,
-        email: `${user.email}`,
-        label: `${user.label}`,
-        designation: `${user.designation}`,
         working_days: daysInCurrentMonth,
         present_days: presentDays,
         month,
@@ -245,6 +242,7 @@ module.exports.generateSalarySlips = async (req, res) => {
       where: {
         month: month,
         year: year,
+        label: label
       },
 
     });
@@ -287,7 +285,6 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
     await existingEntry.update({
       working_days: req.body.working_days,
       present_days: req.body.present_days,
-      label: req.body.label,
       month: req.body.month,
       year: req.body.year,
       leaves: req.body.leaves,
