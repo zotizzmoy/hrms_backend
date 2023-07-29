@@ -304,25 +304,23 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
     });
 
     // Send a success response with the updated entry
-    res.status(200).json({
-      message: "Salary Generated",
-      data: await UserSalary.findAll({
-        where: {
-          month: req.body.month,
-          year: req.body.year,
-          label: req.body.label,
+    const userSalaries = await UserSalary.findAll({
+      where: {
+        month,
+        year,
+        label
+      },
+      include: [
+        {
+          model: UserModel,
+          attributes: ['first_name', 'last_name', 'email', 'emp_id', 'designation'],
+          as: 'user',
         },
-        include: [
-          {
-            model: UserModel,
-            attributes: ['first_name', 'last_name', 'email', 'emp_id', 'designation'],
-            as: 'user',
-          },
-        ],
-        raw: true,
-
-      }),
+      ],
+      raw: true,
     });
+    res.status(200).json(userSalaries)
+
   } catch (error) {
     // Handle any errors that occur during the process
     console.error("Error updating user salary data:", error);
