@@ -241,41 +241,17 @@ module.exports.generateSalarySlips = async (req, res) => {
     // Save all the salary slips for all users in a single database operation
     await UserSalary.bulkCreate(salarySlips);
 
-    const userDetails = await UserModel.findOne({
-      where: { id: users.id },
-      attributes: ['first_name', 'last_name', 'emp_id'],
+
+    const userSalaries = await UserSalary.findAll({
+      where: {
+        month: month,
+        year: year,
+        label: label
+      },
+
     });
-      // Prepare the salary slip object
-      const salary = {
-        user_id: `${users.id}`,
-        first_name: userDetails.first_name, // Include user's first name
-        last_name: userDetails.last_name,   // Include user's last name
-        emp_id: userDetails.emp_id,
-        working_days: daysInCurrentMonth,
-        present_days: presentDays,
-        label: `${users.label}`,
-        month,
-        year,
-        leaves: leavesTaken,
-        adjust_leave: null,
-        adjust_leave: null,
-        late: lateDays,
-        basic: basic,
-        ctc_per_month: ctc_per_month,
-        epf,
-        esic,
-        professional_tax,
-        late_days_deduction: lateDaysDeduction,
-        leave_days_deduction: leaveDaysDeduction,
-        total_deductions: (lateDaysDeduction + leaveDaysDeduction),
-        net_salary: netSalary,
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
 
-   
-
-    res.status(200).json({ salaries: salary });
+    res.status(200).json({ salaries: userSalaries });
   } catch (error) {
     console.error(error);
     res
@@ -335,9 +311,16 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
           month: req.body.month,
           year: req.body.year,
           label: req.body.label,
-        }
-       
-      })
+        },
+        include: [
+          {
+            model: UserModel,
+            attributes: ['first_name', 'last_name', 'email', 'emp_id', 'designation'],
+            as: 'user',
+          },
+        ],
+
+      }),
     });
   } catch (error) {
     // Handle any errors that occur during the process
