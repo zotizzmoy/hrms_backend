@@ -138,23 +138,23 @@ module.exports.generateSalarySlips = async (req, res) => {
           const leaveStartDate = new Date(leave.start_date);
           const leaveEndDate = new Date(leave.end_date);
           const leaveMonth = dayjs(leaveStartDate).format("MM");
-
           const leaveYear = dayjs(leaveStartDate).format("YYYY");
 
           // Check if the leave falls within the specified month and year
           if (leaveMonth === month && leaveYear === year) {
             // Calculate the duration of the leave
-            const leaveDuration =
-              (leaveEndDate - leaveStartDate) / (1000 * 60 * 60 * 24) + 1;
+            const leaveDuration = (leaveEndDate - leaveStartDate) / (1000 * 60 * 60 * 24) + 1;
 
             if (leave.is_half_day === "yes") {
-              leavesTaken += 0.5;
+              leavesTaken += 0.5; // Increment by 0.5 for each half-day leave
             } else {
-              leavesTaken += leaveDuration;
+              leavesTaken += Math.floor(leaveDuration); // Increment by the total duration for full-day leaves
             }
           }
         }
       }
+
+
 
       // Calculate net salary based on deductions
       let { ctc_per_month, epf, esic, professional_tax, basic } =
