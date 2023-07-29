@@ -130,32 +130,8 @@ module.exports.generateSalarySlips = async (req, res) => {
         ? attendances.filter((attendance) => attendance).length
         : 0;
 
-      // // Calculate the total leaves taken by the user in the specified month
-      // let leavesTaken = 0;
-
-      // if (leaves && leaves.length > 0) {
-      //   for (const leave of leaves) {
-      //     const leaveStartDate = new Date(leave.start_date);
-      //     const leaveEndDate = new Date(leave.end_date);
-      //     const leaveMonth = dayjs(leaveStartDate).format("MM");
-      //     const leaveYear = dayjs(leaveStartDate).format("YYYY");
-
-      //     // Check if the leave falls within the specified month and year
-      //     if (leaveMonth === month && leaveYear === year) {
-      //       // Calculate the duration of the leave
-      //       const leaveDuration = (leaveEndDate - leaveStartDate) / (1000 * 60 * 60 * 24) + 1;
-
-      //       if (leave.is_half_day === "yes") {
-      //         leavesTaken += 0.5; // Increment by 0.5 for each half-day leave
-      //       } else {
-      //         leavesTaken += leaveDuration; // Increment by the total duration for full-day leaves
-      //       }
-      //     }
-      //   }
-      // }
       // Calculate the total leaves taken by the user in the specified month
-      let fullDaysLeaveTaken = 0;
-      let halfDaysLeaveTaken = 0;
+      let leavesTaken = 0;
 
       if (leaves && leaves.length > 0) {
         for (const leave of leaves) {
@@ -166,20 +142,21 @@ module.exports.generateSalarySlips = async (req, res) => {
 
           // Check if the leave falls within the specified month and year
           if (leaveMonth === month && leaveYear === year) {
-            // Calculate the duration of the leave in days (including half-days)
+            // Calculate the duration of the leave
             const leaveDuration = (leaveEndDate - leaveStartDate) / (1000 * 60 * 60 * 24) + 1;
 
             if (leave.is_half_day === "yes") {
-              halfDaysLeaveTaken += 1; // Increment by 1 for each half-day leave
+              leavesTaken += 0.5; // Increment by 0.5 for each half-day leave
             } else {
-              fullDaysLeaveTaken += leaveDuration; // Increment by the total duration for full-day leaves
+              leavesTaken += leaveDuration; // Increment by the total duration for full-day leaves
             }
           }
         }
       }
 
-      // Calculate the total leaves taken (combining full-days and half-days)
-      let leavesTaken = fullDaysLeaveTaken + halfDaysLeaveTaken * 0.5;
+
+
+
 
 
 
