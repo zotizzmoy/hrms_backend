@@ -241,17 +241,24 @@ module.exports.generateSalarySlips = async (req, res) => {
     // Save all the salary slips for all users in a single database operation
     await UserSalary.bulkCreate(salarySlips);
 
-
     const userSalaries = await UserSalary.findAll({
       where: {
-        month: month,
-        year: year,
-        label: label
+        month,
+        year,
+        label
       },
-
+      include: [
+        {
+          model: UserModel,
+          attributes: ['first_name', 'last_name', 'email', 'emp_id', 'designation'],
+          as: 'user',
+        },
+      ],
+      raw: true,
     });
 
-    res.status(200).json({ salaries: userSalaries });
+    res.status(200).json(userSalaries);
+
   } catch (error) {
     console.error(error);
     res
@@ -304,23 +311,25 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
     });
 
     // Send a success response with the updated entry
-    const userSalaries = await UserSalary.findAll({
-      where: {
-        month,
-        year,
-        label
-      },
-      include: [
-        {
-          model: UserModel,
-          attributes: ['first_name', 'last_name', 'email', 'emp_id', 'designation'],
-          as: 'user',
+    res.status(200).json({
+      message: "Salary Generated",
+      data: await UserSalary.findAll({
+        where: {
+          month: req.body.month,
+          year: req.body.year,
+          label: req.body.label,
         },
-      ],
-      raw: true,
-    });
-    res.status(200).json(userSalaries)
+        include: [
+          {
+            model: UserModel,
+            attributes: ['first_name', 'last_name', 'email', 'emp_id', 'designation'],
+            as: 'user',
+          },
+        ],
+        raw: true,
 
+      }),
+    });
   } catch (error) {
     // Handle any errors that occur during the process
     console.error("Error updating user salary data:", error);
