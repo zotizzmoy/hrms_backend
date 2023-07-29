@@ -18,7 +18,6 @@ const userSalary = sequelize_db.define(
     user_id: {
       type: DataTypes.INTEGER,
     },
-   
     working_days: {
       type: DataTypes.INTEGER,
     },
@@ -34,11 +33,11 @@ const userSalary = sequelize_db.define(
     leaves: {
       type: DataTypes.INTEGER,
     },
-    adjust_leaves:{
+    adjust_leaves: {
       type: DataTypes.INTEGER
     },
-    adjust_late:{
-      type:DataTypes.INTEGER
+    adjust_late: {
+      type: DataTypes.INTEGER
     },
     late: {
       type: DataTypes.INTEGER,
@@ -55,7 +54,7 @@ const userSalary = sequelize_db.define(
     professional_tax: {
       type: DataTypes.INTEGER,
     },
-    basic:{
+    basic: {
       type: DataTypes.INTEGER,
     },
     late_days_deduction: {

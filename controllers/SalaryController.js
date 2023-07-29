@@ -205,6 +205,7 @@ module.exports.generateSalarySlips = async (req, res) => {
         user_id: `${user.id}`,
         working_days: daysInCurrentMonth,
         present_days: presentDays,
+        label:`${user.label}`,
         month,
         year,
         leaves: leavesTaken,
