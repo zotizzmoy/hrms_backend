@@ -312,6 +312,13 @@ module.exports.updateUserSalaryEntry = async (req, res) => {
           year: req.body.year,
           label: req.body.label,
         },
+        include: [
+          {
+            model: UserModel,
+            attributes: ['first_name', 'last_name', 'emp_id', 'designation'],
+            as: 'salary',
+          },
+        ],
       }),
     });
   } catch (error) {
@@ -337,6 +344,13 @@ module.exports.salariesByMonthAndYear = async (req, res) => {
         year,
         label
       },
+      include: [
+        {
+          model: UserModel,
+          attributes: ['first_name', 'last_name', 'email', 'emp_id', 'designation'],
+          as: 'salary',
+        },
+      ],
       raw: true,
     });
 
@@ -347,3 +361,9 @@ module.exports.salariesByMonthAndYear = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+
+
+
+
