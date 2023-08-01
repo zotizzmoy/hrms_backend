@@ -65,7 +65,7 @@ const UserModel = sequelize_db.define(
       type: DataTypes.STRING,
     },
 
-    leave_balance: {
+    paid_leaves: {
       type: DataTypes.INTEGER
     },
     role: {
