@@ -15,7 +15,7 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 const UserLeave = require("../models/UserLeave");
 
 // Controller function to apply for leave
-const applyForLeave = async (userId, leaveType, startDate, endDate, isHalfDay, reason) => {
+module.exports.applyForLeave = async (userId, leaveType, startDate, endDate, isHalfDay, reason) => {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
 
@@ -93,9 +93,7 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
   return Math.ceil(durationInMilliseconds / (1000 * 60 * 60 * 24) * days);
 };
 
-module.exports = {
-  applyForLeave,
-};
+
 
 
 
