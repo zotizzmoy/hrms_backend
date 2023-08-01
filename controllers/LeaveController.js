@@ -15,6 +15,9 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 
 
 // Controller function to apply for leave
+// Assuming you have required modules and models appropriately
+
+// Controller function to apply for leave
 module.exports.applyForLeave = async (req, res) => {
     const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
     const currentYear = new Date().getFullYear();
@@ -31,25 +34,21 @@ module.exports.applyForLeave = async (req, res) => {
             },
         },
     });
-    console.log(userPaidLeavesThisMonth)
+
     // Calculate the number of leaves taken by the user in the previous month
-    const lastMonth = currentMonth === 1 ? 12 : currentMonth - 1;
     const userPaidLeavesLastMonth = await UserLeave.count({
         where: {
             user_id: userId,
             leave_type: "Paid",
             status: "Approved",
             start_date: {
-                [Op.between]: [`${currentYear}-${lastMonth}-01`, `${currentYear}-${lastMonth}-31`],
+                [Op.between]: [`${currentYear}-${currentMonth - 1}-01`, `${currentYear}-${currentMonth - 1}-31`],
             },
         },
     });
-    console.log(userPaidLeavesLastMonth)
 
     // Calculate remaining paid leaves and carry forward the unused leaves from last month
-    let remainingPaidLeaves = 1 - userPaidLeavesThisMonth;
-    console.log(remainingPaidLeaves, "remaingpaidleaves")
-    remainingPaidLeaves += userPaidLeavesLastMonth;
+    let remainingPaidLeaves = 1 + userPaidLeavesLastMonth - userPaidLeavesThisMonth;
 
     // Calculate the duration of the leave (assuming each leave is for one day)
     const leaveDuration = calculateLeaveDuration(startDate, endDate, isHalfDay);
@@ -57,7 +56,7 @@ module.exports.applyForLeave = async (req, res) => {
     if (leaveType === "Paid") {
         // Apply for a paid leave
         if (leaveDuration > remainingPaidLeaves) {
-            throw new Error(`Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.`);
+            return res.status(400).json({ error: `Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.` });
         }
     } else if (leaveType === "Casual" || leaveType === "Medical") {
         // Apply for a casual or medical leave, deduct from paid leaves if available
@@ -66,7 +65,7 @@ module.exports.applyForLeave = async (req, res) => {
             if (remainingPaidLeaves < 0) remainingPaidLeaves = 0;
         }
     } else {
-        throw new Error("Invalid leave type.");
+        return res.status(400).json({ error: "Invalid leave type." });
     }
 
     // Create a new leave entry
@@ -83,8 +82,7 @@ module.exports.applyForLeave = async (req, res) => {
         document: "N/A", // Assuming no document is needed for most leaves
     });
 
-    res.status(201).json({ data: leaveEntry })
-
+    res.status(201).json({ data: leaveEntry });
 };
 
 // Helper function to calculate leave duration (assuming each leave is for one day)
@@ -94,8 +92,9 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const durationInMilliseconds = Math.abs(end - start);
 
     const days = isHalfDay ? 0.5 : 1;
-    return Math.ceil(durationInMilliseconds / (1000 * 60 * 60 * 24) * days);
+    return Math.ceil(durationInMilliseconds / (1000 * 60 * 60 * 24) * days) + 1;
 };
+
 
 
 
