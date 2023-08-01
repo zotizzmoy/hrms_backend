@@ -48,6 +48,7 @@ module.exports.applyForLeave = async (req, res) => {
 
     // Calculate remaining paid leaves and carry forward the unused leaves from last month
     let remainingPaidLeaves = 1 - userPaidLeavesThisMonth;
+    console.log(remainingPaidLeaves, "remaingpaidleaves")
     remainingPaidLeaves += userPaidLeavesLastMonth;
 
     // Calculate the duration of the leave (assuming each leave is for one day)
