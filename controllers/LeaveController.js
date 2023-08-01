@@ -79,10 +79,11 @@ module.exports.applyForLeave = async (req, res) => {
         status: "Awaiting", // Assuming the leave needs approval before it's marked "Approved"
         document: "N/A", // Assuming no document is needed for most leaves
     });
+    
+    res.status(201).json({ data: leaveEntry })
 
-    return leaveEntry;
 };
-res.status(201).json({ data: leaveEntry })
+
 // Helper function to calculate leave duration (assuming each leave is for one day)
 const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const start = new Date(startDate);
