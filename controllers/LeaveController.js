@@ -1,4 +1,5 @@
 const sequelize_db = require('../config/mysqlORM');
+const { Op, Sequelize } = require('sequelize');
 
 
 
@@ -79,7 +80,7 @@ module.exports.applyForLeave = async (req, res) => {
         status: "Awaiting", // Assuming the leave needs approval before it's marked "Approved"
         document: "N/A", // Assuming no document is needed for most leaves
     });
-    
+
     res.status(201).json({ data: leaveEntry })
 
 };
