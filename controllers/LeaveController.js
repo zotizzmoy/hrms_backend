@@ -31,7 +31,7 @@ module.exports.applyForLeave = async (req, res) => {
             },
         },
     });
-
+    console.log(userPaidLeavesThisMonth)
     // Calculate the number of leaves taken by the user in the previous month
     const lastMonth = currentMonth === 1 ? 12 : currentMonth - 1;
     const userPaidLeavesLastMonth = await UserLeave.count({
@@ -44,6 +44,7 @@ module.exports.applyForLeave = async (req, res) => {
             },
         },
     });
+    console.log(userPaidLeavesLastMonth)
 
     // Calculate remaining paid leaves and carry forward the unused leaves from last month
     let remainingPaidLeaves = 1 - userPaidLeavesThisMonth;
