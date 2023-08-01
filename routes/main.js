@@ -72,7 +72,7 @@ router.route("/all-leave-balance").post(AdminController.calculateAllUsersleaveBa
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //LeaveController
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-router.route('/apply-leave').post(LeaveController.applyLeave);
+router.route('/apply-leave').post(LeaveController.applyForLeave);
 router.route('/calculate-leave').post(LeaveController.calculateLeaves);
 router.post("/upload-document", upload.single('document'), compressImage, LeaveController.uploadDocument); // Different route method is used for image upload
 router.post("/approved-leave", LeaveController.changeStatus);
