@@ -25,6 +25,9 @@ const UserLeave = sequelize_db.define(
     is_half_day: {
       type: DataTypes.STRING,
     },
+    is_paid_leave:{
+      type: DataTypes.STRING
+    },
     applied_on: {
       type: DataTypes.STRING,
     },
