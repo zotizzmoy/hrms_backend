@@ -375,13 +375,13 @@ module.exports.getAllleaves = async (req, res) => {
 
 module.exports.demoTest = async (req, res) => {
 
-    const { userId } = req.body;
+    const { user_id } = req.body;
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
     try {
         const userPaidLeavesThisMonth = await UserLeave.count({
             where: {
-                user_id: userId,
+                user_id: user_id,
                 leave_type: "Paid",
                 status: "Approved",
                 start_date: {
