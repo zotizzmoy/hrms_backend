@@ -19,13 +19,17 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 
 
 // Controller function to apply for leave
+
+// Assuming you have required modules and models appropriately
+
+// Controller function to apply for leave
 module.exports.applyForLeave = async (req, res) => {
     const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
 
-    // Check if the user has already taken a paid leave in the current month
-    const hasTakenPaidLeaveThisMonth = await UserLeave.findOne({
+    // Calculate the number of leaves taken by the user in the current month
+    const userPaidLeavesThisMonth = await UserLeave.count({
         where: {
             user_id: userId,
             leave_type: "Paid",
@@ -35,9 +39,10 @@ module.exports.applyForLeave = async (req, res) => {
             },
         },
     });
-
+    console.log(userPaidLeavesThisMonth, "paidCM");
     // Calculate the number of leaves taken by the user in the previous month
     const lastMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+    console.log(lastMonth, "last-month")
     const userPaidLeavesLastMonth = await UserLeave.count({
         where: {
             user_id: userId,
@@ -48,9 +53,12 @@ module.exports.applyForLeave = async (req, res) => {
             },
         },
     });
-
+    console.log(userPaidLeavesLastMonth, "paidLM");
     // Calculate remaining paid leaves and carry forward the unused leaves from last month
-    let remainingPaidLeaves = 1 + userPaidLeavesLastMonth;
+    let remainingPaidLeaves = userPaidLeavesLastMonth > 0 ? userPaidLeavesLastMonth : 1;
+
+    // Check if the user has already taken a paid leave in the current month
+    const hasTakenPaidLeaveThisMonth = userPaidLeavesThisMonth > 0;
 
     // If the user has already taken a paid leave this month, restrict to 1-day duration
     if (hasTakenPaidLeaveThisMonth) {
@@ -104,6 +112,7 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const days = durationInMilliseconds / oneDayInMilliseconds;
     return Math.ceil(days);
 };
+
 
 
 
