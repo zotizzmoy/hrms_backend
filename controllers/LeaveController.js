@@ -16,6 +16,8 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 
 
 
+
+
 // Controller function to apply for leave
 module.exports.applyForLeave = async (req, res) => {
     const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
@@ -62,6 +64,11 @@ module.exports.applyForLeave = async (req, res) => {
         if (leaveDuration > remainingPaidLeaves) {
             return res.status(400).json({ error: `Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.` });
         }
+
+        // Check if the user has already taken a paid leave in this month
+        if (userPaidLeavesThisMonth > 0) {
+            return res.status(400).json({ error: `You have already taken a paid leave this month.` });
+        }
     } else if (leaveType === "Casual" || leaveType === "Medical") {
         // Apply for a casual or medical leave, deduct from paid leaves if available
         if (remainingPaidLeaves > 0) {
@@ -96,10 +103,8 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const durationInMilliseconds = Math.abs(end - start);
 
     const days = isHalfDay ? 0.5 : 1;
-    return Math.ceil(durationInMilliseconds / (1000 * 60 * 60 * 24) * days) + 1;
+    return Math.ceil(durationInMilliseconds / (1000 * 60 * 60 * 24) * days);
 };
-
-
 
 
 
