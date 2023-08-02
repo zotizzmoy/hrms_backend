@@ -28,6 +28,11 @@ module.exports.applyForLeave = async (req, res) => {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
 
+
+    // Calculate the first and last date of the current month
+    const firstDateOfMonth = new Date(currentYear, currentMonth - 1, 1);
+    const lastDateOfMonth = new Date(currentYear, currentMonth, 0);
+
     // Calculate the number of leaves taken by the user in the current month
     const userPaidLeavesThisMonth = await UserLeave.count({
         where: {
@@ -35,7 +40,7 @@ module.exports.applyForLeave = async (req, res) => {
             leave_type: "Paid",
             status: "Approved",
             start_date: {
-                [Op.between]: [`${currentYear}-${currentMonth}-01`, `${currentYear}-${currentMonth}-31`],
+                [Op.between]: [firstDateOfMonth, lastDateOfMonth],
             },
         },
     });
@@ -49,7 +54,7 @@ module.exports.applyForLeave = async (req, res) => {
             leave_type: "Paid",
             status: "Approved",
             start_date: {
-                [Op.between]: [`${currentYear}-${lastMonth}-01`, `${currentYear}-${lastMonth}-31`],
+                [Op.between]: [firstDateOfMonth, lastDateOfMonth],
             },
         },
     });
