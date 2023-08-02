@@ -103,7 +103,7 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const durationInMilliseconds = Math.abs(end - start);
 
     const days = isHalfDay ? 0.5 : 1;
-    return Math.ceil(durationInMilliseconds / (1000 * 60 * 60 * 24) * days);
+    return Math.ceil(durationInMilliseconds / (1000 * 60 * 60 * 24) * days) + 1;
 };
 
 
