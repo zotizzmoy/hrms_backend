@@ -18,6 +18,9 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 // Assuming you have required modules and models appropriately
 
 // Controller function to apply for leave
+// Assuming you have required modules and models appropriately
+
+// Controller function to apply for leave
 module.exports.applyForLeave = async (req, res) => {
     const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
     const currentYear = new Date().getFullYear();
@@ -49,6 +52,11 @@ module.exports.applyForLeave = async (req, res) => {
 
     // Calculate remaining paid leaves and carry forward the unused leaves from last month
     let remainingPaidLeaves = 1 + userPaidLeavesLastMonth - userPaidLeavesThisMonth;
+
+    // If there are unused paid leaves from last month, add them to the current month's quota
+    if (remainingPaidLeaves > 1) {
+        remainingPaidLeaves = 1;
+    }
 
     // Calculate the duration of the leave (assuming each leave is for one day)
     const leaveDuration = calculateLeaveDuration(startDate, endDate, isHalfDay);
@@ -92,8 +100,9 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const durationInMilliseconds = Math.abs(end - start);
 
     const days = isHalfDay ? 0.5 : 1;
-    return Math.ceil(durationInMilliseconds / (1000 * 60 * 60 * 24) * days) + 1;
+    return Math.ceil(durationInMilliseconds / (1000 * 60 * 60 * 24) * days);
 };
+
 
 
 
