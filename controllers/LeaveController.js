@@ -19,16 +19,13 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 
 
 // Controller function to apply for leave
-// Assuming you have required modules and models appropriately
-
-// Controller function to apply for leave
 module.exports.applyForLeave = async (req, res) => {
     const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
 
-    // Calculate the number of leaves taken by the user in the current month
-    const userPaidLeavesThisMonth = await UserLeave.count({
+    // Check if the user has already taken a paid leave in the current month
+    const hasTakenPaidLeaveThisMonth = await UserLeave.findOne({
         where: {
             user_id: userId,
             leave_type: "Paid",
@@ -53,11 +50,11 @@ module.exports.applyForLeave = async (req, res) => {
     });
 
     // Calculate remaining paid leaves and carry forward the unused leaves from last month
-    let remainingPaidLeaves = 1 - userPaidLeavesThisMonth + userPaidLeavesLastMonth;
+    let remainingPaidLeaves = 1 + userPaidLeavesLastMonth;
 
-    // If there are unused paid leaves from last month, add them to the current month's quota
-    if (remainingPaidLeaves > 1) {
-        remainingPaidLeaves = 1;
+    // If the user has already taken a paid leave this month, restrict to 1-day duration
+    if (hasTakenPaidLeaveThisMonth) {
+        return res.status(400).json({ error: "You can take only a 1-day paid leave in a particular month." });
     }
 
     // Calculate the duration of the leave (assuming each leave is for one day)
@@ -67,11 +64,6 @@ module.exports.applyForLeave = async (req, res) => {
         // Apply for a paid leave
         if (leaveDurationInDays > remainingPaidLeaves) {
             return res.status(400).json({ error: `Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.` });
-        }
-
-        // If the leave duration is more than 1 day, restrict to 1 day
-        if (leaveDurationInDays > 1) {
-            return res.status(400).json({ error: "You can take only a 1-day paid leave in a particular month." });
         }
     } else if (leaveType === "Casual" || leaveType === "Medical") {
         // Apply for a casual or medical leave, deduct from paid leaves if available
