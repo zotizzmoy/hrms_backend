@@ -377,7 +377,11 @@ module.exports.demoTest = async (req, res) => {
 
     const { user_id } = req.body;
     const currentYear = new Date().getFullYear();
+
     const currentMonth = new Date().getMonth() + 1;
+    console.log(currentMonth, "currentMonth");
+    console.log(currentYear, "currentYear");
+
     try {
         const userPaidLeavesThisMonth = await UserLeave.count({
             where: {
