@@ -373,3 +373,28 @@ module.exports.getAllleaves = async (req, res) => {
 
 
 
+module.exports.demoTest = async (req, res) => {
+
+    const { userId } = req.body;
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+    try {
+        const userPaidLeavesThisMonth = await UserLeave.count({
+            where: {
+                user_id: userId,
+                leave_type: "Paid",
+                status: "Approved",
+                start_date: {
+                    [Op.between]: [`${currentYear}-${currentMonth}-01`, `${currentYear}-${currentMonth}-31`],
+                },
+            },
+        });
+        res.json(userPaidLeavesThisMonth)
+    } catch (error) {
+        res.json(error.message)
+    }
+
+
+
+
+};

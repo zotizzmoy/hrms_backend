@@ -78,6 +78,7 @@ router.post("/upload-document", upload.single('document'), compressImage, LeaveC
 router.post("/approved-leave", LeaveController.changeStatus);
 router.post("/cancel-leave", LeaveController.cancelledStatus);
 router.post("/get-all-leaves", LeaveController.getAllleaves);
+router.post("/demo-test", LeaveController.demoTest);
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //HolidayController
