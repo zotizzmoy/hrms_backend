@@ -379,8 +379,7 @@ module.exports.demoTest = async (req, res) => {
     const currentYear = new Date().getFullYear();
 
     const currentMonth = new Date().getMonth() + 1;
-    console.log(currentMonth, "currentMonth");
-    console.log(currentYear, "currentYear");
+    
 
     try {
         const userPaidLeavesThisMonth = await UserLeave.count({
@@ -389,7 +388,7 @@ module.exports.demoTest = async (req, res) => {
                 leave_type: "Paid",
                 status: "Approved",
                 start_date: {
-                    [Op.between]: [`${currentYear}-${currentMonth}-01`, `${currentYear}-${currentMonth}-31`],
+                    [Op.between]: ["2023-08-01", "2023-08-31"],
                 },
             },
         });
