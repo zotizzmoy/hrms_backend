@@ -36,9 +36,7 @@ const UserModel = sequelize_db.define(
     designation: {
       type: DataTypes.STRING
     },
-    address: {
-      type: DataTypes.STRING,
-    },
+   
     password: {
       type: DataTypes.STRING,
     },
@@ -57,9 +55,7 @@ const UserModel = sequelize_db.define(
     religion: {
       type: DataTypes.STRING
     },
-    contact_no: {
-      type: DataTypes.STRING
-    },
+  
 
     status: {
       type: DataTypes.STRING,

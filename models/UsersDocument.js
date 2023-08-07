@@ -9,8 +9,8 @@ const sequelize_db = require("../config/mysqlORM");
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-const educationDetails = sequelize_db.define(
-    "user_education_detail",
+const userDocument = sequelize_db.define(
+    "user_document",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -20,23 +20,14 @@ const educationDetails = sequelize_db.define(
         user_id: {
             type: DataTypes.INTEGER
         },
-        board_name: {
+        document: {
             type: DataTypes.STRING
         },
-        degree_name: {
+        document_name: {
             type: DataTypes.STRING
         },
-        school_name: {
+        document_destination: {
             type: DataTypes.STRING
-        },
-        passing_year: {
-            type: DataTypes.STRING
-        },
-        percentage: {
-            type: DataTypes.STRING
-        },
-        marks: {
-            type: DataTypes.INTEGER
         },
         created_at: {
             type: DataTypes.DATE
@@ -57,5 +48,5 @@ const educationDetails = sequelize_db.define(
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-module.exports = educationDetails;
+module.exports = userDocument;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

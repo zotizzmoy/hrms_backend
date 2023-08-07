@@ -3,14 +3,12 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize_db = require("../config/mysqlORM");
-
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //MODEL DETAILS
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-const bankDetails = sequelize_db.define(
-    "bank_details",
+const personalDetails = sequelize_db.define(
+    "user_personal_detail",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -18,34 +16,54 @@ const bankDetails = sequelize_db.define(
             autoIncrement: true,
         },
         user_id: {
+            type: DataTypes.INTEGER,
+
+        },
+        marital_status: {
+            type: DataTypes.STRING
+        },
+        father_name: {
+            type: DataTypes.STRING
+        },
+        mother_name: {
+            type: DataTypes.STRING
+        },
+        phone_no: {
             type: DataTypes.INTEGER
         },
-        bank_name: {
+        emergency_contact_no: {
+            type: DataTypes.INTEGER
+        },
+        uan_no: {
             type: DataTypes.STRING
         },
-        account_holder_name: {
+        esic: {
             type: DataTypes.STRING
         },
-        branch_name: {
+        pan_no: {
             type: DataTypes.STRING
         },
-        ifsc: {
+        aadhar_no: {
             type: DataTypes.STRING
         },
-        account_number: {
+        present_address: {
             type: DataTypes.STRING
+        },
+        permanent_address: {
+            type: DataTypes.STRING
+        },
+        created_at: {
+            type: DataTypes.DATE
+        },
+        updated_at: {
+            type: DataTypes.DATE
         }
 
     }
-
-
-
-)
-
-
+);
 
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-module.exports = bankDetails;
+module.exports = personalDetails;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
