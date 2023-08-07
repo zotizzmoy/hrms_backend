@@ -57,7 +57,7 @@ const personalDetails = sequelize_db.define(
 
 async function syncDatabase() {
     try {
-        await sequelize_db.sync({ force: false }); // Change to true to force sync (drops existing tables)
+        await sequelize_db.sync({ force: true }); // Change to true to force sync (drops existing tables)
         console.log("Database synchronized successfully.");
     } catch (error) {
         console.error("Error synchronizing database:", error);
