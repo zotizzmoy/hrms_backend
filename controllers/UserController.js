@@ -10,6 +10,10 @@ module.exports.documentsUpload = async (req, res) => {
         const { user_id } = req.body;
         const document = req.files;
 
+        if (!document || !Array.isArray(document)) {
+            return res.status(400).json({ error: 'No files uploaded or invalid format.' });
+        }
+
         // Create document entries for each uploaded file
         const documentEntries = document.map(file => ({
             user_id,
