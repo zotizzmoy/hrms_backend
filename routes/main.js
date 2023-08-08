@@ -106,6 +106,10 @@ router.route('/personal-details').post(UserController.addPersonalDetails);
 router.route('/bank-details').post(UserController.addBankDetails);
 router.route('/add-education').post(UserController.addUserEducation);
 router.route('/documents-upload').post(UserController.documentsUpload);
+router.route('/update-personal-details/:id').post(UserController.updatePersonalDetails);
+router.route('/update-bank-details/:id').post(UserController.updateBankDetails);
+router.route('/update-education-details').post(UserController.updateUserEducation);
+
 
 
 
