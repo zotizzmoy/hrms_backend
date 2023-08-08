@@ -8,6 +8,9 @@ const UserActivity = require("./UsersActivity");
 const UserLeave = require("./UsersLeave");
 const UserSalaryStructure = require("./UsersSalaryStructure");
 const UserSalary = require("./UsersSalary");
+const UsersPersonalDetail = require("./UsersPersonalDetail");
+const UsersEducationDetail = require("./UsersEducation");
+const UsersDocument = require("./UsersDocument");
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -36,16 +39,14 @@ const UserModel = sequelize_db.define(
     designation: {
       type: DataTypes.STRING
     },
-   
+
     password: {
       type: DataTypes.STRING,
     },
     user_image: {
       type: DataTypes.TEXT,
     },
-    guardian_name: {
-      type: DataTypes.STRING,
-    },
+  
     dob: {
       type: DataTypes.STRING
     },
@@ -55,7 +56,7 @@ const UserModel = sequelize_db.define(
     religion: {
       type: DataTypes.STRING
     },
-  
+
 
     status: {
       type: DataTypes.STRING,
@@ -133,8 +134,39 @@ UserSalary.belongsTo(UserModel, {
 
 });
 
+UserModel.hasMany(UsersPersonalDetail, {
+  foreignKey: "user_id",
+  as: "personal_details"
+});
 
+UsersPersonalDetail.belongsTo(UserModel, {
+  foreignKey: "user_id",
+});
 
+UserModel.hasMany(UsersEducationDetail, {
+  foreignKey: "user_id",
+  as: "education_details"
+});
+
+UsersEducationDetail.belongsTo(UserModel, {
+  foreignKey: "user_id"
+});
+
+UserModel.hasOne(UsersBankDetail, {
+  foreignKey: "user_id",
+  as: "bank_details"
+});
+UsersBankDetail.belongsTo(UserModel, {
+  foreignKey: "user_id"
+});
+
+UserModel.hasMany(UsersDocument, {
+  foreignKey: "user_id",
+  as: "user_documents"
+});
+UsersDocument.belongsTo(UserModel, {
+  foreignKey: "user_id"
+});
 
 
 

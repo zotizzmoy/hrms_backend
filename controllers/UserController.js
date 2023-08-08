@@ -107,4 +107,21 @@ module.exports.addUserEducation = async (req, res) => {
 
 
 
+};
+
+module.exports.updateUserEducation = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const education = await educationDetails.findByPk(id);
+        if (education) {
+            await educationDetails.update(req.body)
+        } else {
+            return res.status(404).json({ message: "No eduation details found" });
+        }
+        res.status(200).json(await educationDetails.findOne({
+            where: { id }
+        }));
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
 }

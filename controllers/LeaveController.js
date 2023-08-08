@@ -18,9 +18,7 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 
 
 
-// Controller function to apply for leave
 
-// Assuming you have required modules and models appropriately
 
 // Controller function to apply for leave
 module.exports.applyForLeave = async (req, res) => {

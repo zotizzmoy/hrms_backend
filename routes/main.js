@@ -13,6 +13,7 @@ const LeaveController = require('../controllers/LeaveController');
 const AdminController = require('../controllers/AdminController');
 const HolidayController = require('../controllers/HolidayController');
 const SalaryController = require('../controllers/SalaryController');
+const UserController = require('../controllers/UserController');
 
 
 
@@ -98,9 +99,13 @@ router.route("/salary-generate").post(SalaryController.generateSalarySlips);
 router.route("/update-salary").post(SalaryController.updateUserSalaryEntry);
 router.route("/export-salaries").post(SalaryController.salariesByMonthAndYear);
 
-
-
-
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//UserController
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+router.route('/personal-details').post(UserController.addPersonalDetails);
+router.route('/bank-details').post(UserController.addBankDetails);
+router.route('/add-education').post(UserController.addUserEducation);
+router.route('/documents-upload').post(UserController.documentsUpload);
 
 
 
