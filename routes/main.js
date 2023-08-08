@@ -108,7 +108,7 @@ router.route('/add-education').post(UserController.addUserEducation);
 router.post("/upload-documents", upload.array('document', 10), compressImage, UserController.documentsUpload);
 router.route('/update-personal-details/:id').post(UserController.updatePersonalDetails);
 router.route('/update-bank-details/:id').post(UserController.updateBankDetails);
-router.route('/update-education-details').post(UserController.updateUserEducation);
+router.route('/update-education-details/:id').post(UserController.updateUserEducation);
 
 
 

@@ -11,6 +11,7 @@ const UserSalary = require("./UsersSalary");
 const UsersPersonalDetail = require("./UsersPersonalDetail");
 const UsersEducationDetail = require("./UsersEducation");
 const UsersDocument = require("./UsersDocument");
+const UsersBankDetail = require("./UsersBankDetail");
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
