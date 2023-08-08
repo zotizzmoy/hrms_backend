@@ -8,10 +8,10 @@ const personalDetails = require("../models/UsersPersonalDetail");
 module.exports.documentsUpload = async (req, res) => {
     try {
         const { user_id } = req.body;
-        const uploadedFiles = req.files;
+        const document = req.files;
 
         // Create document entries for each uploaded file
-        const documentEntries = uploadedFiles.map(file => ({
+        const documentEntries = document.map(file => ({
             user_id,
             document: file.filename,
             document_name: file.originalname,
