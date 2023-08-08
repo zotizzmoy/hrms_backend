@@ -37,9 +37,12 @@ const userDocument = sequelize_db.define(
         }
 
 
+    },
+
+    {
+        timestamps: false,
+
     }
-
-
 
 )
 
