@@ -24,8 +24,33 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // define the middleware function to compress images
 const compressImage = (req, res, next) => {
-    if (req.file) {
-        // use Sharp to resize and compress the image
+    if (req.files && req.files.length > 0) {
+        // If there are multiple files, process each one
+        const compressedFiles = [];
+
+        req.files.forEach(file => {
+            const outputFile = 'public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.jpeg';
+
+            sharp(file.path)
+                .toFormat('jpeg')
+                .jpeg({ quality: 80 })
+                .toFile(outputFile, (err, info) => {
+                    if (err) {
+                        return next(err);
+                    }
+                    // Delete the original file
+                    fs.unlinkSync(file.path);
+                    // Add the compressed image filename to the request object
+                    compressedFiles.push(file.filename.replace(/\.[^/.]+$/, "") + '.jpeg');
+
+                    if (compressedFiles.length === req.files.length) {
+                        req.compressedFiles = compressedFiles;
+                        next();
+                    }
+                });
+        });
+    } else if (req.file) {
+        // If there's a single file
         sharp(req.file.path)
             .toFormat('jpeg')
             .jpeg({ quality: 80 })
@@ -33,9 +58,9 @@ const compressImage = (req, res, next) => {
                 if (err) {
                     return next(err);
                 }
-                // delete the original file
+                // Delete the original file
                 fs.unlinkSync(req.file.path);
-                // add the compressed image filename to the request object
+                // Add the compressed image filename to the request object
                 req.file.filename = req.file.filename.replace(/\.[^/.]+$/, "") + '.jpeg';
                 next();
             });
@@ -43,5 +68,6 @@ const compressImage = (req, res, next) => {
         next();
     }
 };
+
 
 module.exports = { upload, compressImage };
