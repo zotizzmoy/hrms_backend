@@ -47,7 +47,7 @@ const compressImage = (req, res, next) => {
 
         req.files.forEach(file => {
             const originalExtension = file.originalname.split('.').pop(); // Get the original extension
-            const outputFile = 'public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.' + originalExtension + '.jpeg';
+            const outputFile = 'public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '-compressed.jpeg';
 
             sharp(file.path)
                 .toFormat('jpeg')  // Convert to JPEG format
@@ -57,7 +57,7 @@ const compressImage = (req, res, next) => {
                         return next(err);
                     }
                     fs.unlinkSync(file.path);
-                    compressedFiles.push(file.filename.replace(/\.[^/.]+$/, "") + '.' + originalExtension + '.jpeg');
+                    compressedFiles.push(file.filename.replace(/\.[^/.]+$/, "") + '-compressed.jpeg');
 
                     if (compressedFiles.length === req.files.length) {
                         req.compressedFiles = compressedFiles;
