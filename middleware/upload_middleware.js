@@ -24,6 +24,7 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // define the middleware function to compress images
 const compressImage = (req, res, next) => {
+    // If it's a single file upload
     if (req.file) {
         const file = req.file;
         const originalExtension = file.originalname.split('.').pop(); // Get the original extension
@@ -31,12 +32,12 @@ const compressImage = (req, res, next) => {
         sharp(file.path)
             .toFormat('jpeg')  // Convert to JPEG format
             .jpeg({ quality: 80 })  // Set JPEG quality
-            .toFile('public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.jpeg', (err, info) => {
+            .toFile('public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.' + originalExtension, (err, info) => {
                 if (err) {
                     return next(err);
                 }
                 fs.unlinkSync(file.path);
-                req.file.filename = file.filename.replace(/\.[^/.]+$/, "") + '.jpeg';
+                req.file.filename = file.filename.replace(/\.[^/.]+$/, "") + '.' + originalExtension;
                 next();
             });
     }
@@ -46,7 +47,7 @@ const compressImage = (req, res, next) => {
 
         req.files.forEach(file => {
             const originalExtension = file.originalname.split('.').pop(); // Get the original extension
-            const outputFile = 'public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.jpeg';
+            const outputFile = 'public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.' + originalExtension;
 
             sharp(file.path)
                 .toFormat('jpeg')  // Convert to JPEG format
@@ -56,7 +57,7 @@ const compressImage = (req, res, next) => {
                         return next(err);
                     }
                     fs.unlinkSync(file.path);
-                    compressedFiles.push(file.filename.replace(/\.[^/.]+$/, "") + '.jpeg');
+                    compressedFiles.push(file.filename.replace(/\.[^/.]+$/, "") + '.' + originalExtension);
 
                     if (compressedFiles.length === req.files.length) {
                         req.compressedFiles = compressedFiles;
@@ -67,6 +68,7 @@ const compressImage = (req, res, next) => {
     } else {
         next();
     }
+
 
 };
 
