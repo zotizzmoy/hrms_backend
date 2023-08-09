@@ -24,23 +24,38 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // define the middleware function to compress images
 const compressImage = (req, res, next) => {
-    if (req.files && req.files.length > 0) {
-        // If there are multiple files, process each one
+    if (req.file) {
+        const file = req.file;
+        const originalExtension = file.originalname.split('.').pop(); // Get the original extension
+
+        sharp(file.path)
+            .toFormat('jpeg')  // Convert to JPEG format
+            .jpeg({ quality: 80 })  // Set JPEG quality
+            .toFile('public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.jpeg', (err, info) => {
+                if (err) {
+                    return next(err);
+                }
+                fs.unlinkSync(file.path);
+                req.file.filename = file.filename.replace(/\.[^/.]+$/, "") + '.jpeg';
+                next();
+            });
+    }
+    // If it's a multiple file upload
+    else if (req.files && req.files.length > 0) {
         const compressedFiles = [];
 
         req.files.forEach(file => {
+            const originalExtension = file.originalname.split('.').pop(); // Get the original extension
             const outputFile = 'public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.jpeg';
 
             sharp(file.path)
-                .toFormat('jpeg')
-                .jpeg({ quality: 80 })
+                .toFormat('jpeg')  // Convert to JPEG format
+                .jpeg({ quality: 80 })  // Set JPEG quality
                 .toFile(outputFile, (err, info) => {
                     if (err) {
                         return next(err);
                     }
-                    // Delete the original file
                     fs.unlinkSync(file.path);
-                    // Add the compressed image filename to the request object
                     compressedFiles.push(file.filename.replace(/\.[^/.]+$/, "") + '.jpeg');
 
                     if (compressedFiles.length === req.files.length) {
@@ -49,24 +64,10 @@ const compressImage = (req, res, next) => {
                     }
                 });
         });
-    } else if (req.file) {
-        // If there's a single file
-        sharp(req.file.path)
-            .toFormat('jpeg')
-            .jpeg({ quality: 80 })
-            .toFile('public/uploads/' + req.file.filename.replace(/\.[^/.]+$/, "") + '.jpeg', (err, info) => {
-                if (err) {
-                    return next(err);
-                }
-                // Delete the original file
-                fs.unlinkSync(req.file.path);
-                // Add the compressed image filename to the request object
-                req.file.filename = req.file.filename.replace(/\.[^/.]+$/, "") + '.jpeg';
-                next();
-            });
     } else {
         next();
     }
+
 };
 
 
