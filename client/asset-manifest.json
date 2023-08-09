@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "./static/css/main.63a44e6a.css",
-    "main.js": "./static/js/main.3986e83b.js",
+    "main.css": "./static/css/main.10d6577f.css",
+    "main.js": "./static/js/main.676e19ce.js",
     "static/media/woman.png": "./static/media/woman.3f889d0af5f26871fbcc.png",
     "static/media/profile.png": "./static/media/profile.5faf09a7795d28bf5a2b.png",
     "static/media/no_data_img.webp": "./static/media/no_data_img.8b59de4eb8bcab819284.webp",
@@ -12,11 +12,11 @@
     "static/media/errboundary.jpg": "./static/media/errboundary.915b7e167f3e83ab3eb2.jpg",
     "static/media/gratia.webp": "./static/media/gratia.36db6bc4fd0b76e92622.webp",
     "index.html": "./index.html",
-    "main.63a44e6a.css.map": "./static/css/main.63a44e6a.css.map",
-    "main.3986e83b.js.map": "./static/js/main.3986e83b.js.map"
+    "main.10d6577f.css.map": "./static/css/main.10d6577f.css.map",
+    "main.676e19ce.js.map": "./static/js/main.676e19ce.js.map"
   },
   "entrypoints": [
-    "static/css/main.63a44e6a.css",
-    "static/js/main.3986e83b.js"
+    "static/css/main.10d6577f.css",
+    "static/js/main.676e19ce.js"
   ]
 }
