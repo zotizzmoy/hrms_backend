@@ -76,6 +76,7 @@ const compressImage = (req, res, next) => {
                     }
                 });
         });
+        console.log('Original Filename:', file.filename);
     } else {
         next();
     }
