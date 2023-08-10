@@ -75,7 +75,7 @@ router.route("/all-leave-balance").post(AdminController.calculateAllUsersleaveBa
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 router.route('/apply-leave').post(LeaveController.applyForLeave);
 router.route('/calculate-leave').post(LeaveController.calculateLeaves);
-router.post("/upload-document", upload.single('document'), compressImage, LeaveController.uploadDocument); // Different route method is used for image upload
+router.post("/upload-document", upload.single('document'),  LeaveController.uploadDocument); // Different route method is used for image upload
 router.post("/approved-leave", LeaveController.changeStatus);
 router.post("/cancel-leave", LeaveController.cancelledStatus);
 router.post("/get-all-leaves", LeaveController.getAllleaves);
@@ -105,7 +105,7 @@ router.route("/export-salaries").post(SalaryController.salariesByMonthAndYear);
 router.route('/personal-details').post(UserController.addPersonalDetails);
 router.route('/bank-details').post(UserController.addBankDetails);
 router.route('/add-education').post(UserController.addUserEducation);
-router.post("/upload-documents", upload.array('document', 10), compressImage, UserController.documentsUpload);
+router.post("/upload-documents", upload.array('document', 10),  UserController.documentsUpload);
 router.route('/update-personal-details/:id').post(UserController.updatePersonalDetails);
 router.route('/update-bank-details/:id').post(UserController.updateBankDetails);
 router.route('/update-education-details/:id').post(UserController.updateUserEducation);
