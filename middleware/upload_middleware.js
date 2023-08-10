@@ -71,12 +71,12 @@ const compressImage = (req, res, next) => {
                     compressedFiles.push(outputFile);
 
                     if (compressedFiles.length === req.files.length) {
-                        req.compressedFiles = compressedFiles;
+                        req.files = compressedFiles;
                         next();
                     }
                 });
         });
-        console.log('Original Filename:', file.filename);
+
     } else {
         next();
     }
