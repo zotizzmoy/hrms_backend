@@ -262,12 +262,10 @@ module.exports.register = async function (req, res) {
       password: bcrypt.hashSync(autoPassword, salt),
       status: "Active",
       role: 0,
-      guardian_name: req.body.guardian_name,
       dob: req.body.dob,
       label: req.body.label,
       gender: req.body.gender,
-      religion: req.body.religion,
-      leave_balance: req.body.leave_balance,
+      paid_leaves: req.body.paid_leaves,
     };
 
     const user = await UserModel.create(userObject);
@@ -418,40 +416,39 @@ module.exports.resetPassword = async (req, res) => {
 
 module.exports.updatePasswordusingToken = async (req, res) => {
   const { token } = req.params;
-  const {newPassword} = req.body;
+  const { newPassword } = req.body;
 
-try {
-  // Find the reset token in the database
-  const resetTokenEntry = await ResetToken.findOne({ where: { token } });
-  if (!resetTokenEntry) {
-    return res.status(404).json({ error: 'Invalid reset token' });
+  try {
+    // Find the reset token in the database
+    const resetTokenEntry = await ResetToken.findOne({ where: { token } });
+    if (!resetTokenEntry) {
+      return res.status(404).json({ error: 'Invalid reset token' });
+    }
+
+    // Check if the reset token has expired
+    if (resetTokenEntry.expiresAt < new Date()) {
+      return res.status(400).json({ error: 'Reset token has expired' });
+    }
+
+    // Find the user based on the user_id associated with the reset token
+    const user = await UserModel.findOne({ where: { id: resetTokenEntry.user_id } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the user's password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    // Delete the used reset token from the database
+    await resetTokenEntry.destroy();
+
+    // Return success response
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.error('Error updating password:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 
-  // Check if the reset token has expired
-  if (resetTokenEntry.expiresAt < new Date()) {
-    return res.status(400).json({ error: 'Reset token has expired' });
-  }
-
-  // Find the user based on the user_id associated with the reset token
-  const user = await UserModel.findOne({ where: { id: resetTokenEntry.user_id } });
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-
-  // Update the user's password
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  user.password = hashedPassword;
-  await user.save();
-
-  // Delete the used reset token from the database
-  await resetTokenEntry.destroy();
-
-  // Return success response
-  res.status(200).json({ message: 'Password reset successful' });
-} catch (error) {
-  console.error('Error updating password:', error);
-  res.status(500).json({ error: 'Internal server error' });
 }
-
-}
- 
