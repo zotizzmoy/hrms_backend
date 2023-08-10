@@ -54,10 +54,7 @@ const UserModel = sequelize_db.define(
     gender: {
       type: DataTypes.STRING
     },
-    religion: {
-      type: DataTypes.STRING
-    },
-
+    
 
     status: {
       type: DataTypes.STRING,
