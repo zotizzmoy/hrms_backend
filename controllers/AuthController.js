@@ -272,7 +272,7 @@ module.exports.register = async function (req, res) {
 
     res.status(201).json({
       message: "1st step completed",
-      user_id: "user.id"
+      user_id: user.id
     });
 
     await sendMail(user.first_name, user.emp_id, user.email, autoPassword);
