@@ -53,12 +53,16 @@ const compressImage = (req, res, next) => {
                 next();
             });
     }
+    
     // If it's a multiple file upload
     else if (req.files && req.files.length > 0) {
         req.files.forEach(file => {
-            // You can skip compression for multiple files by handling them differently here
-            // For example, you might just move the files without compression
-            const destinationPath = 'public/uploads/' + file.filename;
+            const originalExtension = file.originalname.split('.').pop();
+            const filenameWithoutExtension = file.filename.includes('.')
+                ? file.filename.replace(/\.[^/.]+$/, "")
+                : file.filename;
+
+            const destinationPath = 'public/uploads/' + filenameWithoutExtension + '.' + originalExtension;
             fs.renameSync(file.path, destinationPath);
         });
 
@@ -70,13 +74,6 @@ const compressImage = (req, res, next) => {
         next();
     }
 };
-
-// ...
-
-
-// ...
-
-
 
 
 module.exports = { upload, compressImage };
