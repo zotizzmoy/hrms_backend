@@ -271,7 +271,8 @@ module.exports.register = async function (req, res) {
     const user = await UserModel.create(userObject);
 
     res.status(201).json({
-      message: "User successfully registered",
+      message: "1st step completed",
+      user_id: "user.id"
     });
 
     await sendMail(user.first_name, user.emp_id, user.email, autoPassword);
