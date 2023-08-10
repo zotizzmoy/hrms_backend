@@ -28,6 +28,7 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // define the middleware function to compress images
 // ...
+// ...
 
 const compressImage = (req, res, next) => {
     // If it's a single file upload
@@ -55,6 +56,7 @@ const compressImage = (req, res, next) => {
         const compressedFiles = [];
 
         req.files.forEach(file => {
+            const originalExtension = file.originalname.split('.').pop();
             const filenameWithoutExtension = file.filename.replace(/\.[^/.]+$/, "");
             const outputFile = filenameWithoutExtension + '-compressed.jpeg';
 
@@ -79,7 +81,7 @@ const compressImage = (req, res, next) => {
     }
 };
 
-
+// ...
 
 
 
