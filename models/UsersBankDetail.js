@@ -43,8 +43,12 @@ const bankDetails = sequelize_db.define(
         }
 
 
-    }
+    },
+    
+    {
+        timestamps: false,
 
+    }
 
 
 )
