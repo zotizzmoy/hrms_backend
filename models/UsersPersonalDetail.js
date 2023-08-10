@@ -29,10 +29,10 @@ const personalDetails = sequelize_db.define(
             type: DataTypes.STRING
         },
         phone_no: {
-            type: DataTypes.INTEGER
+            type: DataTypes.STRING
         },
         emergency_contact_no: {
-            type: DataTypes.INTEGER
+            type: DataTypes.STRING
         },
         uan_no: {
             type: DataTypes.STRING
