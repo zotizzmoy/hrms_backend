@@ -26,7 +26,7 @@ router.route('/otp').post(AuthController.otp);
 router.route('/login').post(AuthController.login);
 router.route("/register").post(AuthController.register);
 router.route("/update").post(AuthController.update)
-router.post("/profile-img", upload.single('user_image'), compressImage, AuthController.profileImage); // Different route method is used for image upload
+router.post("/profile-img", upload.single('user_image'),  AuthController.profileImage); // Different route method is used for image upload
 router.route("/get-profile-url").post(AuthController.user_image);
 router.route('/resend-otp').post(AuthController.resend_opt);
 router.route('/change-password').post(AuthController.change_password);
