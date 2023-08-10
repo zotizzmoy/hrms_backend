@@ -30,6 +30,8 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 // ...
 // ...
 
+// ...
+
 const compressImage = (req, res, next) => {
     // If it's a single file upload
     if (req.file) {
@@ -53,34 +55,24 @@ const compressImage = (req, res, next) => {
     }
     // If it's a multiple file upload
     else if (req.files && req.files.length > 0) {
-        const compressedFiles = [];
-
         req.files.forEach(file => {
-            const originalExtension = file.originalname.split('.').pop();
-            const filenameWithoutExtension = file.filename.replace(/\.[^/.]+$/, "");
-            const outputFile = filenameWithoutExtension + '-compressed.jpeg';
-
-            sharp(file.path)
-                .toFormat('jpeg')
-                .jpeg({ quality: 80 })
-                .toFile('public/uploads/' + outputFile, (err, info) => {
-                    if (err) {
-                        return next(err);
-                    }
-                    fs.unlinkSync(file.path);
-                    compressedFiles.push(outputFile);
-
-                    if (compressedFiles.length === req.files.length) {
-                        req.files = compressedFiles;
-                        next();
-                    }
-                });
+            // You can skip compression for multiple files by handling them differently here
+            // For example, you might just move the files without compression
+            const destinationPath = 'public/uploads/' + file.filename;
+            fs.renameSync(file.path, destinationPath);
         });
 
+        // Set req.compressedFiles to null to indicate that compression was skipped
+        req.compressedFiles = null;
+
+        next();
     } else {
         next();
     }
 };
+
+// ...
+
 
 // ...
 
