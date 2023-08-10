@@ -31,17 +31,16 @@ const compressImage = (req, res, next) => {
     // If it's a single file upload
     if (req.file) {
         const file = req.file;
-        const originalExtension = file.originalname.split('.').pop();
 
         sharp(file.path)
             .toFormat('jpeg')
             .jpeg({ quality: 80 })
-            .toFile('public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.' + originalExtension, (err, info) => {
+            .toFile('public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.jpeg', (err, info) => {
                 if (err) {
                     return next(err);
                 }
                 fs.unlinkSync(file.path);
-                req.file.filename = file.filename.replace(/\.[^/.]+$/, "") + '.' + originalExtension;
+                req.file.filename = file.filename.replace(/\.[^/.]+$/, "") + '.jpeg';
                 next();
             });
     }
@@ -50,13 +49,10 @@ const compressImage = (req, res, next) => {
         const compressedFiles = [];
 
         req.files.forEach(file => {
-            const originalExtension = file.originalname.split('.').pop();
-            const outputFile = 'public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.jpeg';
-
             sharp(file.path)
                 .toFormat('jpeg')
                 .jpeg({ quality: 80 })
-                .toFile(outputFile, (err, info) => {
+                .toFile('public/uploads/' + file.filename.replace(/\.[^/.]+$/, "") + '.jpeg', (err, info) => {
                     if (err) {
                         return next(err);
                     }
@@ -73,6 +69,7 @@ const compressImage = (req, res, next) => {
         next();
     }
 };
+
 
 
 module.exports = { upload, compressImage };
