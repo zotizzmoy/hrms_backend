@@ -8,7 +8,7 @@ const personalDetails = require("../models/UsersPersonalDetail");
 module.exports.documentsUpload = async (req, res) => {
     try {
         const { user_id } = req.body;
-        const document = req.files;
+        const document = req.compressedFiles;
 
         if (!document || !Array.isArray(document)) {
             return res.status(400).json({ error: 'No files uploaded or invalid format.' });
