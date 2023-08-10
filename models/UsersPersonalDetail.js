@@ -59,6 +59,11 @@ const personalDetails = sequelize_db.define(
             type: DataTypes.DATE
         }
 
+    },
+    {
+        timestamps: false,
+        underscored: true,
+        paranoid: false,
     }
 );
 
