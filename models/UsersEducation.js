@@ -46,7 +46,12 @@ const educationDetails = sequelize_db.define(
         }
 
 
+    },
+    {
+        timestamps: false,
+
     }
+
 
 
 
