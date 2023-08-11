@@ -21,29 +21,31 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-const compressImage = (req, res, next) => {
-    if (req.files && req.files.length > 0) {
+const moveImage = (req, res, next) => {
+    if (req.file) {
+        const file = req.file;
+        const outputFilename = file.filename;
+
+        const destinationPath = 'public/uploads/' + outputFilename;
+        fs.renameSync(file.path, destinationPath);
+
+        req.compressedFiles = [outputFilename];
+        next();
+    } else if (req.files && req.files.length > 0) {
         req.compressedFiles = [];
 
         req.files.forEach(file => {
             const outputFilename = file.filename;
-
-            // You don't need to convert the image format here
-            // Simply move the uploaded file to the destination
             const destinationPath = 'public/uploads/' + outputFilename;
             fs.renameSync(file.path, destinationPath);
 
             req.compressedFiles.push(outputFilename);
-            if (req.compressedFiles.length === req.files.length) {
-                next();
-            }
         });
+
+        next();
     } else {
         next();
     }
 };
 
-
-
-
-module.exports = { upload, compressImage };
+module.exports = { upload, moveImage };
