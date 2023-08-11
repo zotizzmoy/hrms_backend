@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
         cb(null, './public/uploads');
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
+        cb(null, Date.now() + '-' + file.fieldname);
     }
 });
 
@@ -25,7 +25,7 @@ const moveImage = async (req, res, next) => {
     if (req.file) {
         const file = req.file;
         const outputFilename = file.filename;
-        const destinationPath = '/public/uploads' + outputFilename;
+        const destinationPath = './public/uploads' + outputFilename;
 
         try {
             const resizedBuffer = await sharp(file.path)
@@ -46,7 +46,7 @@ const moveImage = async (req, res, next) => {
 
         for (const file of req.files) {
             const outputFilename = file.filename;
-            const destinationPath = '/public/uploads/' + outputFilename;
+            const destinationPath = './public/uploads/' + outputFilename;
 
             try {
                 const resizedBuffer = await sharp(file.path)
