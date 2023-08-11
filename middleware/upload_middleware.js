@@ -21,26 +21,44 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-const moveImage = (req, res, next) => {
+const moveImage = async (req, res, next) => {
     if (req.file) {
         const file = req.file;
         const outputFilename = file.filename;
-
         const destinationPath = 'public/uploads/' + outputFilename;
-        fs.renameSync(file.path, destinationPath);
 
-        req.compressedFiles = [outputFilename];
-        next();
+        try {
+            await sharp(file.path)
+                .resize(800) // You can adjust the desired dimensions here
+                .toFile(destinationPath);
+
+            fs.unlinkSync(file.path); // Delete the original unresized image
+
+            req.compressedFiles = [outputFilename];
+            next();
+        } catch (error) {
+            next(error);
+        }
     } else if (req.files && req.files.length > 0) {
         req.compressedFiles = [];
 
-        req.files.forEach(file => {
+        for (const file of req.files) {
             const outputFilename = file.filename;
             const destinationPath = 'public/uploads/' + outputFilename;
-            fs.renameSync(file.path, destinationPath);
 
-            req.compressedFiles.push(outputFilename);
-        });
+            try {
+                await sharp(file.path)
+                    .resize(800) // You can adjust the desired dimensions here
+                    .toFile(destinationPath);
+
+                fs.unlinkSync(file.path); // Delete the original unresized image
+
+                req.compressedFiles.push(outputFilename);
+            } catch (error) {
+                next(error);
+                return;
+            }
+        }
 
         next();
     } else {
