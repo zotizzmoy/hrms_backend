@@ -25,7 +25,7 @@ const moveImage = async (req, res, next) => {
     if (req.file) {
         const file = req.file;
         const outputFilename = file.filename;
-        const destinationPath = './public/uploads' + outputFilename;
+        const destinationPath = './public/uploads/' + outputFilename;
 
         try {
             const resizedBuffer = await sharp(file.path)
