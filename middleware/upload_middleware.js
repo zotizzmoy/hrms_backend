@@ -25,14 +25,12 @@ const moveImage = async (req, res, next) => {
     if (req.file) {
         const file = req.file;
         const outputFilename = file.filename;
-        const destinationPath = './public/uploads/' + outputFilename;
+        const destinationPath = 'public/uploads/' + outputFilename;
 
         try {
-            const resizedBuffer = await sharp(file.path)
+            await sharp(file.path)
                 .resize(800) // You can adjust the desired dimensions here
-                .toBuffer();
-
-            fs.writeFileSync(destinationPath, resizedBuffer);
+                .toFile(destinationPath);
 
             fs.unlinkSync(file.path); // Delete the original unresized image
 
@@ -46,14 +44,12 @@ const moveImage = async (req, res, next) => {
 
         for (const file of req.files) {
             const outputFilename = file.filename;
-            const destinationPath = './public/uploads/' + outputFilename;
+            const destinationPath = 'public/uploads/' + outputFilename;
 
             try {
-                const resizedBuffer = await sharp(file.path)
+                await sharp(file.path)
                     .resize(800) // You can adjust the desired dimensions here
-                    .toBuffer();
-
-                fs.writeFileSync(destinationPath, resizedBuffer);
+                    .toFile(destinationPath);
 
                 fs.unlinkSync(file.path); // Delete the original unresized image
 
@@ -69,6 +65,9 @@ const moveImage = async (req, res, next) => {
         next();
     }
 };
+
+
+
 
 
 
