@@ -28,7 +28,6 @@ const compressImage = (req, res, next) => {
         req.files.forEach(file => {
             const originalExtension = file.originalname.split('.').pop();
             const filenameWithoutExtension = file.filename.replace(/\.[^/.]+$/, "");
-
             const outputFilename = filenameWithoutExtension + '.jpeg';
 
             sharp(file.path)
@@ -49,5 +48,6 @@ const compressImage = (req, res, next) => {
         next();
     }
 };
+
 
 module.exports = { upload, compressImage };
