@@ -66,4 +66,5 @@ const moveImage = async (req, res, next) => {
     }
 };
 
+
 module.exports = { upload, moveImage };
