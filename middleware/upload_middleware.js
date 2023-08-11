@@ -26,27 +26,23 @@ const compressImage = (req, res, next) => {
         req.compressedFiles = [];
 
         req.files.forEach(file => {
-            const filenameWithoutExtension = file.filename.replace(/\.[^/.]+$/, "");
-            const outputFilename = filenameWithoutExtension + '.jpeg';
+            const outputFilename = file.filename;
 
-            sharp(file.path)
-                .toFormat('jpeg')
-                .jpeg({ quality: 80 })
-                .toFile('public/uploads/' + outputFilename, (err, info) => {
-                    if (err) {
-                        return next(err);
-                    }
-                    fs.unlinkSync(file.path);
-                    req.compressedFiles.push(outputFilename);
-                    if (req.compressedFiles.length === req.files.length) {
-                        next();
-                    }
-                });
+            // You don't need to convert the image format here
+            // Simply move the uploaded file to the destination
+            const destinationPath = 'public/uploads/' + outputFilename;
+            fs.renameSync(file.path, destinationPath);
+
+            req.compressedFiles.push(outputFilename);
+            if (req.compressedFiles.length === req.files.length) {
+                next();
+            }
         });
     } else {
         next();
     }
 };
+
 
 
 
