@@ -1,25 +1,51 @@
 const multer = require('multer');
-const path = require('path');
+const sharp = require('sharp');
+const fs = require('fs');
 
 const storage = multer.diskStorage({
-    destination: './public/uploads/',
-    filename: (req, file, callback) => {
-        const ext = path.extname(file.originalname);
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        callback(null, 'image-' + uniqueSuffix + ext);
+    destination: (req, file, cb) => {
+        cb(null, './public/uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
     }
 });
 
-const fileFilter = (req, file, callback) => {
-    const allowedTypes = ['image/jpeg', 'image/png'];
-
-    if (allowedTypes.includes(file.mimetype)) {
-        callback(null, true);
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
+        cb(null, true);
     } else {
-        callback(new Error('Only JPEG and PNG files are allowed.'));
+        cb(new Error('Only images are allowed!'));
     }
 };
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-module.exports = upload;
+const moveImage = (req, res, next) => {
+    if (req.file) {
+        const file = req.file;
+        const outputFilename = file.filename;
+
+        const destinationPath = 'public/uploads/' + outputFilename;
+        fs.renameSync(file.path, destinationPath);
+
+        req.compressedFiles = [outputFilename];
+        next();
+    } else if (req.files && req.files.length > 0) {
+        req.compressedFiles = [];
+
+        req.files.forEach(file => {
+            const outputFilename = file.filename;
+            const destinationPath = 'public/uploads/' + outputFilename;
+            fs.renameSync(file.path, destinationPath);
+
+            req.compressedFiles.push(outputFilename);
+        });
+
+        next();
+    } else {
+        next();
+    }
+};
+
+module.exports = { upload, moveImage };
