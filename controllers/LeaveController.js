@@ -214,10 +214,10 @@ module.exports.changeStatus = async (req, res) => {
 
         const user = await UserModel.findOne({
             where: { id: user_id },
-            attributes: ["email", "first_name", "last_name", "emp_id", "paid_leave"],
+            attributes: ["email", "first_name", "last_name", "emp_id", "paid_leaves"],
         });
 
-        const { email, first_name, last_name, emp_id,  paid_leaves } = user;
+        const { email, first_name, last_name, emp_id, paid_leaves } = user;
 
         if (leave) {
             // Calculate the duration of the approved leave
@@ -227,7 +227,7 @@ module.exports.changeStatus = async (req, res) => {
             const duration = Math.round(Math.abs((startDate - endDate) / oneDay)) + 1;
 
             // Deduct the leave duration from the leave_balance
-            const updatedLeaveBalance = leave_balance - (leave.is_half_day ? 0.5 : duration);
+            const updatedLeaveBalance = paid_leaves - (leave.is_half_day ? 0.5 : duration);
 
             // Update the leave_balance in the UserModel
             await UserModel.update(
