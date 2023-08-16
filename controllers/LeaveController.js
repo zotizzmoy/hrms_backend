@@ -47,17 +47,17 @@ module.exports.applyForLeave = async (req, res) => {
         // No additional checks needed for casual and medical leaves
     } else if (leaveType === "Paid") {
         // Check remaining paid leaves and handle accordingly
-        const userLeaveBalance = await UserLeaveBalance.findOne({
+        const userLeaveBalance = await UserModel.findOne({
             where: {
                 user_id: userId,
             },
         });
 
-        if (!userLeaveBalance) {
+        if (!userLeaveBalance.paid_leaves) {
             return res.status(400).json({ error: "User leave balance not found." });
         }
 
-        const remainingPaidLeaves = userLeaveBalance.paid_leaves_balance;
+        const remainingPaidLeaves = userLeaveBalance.paid_leaves;
 
         if (leaveDurationInDays > remainingPaidLeaves) {
             return res.status(400).json({ error: `Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.` });
