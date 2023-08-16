@@ -7,7 +7,7 @@ const personalDetails = require("../models/UsersPersonalDetail");
 
 module.exports.documentsUpload = async (req, res) => {
     try {
-        const { user_id } = req.body;
+        const { user_id, document_name } = req.body;
         const document = req.files;
 
         if (!document || !Array.isArray(document)) {
@@ -18,7 +18,7 @@ module.exports.documentsUpload = async (req, res) => {
         const documentEntries = document.map(file => ({
             user_id,
             document: file.filename,
-            document_name: file.originalname,
+            document_name: req.body.document_name,
             document_destination: file.destination,
             created_at: Date.now(),
             updated_at: Date.now()

@@ -12,26 +12,15 @@ const UserLeave = require('../models/UsersLeave');
 const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
 
-
-
-
-
-
-
-
-
 // Controller function to apply for leave
 module.exports.applyForLeave = async (req, res) => {
     const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
 
-
-    // Calculate the first and last date of the current month
     const firstDateOfMonth = new Date(currentYear, currentMonth - 1, 1);
     const lastDateOfMonth = new Date(currentYear, currentMonth, 0);
 
-    // Calculate the number of leaves taken by the user in the current month
     const userPaidLeavesThisMonth = await UserLeave.count({
         where: {
             user_id: userId,
@@ -42,51 +31,41 @@ module.exports.applyForLeave = async (req, res) => {
             },
         },
     });
-    console.log(userPaidLeavesThisMonth, "paidCM");
-    // Calculate the number of leaves taken by the user in the previous month
-    const lastMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-    console.log(lastMonth, "last-month")
-    const userPaidLeavesLastMonth = await UserLeave.count({
-        where: {
-            user_id: userId,
-            leave_type: "Paid",
-            status: "Approved",
-            start_date: {
-                [Op.between]: [firstDateOfMonth, lastDateOfMonth],
-            },
-        },
-    });
-    console.log(userPaidLeavesLastMonth, "paidLM");
-    // Calculate remaining paid leaves and carry forward the unused leaves from last month
-    let remainingPaidLeaves = userPaidLeavesLastMonth > 0 ? userPaidLeavesLastMonth : 1;
 
-    // Check if the user has already taken a paid leave in the current month
-    const hasTakenPaidLeaveThisMonth = userPaidLeavesThisMonth > 0;
-
-    // If the user has already taken a paid leave this month, restrict to 1-day duration
-    if (hasTakenPaidLeaveThisMonth) {
-        return res.status(400).json({ error: "You can take only a 1-day paid leave in a particular month." });
-    }
-
-    // Calculate the duration of the leave (assuming each leave is for one day)
     const leaveDurationInDays = calculateLeaveDuration(startDate, endDate, isHalfDay);
 
     if (leaveType === "Paid") {
-        // Apply for a paid leave
+        // Check if the user has already taken a paid leave in the current month
+        const hasTakenPaidLeaveThisMonth = userPaidLeavesThisMonth > 0;
+
+        if (hasTakenPaidLeaveThisMonth) {
+            return res.status(400).json({ error: "You can take only one paid leave per month." });
+        }
+    }
+
+    if (leaveType === "Casual" || leaveType === "Medical") {
+        // No additional checks needed for casual and medical leaves
+    } else if (leaveType === "Paid") {
+        // Check remaining paid leaves and handle accordingly
+        const userLeaveBalance = await UserLeaveBalance.findOne({
+            where: {
+                user_id: userId,
+            },
+        });
+
+        if (!userLeaveBalance) {
+            return res.status(400).json({ error: "User leave balance not found." });
+        }
+
+        const remainingPaidLeaves = userLeaveBalance.paid_leaves_balance;
+
         if (leaveDurationInDays > remainingPaidLeaves) {
             return res.status(400).json({ error: `Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.` });
-        }
-    } else if (leaveType === "Casual" || leaveType === "Medical") {
-        // Apply for a casual or medical leave, deduct from paid leaves if available
-        if (remainingPaidLeaves > 0) {
-            remainingPaidLeaves -= leaveDurationInDays;
-            if (remainingPaidLeaves < 0) remainingPaidLeaves = 0;
         }
     } else {
         return res.status(400).json({ error: "Invalid leave type." });
     }
 
-    // Create a new leave entry
     const leaveEntry = await UserLeave.create({
         user_id: userId,
         leave_type: leaveType,
@@ -94,27 +73,25 @@ module.exports.applyForLeave = async (req, res) => {
         applied_on: new Date().toISOString(),
         start_date: startDate,
         end_date: endDate,
-        duration: leaveDurationInDays, // Storing leave duration in days
+        duration: leaveDurationInDays,
         reason,
-        status: "Awaiting", // Assuming the leave needs approval before it's marked "Approved"
-        document: "N/A", // Assuming no document is needed for most leaves
+        status: "Awaiting",
+        document: "N/A",
     });
 
     res.status(201).json({ data: leaveEntry });
 };
 
-// Helper function to calculate leave duration in days
 const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-
-    // Calculate the duration in days
     const oneDayInMilliseconds = 1000 * 60 * 60 * 24;
     const durationInMilliseconds = Math.abs(end - start) + (isHalfDay ? oneDayInMilliseconds / 2 : oneDayInMilliseconds);
-
     const days = durationInMilliseconds / oneDayInMilliseconds;
     return Math.ceil(days);
 };
+
+
 
 
 
