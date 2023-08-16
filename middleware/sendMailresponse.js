@@ -78,7 +78,6 @@ const sendMailresponse = (
         });
     });
   };
-  
-  module.exports = sendMailresponse;
+
   
 module.exports = sendMailresponse;

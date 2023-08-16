@@ -92,17 +92,6 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
 module.exports.calculateLeaves = async (req, res) => {
     // Assuming you have the User model imported
 
@@ -210,7 +199,7 @@ module.exports.changeStatus = async (req, res) => {
         const { user_id, leave_id } = req.body;
 
         const update = {
-            status: "approved"
+            status: "Approved"
         };
 
         let leave;
@@ -225,10 +214,10 @@ module.exports.changeStatus = async (req, res) => {
 
         const user = await UserModel.findOne({
             where: { id: user_id },
-            attributes: ["email", "first_name", "last_name", "emp_id", "total_leave", "leave_balance"],
+            attributes: ["email", "first_name", "last_name", "emp_id", "paid_leave"],
         });
 
-        const { email, first_name, last_name, emp_id, total_leave, leave_balance } = user;
+        const { email, first_name, last_name, emp_id,  paid_leaves } = user;
 
         if (leave) {
             // Calculate the duration of the approved leave
@@ -242,7 +231,7 @@ module.exports.changeStatus = async (req, res) => {
 
             // Update the leave_balance in the UserModel
             await UserModel.update(
-                { leave_balance: updatedLeaveBalance },
+                { paid_leaves: updatedLeaveBalance },
                 { where: { id: user_id } }
             );
 
