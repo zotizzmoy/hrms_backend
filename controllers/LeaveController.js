@@ -49,7 +49,7 @@ module.exports.applyForLeave = async (req, res) => {
         // Check remaining paid leaves and handle accordingly
         const userLeaveBalance = await UserModel.findOne({
             where: {
-                user_id: userId,
+                id: userId,
             },
         });
 
