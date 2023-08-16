@@ -218,6 +218,7 @@ module.exports.changeStatus = async (req, res) => {
         });
 
         const { email, first_name, last_name, emp_id, paid_leaves } = user;
+        console.log(user);
 
         if (leave) {
             // Calculate the duration of the approved leave
@@ -228,6 +229,7 @@ module.exports.changeStatus = async (req, res) => {
 
             // Deduct the leave duration from the leave_balance
             const updatedLeaveBalance = paid_leaves - (leave.is_half_day ? 0.5 : duration);
+            console.log(updatedLeaveBalance);
 
             // Update the leave_balance in the UserModel
             await UserModel.update(
