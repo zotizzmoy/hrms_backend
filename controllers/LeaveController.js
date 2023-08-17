@@ -16,7 +16,7 @@ const dayjs = require('dayjs');
 
 
 module.exports.applyForLeave = async (req, res) => {
-    const { userId, leaveType, startDate, endDate, isHalfDay, reason, usePaidLeavesAsCasual } = req.body; // Add usePaidLeavesAsCasual to the request body
+    const { userId, leaveType, startDate, endDate, isHalfDay, reason, usePaidLeavesAsCasual } = req.body;
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
 
@@ -218,16 +218,25 @@ module.exports.uploadDocument = async (req, res) => {
     }
 
 };
+
+
 module.exports.changeStatus = async (req, res) => {
     const { leave_id } = req.body;
+    let transaction;
+
     try {
+        // Start a transaction
+        transaction = await sequelize_db.transaction();
+
         const leaveEntry = await UserLeave.findOne({
             where: {
                 id: leave_id,
             },
+            transaction, // Pass the transaction to the query
         });
 
         if (!leaveEntry) {
+            await transaction.rollback();
             return res.status(404).json({ error: "Leave entry not found." });
         }
 
@@ -235,9 +244,11 @@ module.exports.changeStatus = async (req, res) => {
             where: {
                 id: leaveEntry.user_id,
             },
+            transaction, // Pass the transaction to the query
         });
 
         if (!userLeaveBalance) {
+            await transaction.rollback();
             return res.status(400).json({ error: "User leave balance not found." });
         }
 
@@ -247,12 +258,11 @@ module.exports.changeStatus = async (req, res) => {
             const usedPaidLeaves = Math.min(leaveDurationInDays, remainingPaidLeaves);
 
             userLeaveBalance.paid_leaves -= usedPaidLeaves;
-            await userLeaveBalance.save();
+            await userLeaveBalance.save({ transaction }); // Pass the transaction to the save operation
         }
 
         leaveEntry.status = "Approved";
-        await leaveEntry.save();
-
+        await leaveEntry.save({ transaction }); // Pass the transaction to the save operation
 
         // Send email with the updated leave status
         await sendMailresponse(
@@ -268,16 +278,23 @@ module.exports.changeStatus = async (req, res) => {
             leaveEntry.status
         );
 
+        // Commit the transaction
+        await transaction.commit();
 
         res.status(200).json({ leave: leaveEntry });
 
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        if (transaction) {
+            await transaction.rollback();
+        }
         res.status(422).json({
-            error: error.message
+            error: error.message,
         });
     }
 };
+
+   
 
 
 module.exports.cancelledStatus = async (req, res) => {
