@@ -11,10 +11,12 @@ const UserLeave = require('../models/UsersLeave');
 // Middlewares
 const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
+const dayjs = require('dayjs');
 
-// Controller function to apply for leave
+
+
 module.exports.applyForLeave = async (req, res) => {
-    const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
+    const { userId, leaveType, startDate, endDate, isHalfDay, reason, usePaidLeavesAsCasual } = req.body; // Add usePaidLeavesAsCasual to the request body
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
 
@@ -34,52 +36,69 @@ module.exports.applyForLeave = async (req, res) => {
 
     const leaveDurationInDays = calculateLeaveDuration(startDate, endDate, isHalfDay);
 
-    if (leaveType === "Paid") {
-        // Check if the user has already taken a paid leave in the current month
-        const hasTakenPaidLeaveThisMonth = userPaidLeavesThisMonth > 0;
-
-        if (hasTakenPaidLeaveThisMonth) {
-            return res.status(400).json({ error: "You can take only one paid leave per month." });
-        }
+    if (leaveType === "Paid" && leaveDurationInDays > 1) {
+        return res.status(400).json({ error: "Paid leaves can only be for one day or less." });
     }
 
-    if (leaveType === "Casual" || leaveType === "Medical") {
-        // No additional checks needed for casual and medical leaves
-    } else if (leaveType === "Paid") {
-        // Check remaining paid leaves and handle accordingly
-        const userLeaveBalance = await UserModel.findOne({
-            where: {
-                id: userId,
-            },
-        });
+    const userLeaveBalance = await UserModel.findOne({
+        where: {
+            id: userId,
+        },
+    });
 
-        if (!userLeaveBalance.paid_leaves) {
-            return res.status(400).json({ error: "User leave balance not found." });
+    if (!userLeaveBalance) {
+        return res.status(400).json({ error: "User leave balance not found." });
+    }
+
+    const remainingPaidLeaves = userLeaveBalance.paid_leaves;
+
+    if (leaveType === "Paid") {
+        if (userPaidLeavesThisMonth > 0) {
+            return res.status(400).json({ error: "You can take only one paid leave per month." });
         }
-
-        const remainingPaidLeaves = userLeaveBalance.paid_leaves;
 
         if (leaveDurationInDays > remainingPaidLeaves) {
             return res.status(400).json({ error: `Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.` });
         }
+    } else if (leaveType === "Casual" || leaveType === "Medical") {
+        // No additional checks needed for casual and medical leaves
     } else {
         return res.status(400).json({ error: "Invalid leave type." });
     }
 
-    const leaveEntry = await UserLeave.create({
-        user_id: userId,
-        leave_type: leaveType,
-        is_half_day: isHalfDay ? "Yes" : "No",
-        applied_on: new Date().toISOString(),
-        start_date: startDate,
-        end_date: endDate,
-        duration: leaveDurationInDays,
-        reason,
-        status: "Awaiting",
-        document: "N/A",
-    });
+    // If the requested leave type is "Casual" and the user chooses to use paid leaves as casual leaves
+    if (leaveType === "Casual" && usePaidLeavesAsCasual && remainingPaidLeaves > 0) {
+        const leaveEntry = await UserLeave.create({
+            user_id: userId,
+            leave_type: "Paid", // Store as "Paid" type in the database
+            is_half_day: isHalfDay,
+            applied_on: dayjs().format("YYYY-MM-DD"),
+            start_date: startDate,
+            end_date: endDate,
+            duration: leaveDurationInDays,
+            reason,
+            status: "Awaiting",
+            document: "N/A",
+        });
 
-    res.status(201).json({ data: leaveEntry });
+        res.status(201).json({ data: leaveEntry });
+    } else {
+        // Normal leave application
+        const leaveEntry = await UserLeave.create({
+            user_id: userId,
+            leave_type: leaveType,
+            is_half_day: isHalfDay,
+            applied_on: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+            start_date: startDate,
+            end_date: endDate,
+            duration: leaveDurationInDays,
+            reason,
+            status: "Awaiting",
+            document: "N/A",
+        });
+
+        res.status(201).json({ data: leaveEntry });
+    }
 };
 
 const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
@@ -90,7 +109,6 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const days = durationInMilliseconds / oneDayInMilliseconds;
     return Math.ceil(days);
 };
-
 
 module.exports.calculateLeaves = async (req, res) => {
     // Assuming you have the User model imported
@@ -195,64 +213,57 @@ module.exports.uploadDocument = async (req, res) => {
 
 };
 module.exports.changeStatus = async (req, res) => {
+    const { leave_id } = req.body;
     try {
-        const { user_id, leave_id } = req.body;
-
-        const update = {
-            status: "Approved"
-        };
-
-        let leave;
-
-        await sequelize_db.transaction(async (transaction) => {
-            // Find the leave details before updating the status
-            leave = await UserLeave.findOne({ where: { user_id, id: leave_id }, transaction });
-
-            // Update the status of the leave to "approved"
-            await UserLeave.update(update, { where: { user_id, id: leave_id }, transaction });
+        const leaveEntry = await UserLeave.findOne({
+            where: {
+                id: leave_id,
+            },
         });
 
-        const user = await UserModel.findOne({
-            where: { id: user_id },
-            attributes: ["email", "first_name", "last_name", "emp_id", "paid_leaves"],
-        });
-
-        const { email, first_name, last_name, emp_id, paid_leaves } = user;
-        console.log(user);
-
-        if (leave) {
-            // Calculate the duration of the approved leave
-            const startDate = new Date(leave.start_date);
-            const endDate = new Date(leave.end_date);
-            const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
-            const duration = Math.round(Math.abs((startDate - endDate) / oneDay)) + 1;
-
-            // Deduct the leave duration from the leave_balance
-            const updatedLeaveBalance = user.paid_leaves - (leave.is_half_day === "Yes" ? 0.5 : duration);
-            console.log(updatedLeaveBalance);
-
-            // Update the leave_balance in the UserModel
-            await UserModel.update(
-                { paid_leaves: updatedLeaveBalance },
-                { where: { id: user_id } }
-            );
-
-            // Send email with the updated leave status
-            await sendMailresponse(
-                email,
-                first_name,
-                last_name,
-                emp_id,
-                leave.start_date,
-                leave.end_date,
-                leave.is_half_day,
-                leave.leave_type,
-                leave.reason,
-                leave.status
-            );
+        if (!leaveEntry) {
+            return res.status(404).json({ error: "Leave entry not found." });
         }
 
-        res.status(200).json({ leave });
+        const userLeaveBalance = await UserModel.findOne({
+            where: {
+                id: leaveEntry.user_id,
+            },
+        });
+
+        if (!userLeaveBalance) {
+            return res.status(400).json({ error: "User leave balance not found." });
+        }
+
+        if (leaveEntry.leave_type === "Paid" && leaveEntry.status === "Awaiting") {
+            const leaveDurationInDays = leaveEntry.duration;
+            const remainingPaidLeaves = userLeaveBalance.paid_leaves;
+            const usedPaidLeaves = Math.min(leaveDurationInDays, remainingPaidLeaves);
+
+            userLeaveBalance.paid_leaves -= usedPaidLeaves;
+            await userLeaveBalance.save();
+        }
+
+        leaveEntry.status = "Approved";
+        await leaveEntry.save();
+
+
+        // Send email with the updated leave status
+        await sendMailresponse(
+            userLeaveBalance.email,
+            userLeaveBalance.first_name,
+            userLeaveBalance.last_name,
+            userLeaveBalance.emp_id,
+            leaveEntry.start_date,
+            leaveEntry.end_date,
+            leaveEntry.is_half_day,
+            leaveEntry.leave_type,
+            leaveEntry.reason,
+            leaveEntry.status
+        );
+
+
+        res.status(200).json({ leave: leaveEntry });
 
     } catch (error) {
         console.error(error)

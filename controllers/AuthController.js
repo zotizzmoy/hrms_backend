@@ -271,8 +271,8 @@ module.exports.register = async function (req, res) {
       label: req.body.label,
       gender: req.body.gender,
       paid_leaves: req.body.paid_leaves,
-      created_at: now.format("YYYY-MM-DD"),
-      updated_at: now.format("YYYY-MM-DD")
+      created_at: now.format("YYYY-MM-DD HH:mm:ss"),
+      updated_at: now.format("YYYY-MM-DD HH:mm:ss")
     };
 
     const user = await UserModel.create(userObject);

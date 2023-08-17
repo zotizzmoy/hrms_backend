@@ -145,7 +145,7 @@ module.exports.generateSalarySlips = async (req, res) => {
             // Calculate the duration of the leave
             const leaveDuration = (leaveEndDate - leaveStartDate) / (1000 * 60 * 60 * 24) + 1;
 
-            if (leave.is_half_day === "yes") {
+            if (leave.is_half_day === "Yes") {
               leavesTaken += 0.5; // Increment by 0.5 for each half-day leave
             } else {
               leavesTaken += leaveDuration; // Increment by the total duration for full-day leaves
