@@ -67,12 +67,12 @@ module.exports.applyForLeave = async (req, res) => {
     }
 
     // If the requested leave type is "Casual" and the user chooses to use paid leaves as casual leaves
-    if (leaveType === "Casual" && usePaidLeavesAsCasual && remainingPaidLeaves > 0) {
+    if (leaveType === "Casual" && usePaidLeavesAsCasual && remainingPaidLeaves >= leaveDurationInDays) {
         const leaveEntry = await UserLeave.create({
             user_id: userId,
             leave_type: "Paid", // Store as "Paid" type in the database
             is_half_day: isHalfDay,
-            applied_on: dayjs().format("YYYY-MM-DD"),
+            applied_on: dayjs().format("YYYY-MM-DD hh:mm:ss"),
             start_date: startDate,
             end_date: endDate,
             duration: leaveDurationInDays,
