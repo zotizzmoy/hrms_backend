@@ -5,6 +5,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const generator = require("generate-password");
+const dayjs = require("dayjs");
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const { body, validationResult } = require("express-validator");
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -19,6 +20,8 @@ const { generateJwt } = require("../helper/helper.js");
 const sendMail = require("../middleware/sendMail.js");
 const sendResetMail = require("../middleware/sendResetMail.js");
 const ResetToken = require("../models/ResetToken.js");
+
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Route OTP
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -207,6 +210,7 @@ module.exports.login = async function (req, res) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+
     // Create and send JWT token
     const payload = {
       user_id: user.id,
@@ -249,6 +253,7 @@ module.exports.register = async function (req, res) {
     length: 6,
     numbers: true,
   });
+  let now = dayjs();
 
   if (!user) {
     const userObject = {
@@ -266,6 +271,8 @@ module.exports.register = async function (req, res) {
       label: req.body.label,
       gender: req.body.gender,
       paid_leaves: req.body.paid_leaves,
+      created_at: now.format("YYYY-MM-DD"),
+      updated_at: now.format("YYYY-MM-DD")
     };
 
     const user = await UserModel.create(userObject);

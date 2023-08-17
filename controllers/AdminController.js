@@ -276,6 +276,14 @@ module.exports.deleteUser = async function (req, res) {
             return res.status(404).json({ error: 'User not found' });
         }
 
+        const update = {
+            deleted_at: new Date.now()
+        }
+        // Implementing soft delete
+        await UserModel.update(update, { where: { id: id } });
+
+
+
         // Delete the user's attendances
         await UserAttendence.destroy({ where: { user_id: id } });
 
@@ -287,12 +295,13 @@ module.exports.deleteUser = async function (req, res) {
 
 
 
+
         // Delete the user
         await user.destroy({
             force: false, //soft delete
         });
 
-        res.json({ message: 'User, attendances, activities, leaves deleted successfully' });
+        res.status(200).json({ message: 'User, attendances, activities, leaves deleted successfully' });
     } catch (error) {
         console.error('Error deleting user:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -549,7 +558,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     emp_id: user.emp_id,
                     first_name: user.first_name,
                     last_name: user.last_name,
-                    total_leaves:totalLeaves,
+                    total_leaves: totalLeaves,
                     approved_leaves: appliedLeavesCount,
                     available_leaves: remainingLeaves + " days",
                 };
