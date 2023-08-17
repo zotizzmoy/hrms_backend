@@ -65,7 +65,12 @@ module.exports.applyForLeave = async (req, res) => {
     } else {
         return res.status(400).json({ error: "Invalid leave type." });
     }
-
+    console.log('==============remainingPaidLeaves======================');
+    console.log(remainingPaidLeaves);
+    console.log('====================================');
+    console.log('==============leaveDurationInDays====================');
+    console.log(leaveDurationInDays);
+    console.log('====================================');
     // If the requested leave type is "Casual" and the user chooses to use paid leaves as casual leaves
     if (leaveType === "Casual" && usePaidLeavesAsCasual && remainingPaidLeaves >= leaveDurationInDays) {
         const leaveEntry = await UserLeave.create({
@@ -100,6 +105,8 @@ module.exports.applyForLeave = async (req, res) => {
         res.status(201).json({ data: leaveEntry });
     }
 };
+
+//helper function to calculate leave duration 
 
 const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const start = new Date(startDate);
