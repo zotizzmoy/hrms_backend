@@ -73,6 +73,10 @@ module.exports.applyForLeave = async (req, res) => {
     console.log('====================================');
     // If the requested leave type is "Casual" and the user chooses to use paid leaves as casual leaves
     if (leaveType === "Casual" && usePaidLeavesAsCasual && remainingPaidLeaves >= leaveDurationInDays) {
+        if (remainingPaidLeaves >= leaveDurationInDays) {
+            return res.status(422).json({ error: `Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.` })
+
+        }
         const leaveEntry = await UserLeave.create({
             user_id: userId,
             leave_type: "Paid", // Store as "Paid" type in the database
