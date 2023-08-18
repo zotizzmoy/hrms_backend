@@ -5,7 +5,7 @@ const dayjs = require("dayjs");
 
 
 
-module.getLeaveDeductions = async (req, res) => {
+module.exports.getLeaveDeductions = async (req, res) => {
     const { userId, startDate, endDate } = req.body;
 
     try {
