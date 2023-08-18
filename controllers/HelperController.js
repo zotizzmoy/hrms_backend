@@ -16,7 +16,8 @@ module.exports.getLeaveDeductions = async (req, res) => {
             },
             attributes: ["basic"]
         });
-        console.log(basic+"basic")
+        console.log(basicSalary + " basic");
+
 
         const startMonth = dayjs(startDate).format('MM');
         const daysInStartMonth = dayjs(startDate).daysInMonth();
