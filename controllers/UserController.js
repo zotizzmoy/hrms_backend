@@ -18,7 +18,7 @@ module.exports.documentsUpload = async (req, res) => {
         const documentEntries = document.map(file => ({
             user_id,
             document: file.filename,
-            document_name: req.body.document_name,
+            document_name: document_name,
             document_destination: file.destination,
             created_at: Date.now(),
             updated_at: Date.now()

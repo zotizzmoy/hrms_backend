@@ -111,10 +111,20 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
     const oneDayInMilliseconds = 1000 * 60 * 60 * 24;
-    const durationInMilliseconds = Math.abs(end - start) + (isHalfDay ? oneDayInMilliseconds / 2 : oneDayInMilliseconds);
+    const halfDayInMilliseconds = oneDayInMilliseconds / 2;
+
+    const durationInMilliseconds = Math.abs(end - start) + (isHalfDay ? halfDayInMilliseconds : oneDayInMilliseconds);
     const days = durationInMilliseconds / oneDayInMilliseconds;
-    return Math.ceil(days);
+
+    if (isHalfDay) {
+        return 0.5;
+    } else {
+        return Math.ceil(days);
+    }
 };
+
+
+
 
 module.exports.calculateLeaves = async (req, res) => {
     // Assuming you have the User model imported
@@ -131,7 +141,7 @@ module.exports.calculateLeaves = async (req, res) => {
 
         // Retrieve applied leaves and join with User table
         const appliedLeaves = await UserLeave.findAll({
-            where: { user_id: user_id, status: 'approved' },
+            where: { user_id: user_id, status: 'Approved' },
             include: [
                 {
                     model: UserModel,
@@ -141,37 +151,14 @@ module.exports.calculateLeaves = async (req, res) => {
         });
 
         const appliedLeavesCount = appliedLeaves.length;
-        // Retrieve total leaves
-        const user = await UserModel.findOne({
+
+        // Retrieve paid leaves
+        const remainingLeaves = await UserModel.findOne({
             where: { id: user_id },
+            attributes: ['paid_leaves']
 
         });
 
-        // Calculate leave durations and subtract from total leaves
-        let remainingLeaves = user.leave_balance;
-        let remainingHalfLeaves = user.leave_balance;
-        const leaveDurations = appliedLeaves.map((leave) => {
-            const startDate = new Date(leave.start_date);
-            const endDate = new Date(leave.end_date);
-            const duration = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Difference in days
-
-            remainingLeaves -= duration;
-
-            // Check if the leave is a half-day leave
-            if (leave.is_half_day === "yes") {
-                remainingHalfLeaves -= 0.5;
-            } else {
-                remainingHalfLeaves -= duration;
-            }
-
-            return {
-                leaveId: leave.id,
-                startDate: leave.start_date,
-                endDate: leave.end_date,
-                duration: duration,
-                isHalfDay: leave.is_half_day
-            };
-        });
 
         // Prepare response JSON
         const response = {
@@ -179,7 +166,7 @@ module.exports.calculateLeaves = async (req, res) => {
                 {
                     leave_balance: remainingLeaves,
                     applied_leaves: appliedLeavesCount,
-                    available_leaves: remainingHalfLeaves
+
                 }
             ]
         };
@@ -294,7 +281,7 @@ module.exports.changeStatus = async (req, res) => {
     }
 };
 
-   
+
 
 
 module.exports.cancelledStatus = async (req, res) => {
