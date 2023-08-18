@@ -14,7 +14,7 @@ module.exports.getLeaveDeductions = async (req, res) => {
             where: {
                 user_id: userId
             },
-            attributes: [basic]
+            attributes: ["basic"]
         });
 
         const startMonth = dayjs(startDate).format('MM');
