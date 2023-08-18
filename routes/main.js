@@ -116,7 +116,7 @@ router.route('/update-education-details/:id').post(UserController.updateUserEduc
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //HelperController
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-router.post("/get-leave-deductions", HelperController.getLeaveDeductions);
+router.route('/get-leave-deductions').post(HelperController.getLeaveDeductions);
 
 
 
