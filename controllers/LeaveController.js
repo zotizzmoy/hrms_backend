@@ -1,5 +1,6 @@
 const sequelize_db = require('../config/mysqlORM');
 const { Op, Sequelize } = require('sequelize');
+const dayjs = require('dayjs');
 
 
 
@@ -11,7 +12,7 @@ const UserLeave = require('../models/UsersLeave');
 // Middlewares
 const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
-const dayjs = require('dayjs');
+
 
 
 
@@ -101,6 +102,25 @@ module.exports.applyForLeave = async (req, res) => {
             document: "N/A",
         });
 
+        const user = await UserModel.findOne({
+            where: {
+                id: userId
+            }
+
+        });
+        // send leave mail to the admin 
+        await sendLeaveMail(
+            user.first_name,
+            user.last_name,
+            user.emp_id,
+            startDate,
+            endDate,
+            isHalfDay,
+            leaveType,
+            reason
+
+        )
+
         res.status(201).json({ data: leaveEntry });
     }
 };
@@ -128,7 +148,7 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
 
 
 module.exports.calculateLeaves = async (req, res) => {
-    
+
 
     try {
         const { user_id } = req.body;

@@ -14,6 +14,8 @@ const AdminController = require('../controllers/AdminController');
 const HolidayController = require('../controllers/HolidayController');
 const SalaryController = require('../controllers/SalaryController');
 const UserController = require('../controllers/UserController');
+const HelperController = require('../controllers/HelperController');
+
 
 
 
@@ -111,8 +113,10 @@ router.route('/update-bank-details/:id').post(UserController.updateBankDetails);
 router.route('/update-education-details/:id').post(UserController.updateUserEducation);
 
 
-
-
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//HelperController
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+router.route('/get-leave-deductions').post(HelperController.getLeaveDeductions);
 
 
 
