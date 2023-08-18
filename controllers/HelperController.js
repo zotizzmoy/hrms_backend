@@ -16,10 +16,11 @@ module.exports.getLeaveDeductions = async (req, res) => {
             },
             attributes: ["basic"]
         });
+        console.log(basic+"basic")
 
         const startMonth = dayjs(startDate).format('MM');
         const daysInStartMonth = dayjs(startDate).daysInMonth();
-
+        console.log(daysInStartMonth + "daysinmonth")
         // Calculate duration between start and end date in days
         const start = dayjs(startDate);
         const end = dayjs(endDate);
