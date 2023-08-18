@@ -105,7 +105,8 @@ module.exports.applyForLeave = async (req, res) => {
     }
 };
 
-//helper function to calculate leave duration 
+
+//Helper function to calculate leave duration 
 
 const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const start = new Date(startDate);
@@ -116,18 +117,18 @@ const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
     const durationInMilliseconds = Math.abs(end - start) + (isHalfDay ? halfDayInMilliseconds : oneDayInMilliseconds);
     const days = durationInMilliseconds / oneDayInMilliseconds;
 
-    if (isHalfDay) {
-        return 0.5;
-    } else {
-        return Math.ceil(days);
-    }
+    return isHalfDay ? 0.5 : Math.ceil(days);
 };
 
 
 
 
+
+
+
+
 module.exports.calculateLeaves = async (req, res) => {
-    // Assuming you have the User model imported
+    
 
     try {
         const { user_id } = req.body;
