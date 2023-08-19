@@ -7,30 +7,29 @@ const personalDetails = require("../models/UsersPersonalDetail");
 
 module.exports.documentsUpload = async (req, res) => {
     try {
-
-        const { user_id, document_name } = req.body;
+        const { user_id } = req.params;
+        const { document_names } = req.body; // An array of document names
         const documents = req.files;
 
-        if (!documents || !Array.isArray(documents)) {
-            return res.status(400).json({ error: 'No files uploaded or invalid format.' });
+        if (!documents || !Array.isArray(documents) || !document_names || !Array.isArray(document_names) || documents.length !== document_names.length) {
+            return res.status(400).json({ error: 'Invalid input format.' });
         }
 
         const documentEntries = [];
 
-        // Loop through each document and create a separate entry
-        for (const file of documents) {
+        for (let i = 0; i < documents.length; i++) {
+            const file = documents[i];
             const documentEntry = {
                 user_id,
                 document: file.filename,
-                document_name: document_name || file.originalname,
+                document_name: document_names[i] || file.originalname,
                 document_destination: file.destination,
-                created_at: Date.now(),
-                updated_at: Date.now()
+                created_at: new Date(),
+                updated_at: new Date()
             };
             documentEntries.push(documentEntry);
         }
 
-        // Create entries in the userDocument model
         await userDocument.bulkCreate(documentEntries);
 
         res.status(201).json({
@@ -41,6 +40,7 @@ module.exports.documentsUpload = async (req, res) => {
         console.error('Error uploading files:', error);
         res.status(500).json({ error: 'An error occurred while uploading the files.' });
     }
+
 
 };
 
