@@ -10,13 +10,14 @@ module.exports.getLeaveDeductions = async (req, res) => {
 
     try {
         // Assuming you have the 'basic' salary and 'numberofdaysinmonth' available
-        const basicSalary = await userSalaryStructure.findOne({
+        const Salary = await userSalaryStructure.findOne({
             where: {
                 user_id: userId
             },
-            attributes: ["basic"]
+
         });
-        console.log(basicSalary + " basic");
+
+        const basicSalary = Salary.basic;
 
 
         const startMonth = dayjs(startDate).format('MM');
