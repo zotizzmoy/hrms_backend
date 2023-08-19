@@ -26,7 +26,7 @@ module.exports.documentsUpload = async (req, res) => {
 
         // Create entries in the userDocument model
         await userDocument.bulkCreate(documentEntries);
-
+            console.log(documentEntries)
         res.status(201).json({
             message: 'Files uploaded and document entries created.',
             documents: documentEntries
