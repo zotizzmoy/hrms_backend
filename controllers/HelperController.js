@@ -29,7 +29,7 @@ module.exports.getLeaveDeductions = async (req, res) => {
         const durationInDays = end.diff(start, 'days') + 1; // Including both start and end days
 
         // Calculate leave deduction
-        const leaveDeduction = (basicSalary / daysInStartMonth) * durationInDays;
+        const leaveDeduction = Math.round((basicSalary / daysInStartMonth)) * durationInDays;
 
         // You can send the calculated deduction as a response or process it further
         res.status(200).json({ leaveDeduction });
