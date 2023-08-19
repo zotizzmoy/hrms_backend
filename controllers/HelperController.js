@@ -1,3 +1,4 @@
+const UserModel = require("../models/Users");
 const userSalaryStructure = require("../models/UsersSalaryStructure");
 const dayjs = require("dayjs");
 
@@ -22,7 +23,7 @@ module.exports.getLeaveDeductions = async (req, res) => {
 
         const startMonth = dayjs(startDate).format('MM');
         const daysInStartMonth = dayjs(startDate).daysInMonth();
-       
+
         // Calculate duration between start and end date in days
         const start = dayjs(startDate);
         const end = dayjs(endDate);
@@ -39,3 +40,24 @@ module.exports.getLeaveDeductions = async (req, res) => {
     }
 
 };
+
+
+module.exports.getLeaveBalance = async (req, res) => {
+    const { user_id } = req.body;
+    try {
+        const paidleaveBalance = await UserModel.findOne({
+            where: {
+                id: user_id
+            }
+        });
+
+        const balance = paidleaveBalance.paid_leaves;
+
+        res.status(200).json({ balance });
+
+    } catch (error) {
+        res.status(500)(error.message);
+    }
+
+};
+

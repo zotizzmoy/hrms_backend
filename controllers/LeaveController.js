@@ -176,16 +176,16 @@ module.exports.calculateLeaves = async (req, res) => {
         // Retrieve paid leaves
         const remainingLeaves = await UserModel.findOne({
             where: { id: user_id },
-            attributes: ['paid_leaves']
+
 
         });
 
-
+        const paidLeaves = remainingLeaves.paid_leaves
         // Prepare response JSON
         const response = {
             leaves: [
                 {
-                    leave_balance: remainingLeaves,
+                    leave_balance: paidLeaves,
                     applied_leaves: appliedLeavesCount,
 
                 }

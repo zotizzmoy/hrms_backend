@@ -7,8 +7,8 @@ const personalDetails = require("../models/UsersPersonalDetail");
 
 module.exports.documentsUpload = async (req, res) => {
     try {
-        
-        const { user_id , document_names } = req.body; // An array of document names
+
+        const { user_id, document_names } = req.body; 
         const documents = req.files;
 
         if (!documents || !Array.isArray(documents) || !document_names || !Array.isArray(document_names) || documents.length !== document_names.length) {
