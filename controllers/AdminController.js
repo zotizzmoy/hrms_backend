@@ -277,7 +277,7 @@ module.exports.deleteUser = async function (req, res) {
         }
 
         const update = {
-            deleted_at: new Date.now()
+            deleted_at:  Date.now()
         }
         // Implementing soft delete
         await UserModel.update(update, { where: { id: id } });
