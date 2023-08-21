@@ -100,7 +100,7 @@ module.exports.generateSalarySlips = async (req, res) => {
               year
             ),
             { status: "Approved" },
-            { leave_type: { $ne: "Paid" } } // Exclude Paid leaves
+            { leave_type: { [Sequelize.Op.ne]: "Paid" } } // Exclude Paid leaves
           ),
           required: false,
         },
