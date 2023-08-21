@@ -53,7 +53,7 @@ module.exports.getLeaveBalance = async (req, res) => {
 
         const balance = paidleaveBalance.paid_leaves;
 
-        res.status(200).json({ balance });
+        res.status(200).json(balance);
 
     } catch (error) {
         res.status(500)(error.message);
