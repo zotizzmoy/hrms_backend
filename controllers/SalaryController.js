@@ -61,14 +61,12 @@ module.exports.addSalaryStructure = async (req, res) => {
 module.exports.generateSalarySlips = async (req, res) => {
   const { month, year, label } = req.body;
 
-  if (!month || !year || !label) {
-    return res.status(400).json({ error: "Month, year, and label are required." });
+  if (!month || !year) {
+    return res.status(400).json({ error: "Month and year are required." });
   }
   try {
     // Retrieve all users with their salary structures, attendances, and leaves
-
-    const users = await UserModel.findAll({
-      where: { label },
+    let usersQuery = {
       include: [
         {
           model: UserSalaryStructure,
@@ -101,12 +99,20 @@ module.exports.generateSalarySlips = async (req, res) => {
               Sequelize.fn("YEAR", Sequelize.col("leaves.start_date")),
               year
             ),
-            { status: "approved" }
+            { status: "Approved" },
+            Sequelize.not({ leave_type: "Paid" }) // Exclude Paid leaves
           ),
           required: false,
         },
       ],
-    });
+    };
+
+    if (label) {
+      usersQuery.where = { label };
+    }
+
+    const users = await UserModel.findAll(usersQuery);
+
 
     const salarySlips = [];
 
@@ -145,7 +151,7 @@ module.exports.generateSalarySlips = async (req, res) => {
             // Calculate the duration of the leave
             const leaveDuration = (leaveEndDate - leaveStartDate) / (1000 * 60 * 60 * 24) + 1;
 
-            if (leave.is_half_day === "Yes") {
+            if (leave.is_half_day) {
               leavesTaken += 0.5; // Increment by 0.5 for each half-day leave
             } else {
               leavesTaken += leaveDuration; // Increment by the total duration for full-day leaves
