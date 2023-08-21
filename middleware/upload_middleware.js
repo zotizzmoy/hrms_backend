@@ -1,5 +1,4 @@
 const multer = require('multer');
-const sharp = require('sharp');
 const fs = require('fs');
 
 const storage = multer.diskStorage({
@@ -19,7 +18,16 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-const upload = multer({ storage: storage, fileFilter: fileFilter });
+// Add a file size limiter (e.g., 2MB)
+const fileSizeLimit = 1 * 1024 * 1024; // 1MB in bytes
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: fileSizeLimit
+    }
+});
 
 const moveImage = (req, res, next) => {
     if (req.file) {
