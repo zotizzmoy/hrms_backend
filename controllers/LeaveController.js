@@ -307,10 +307,11 @@ module.exports.changeStatus = async (req, res) => {
 
 module.exports.cancelledStatus = async (req, res) => {
     try {
-        const { user_id, leave_id } = req.body;
+        const { user_id, leave_id, cancel_reason } = req.body;
 
         const update = {
-            status: "cancelled"
+            status: "cancelled",
+            cancel_reason: cancel_reason
         };
 
         let leave;
@@ -337,7 +338,7 @@ module.exports.cancelledStatus = async (req, res) => {
                 leave.end_date,
                 leave.is_half_day,
                 leave.leave_type,
-                leave.reason,
+                leave.cancel_reason,
                 leave.status
             );
         }

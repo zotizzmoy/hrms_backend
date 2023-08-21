@@ -153,42 +153,23 @@ module.exports.generateSalarySlips = async (req, res) => {
           }
         }
       }
-
-
-
-
-
-
-
       // Calculate net salary based on deductions
+
       let { ctc_per_month, epf, esic, professional_tax, basic } =
         salary_structure;
 
       let daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
 
-
-      let leaveDaysDeduction = 0;
-      if (user.leave_balance > 0) {
-        leaveDaysDeduction = 0
-
-      } else {
-        leaveDaysDeduction = leavesTaken * Math.floor(
-          (basic / daysInCurrentMonth))
+      let leaveDaysDeduction = leavesTaken * Math.floor(basic / daysInCurrentMonth);
 
 
-
-      }
 
 
       let lateDaysDeduction =
         Math.floor(basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
 
-      let netSalary;
-      if (user.leave_balance > 0) {
-        netSalary = Math.round(ctc_per_month - epf - esic - professional_tax - lateDaysDeduction);
-      } else {
-        netSalary = Math.round(ctc_per_month - epf - esic - professional_tax - leaveDaysDeduction - lateDaysDeduction);
-      }
+      let netSalary =
+        Math.round(ctc_per_month - epf - esic - professional_tax - leaveDaysDeduction - lateDaysDeduction);
       // Check if the salary slip for the user with the same month and year already exists
       const existingSalarySlip = await UserSalary.findOne({
         where: {

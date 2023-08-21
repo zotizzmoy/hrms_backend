@@ -42,6 +42,9 @@ const UserLeave = sequelize_db.define(
     reason: {
       type: DataTypes.STRING,
     },
+    cancel_reason:{
+      type: DataTypes.STRING
+    },
     status: {
       type: DataTypes.ENUM("Awaiting", "Approved", "Cancelled"),
     },
