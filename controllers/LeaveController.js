@@ -283,7 +283,7 @@ module.exports.changeStatus = async (req, res) => {
         }
 
         if (leaveEntry.leave_type === "Paid" && leaveEntry.status === "Awaiting") {
-            const leaveDurationInDays = leaveEntry.duration;
+            const leaveDurationInDays = leaveEntry.is_half_day ? 0.5 : leaveEntry.duration; // Adjust the leave duration
             const remainingPaidLeaves = userLeaveBalance.paid_leaves;
             const usedPaidLeaves = Math.min(leaveDurationInDays, remainingPaidLeaves);
 

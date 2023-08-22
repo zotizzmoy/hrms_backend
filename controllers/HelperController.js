@@ -3,7 +3,7 @@ const userSalaryStructure = require("../models/UsersSalaryStructure");
 const dayjs = require("dayjs");
 
 module.exports.getLeaveDeductions = async (req, res) => {
-    const { userId, startDate, endDate, usePaidLeave } = req.body;
+    const { userId, startDate, endDate, usePaidLeave, isHalfDay } = req.body;
 
     try {
         // Assuming you have the 'basic' salary and 'numberofdaysinmonth' available
@@ -21,16 +21,18 @@ module.exports.getLeaveDeductions = async (req, res) => {
         const end = dayjs(endDate);
         const durationInDays = end.diff(start, 'days') + 1; // Including both start and end days
 
-        // Calculate leave deduction based on usePaidLeave flag
+        // Calculate leave deduction based on usePaidLeave flag and isHalfDay
         let leaveDeduction;
-        if (usePaidLeave) {
+        if (isHalfDay) {
+            leaveDeduction = 0.5 * (basicSalary / daysInStartMonth);
+        } else if (usePaidLeave) {
             leaveDeduction = 0; // No deductions if leave is paid
         } else {
             const startMonth = dayjs(startDate).format('MM');
             leaveDeduction = Math.round((basicSalary / daysInStartMonth)) * durationInDays;
         }
 
-        // You can send the calculated deduction as a response or process it further
+        
         res.status(200).json({ leaveDeduction });
     } catch (error) {
         console.error('An error occurred:', error);
