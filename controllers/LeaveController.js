@@ -14,10 +14,8 @@ const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
 
 
-
-
 module.exports.applyForLeave = async (req, res) => {
-    const { userId, leaveType, startDate, endDate, isHalfDay, reason, usePaidLeavesAsCasual } = req.body;
+    const { userId, leaveType, startDate, endDate, isHalfDay, reason, usePaidLeavesAsCasual, usePaidLeavesAsMedical } = req.body;
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
 
@@ -87,6 +85,25 @@ module.exports.applyForLeave = async (req, res) => {
         } else {
             return res.status(400).json({ error: `Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.` });
         }
+    } else if (leaveType === "Medical" && usePaidLeavesAsMedical) {
+        if (remainingPaidLeaves >= leaveDurationInDays) {
+            const leaveEntry = await UserLeave.create({
+                user_id: userId,
+                leave_type: "Paid", // Store as "Paid" type in the database
+                is_half_day: isHalfDay,
+                applied_on: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+                start_date: startDate,
+                end_date: endDate,
+                duration: leaveDurationInDays,
+                reason,
+                status: "Awaiting",
+                document: "N/A",
+            });
+
+            res.status(201).json({ data: leaveEntry });
+        } else {
+            return res.status(400).json({ error: `Insufficient paid leaves. You have ${remainingPaidLeaves} paid leaves left.` });
+        }
     } else {
         // Normal leave application
         const leaveEntry = await UserLeave.create({
@@ -106,8 +123,8 @@ module.exports.applyForLeave = async (req, res) => {
             where: {
                 id: userId
             }
-
         });
+
         // send leave mail to the admin 
         await sendLeaveMail(
             user.first_name,
@@ -118,12 +135,13 @@ module.exports.applyForLeave = async (req, res) => {
             isHalfDay,
             leaveType,
             reason
-
-        )
+        );
 
         res.status(201).json({ data: leaveEntry });
     }
 };
+
+
 
 
 //Helper function to calculate leave duration 
