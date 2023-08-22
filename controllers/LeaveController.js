@@ -231,9 +231,13 @@ module.exports.uploadDocument = async (req, res) => {
         const update = {
             document: req.file.filename
         }
-        created_user = await UserLeave.update(update, { where: { user_id: req.body.user_id } });
+        created_user = await UserLeave.update(update, {
+            where:
+                { user_id: req.body.user_id },
+
+        });
         res.status(200).json({
-            data: await UserLeave.findOne({ where: { user_id: req.body.user_id } })
+            data: await UserLeave.findOne({ where: { user_id: req.body.user_id, leave_type: "Medical" } })
         });
 
     } catch (error) {
