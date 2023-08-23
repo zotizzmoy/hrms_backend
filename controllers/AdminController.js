@@ -631,3 +631,56 @@ module.exports.getAlluserDetails = async (req, res) => {
     }
 
 };
+
+
+module.exports.updateAllUserDetails = async (req, res) => {
+    const user_id = req.params;
+    try {
+        const user = await UserModel.findByPk(user_id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update user details
+        await user.update(req.body.user);
+
+        // Update personal details
+        if (req.body.personal_details) {
+            const personalDetails = await UsersPersonalDetail.findOne({
+                where: { user_id: user_id },
+            });
+            await personalDetails.update(req.body.personal_details);
+        }
+
+        // Update bank details
+        if (req.body.bank_details) {
+            const bankDetails = await UsersBankDetail.findOne({
+                where: { user_id: user_id },
+            });
+            await bankDetails.update(req.body.bank_details);
+        }
+
+        // update education details 
+        if (req.body.education_details) {
+            const education_details = await UsersEducationDetail.findOne({
+                where: { user_id: user_id },
+            });
+            await education_details.update(req.body.bank_details);
+        }
+        //  update salary structure
+        if (req.body.salary_structure) {
+            const salary_structure = await UserSalaryStructure.findOne({
+                where: { user_id: user_id },
+            });
+            await salary_structure.update(req.body.salary_structure);
+        }
+
+        return res.status(200).json({ message: 'User details updated successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+
+
+}
