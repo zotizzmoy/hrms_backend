@@ -70,7 +70,7 @@ router.route("/leave-applied-users").post(AdminController.leaveRequests);
 router.route("/count-leave-applied").post(AdminController.leaveCountForSevenDays);
 router.route("/on-leave-today").post(AdminController.onleaveCount);
 router.route("/all-leave-balance").post(AdminController.calculateAllUsersleaveBalance);
-router.route("/user-details/:user_id").post(AdminController.getAlluserDetails);
+router.route("/user-details").post(AdminController.getAlluserDetails);
 router.route("/update-user-details/:user_id").post(AdminController.updateAllUserDetails);
 
 
@@ -83,7 +83,7 @@ router.post("/upload-document", upload.single('document'), moveImage, LeaveContr
 router.post("/approved-leave", LeaveController.changeStatus);
 router.post("/cancel-leave", LeaveController.cancelledStatus);
 router.post("/get-all-leaves", LeaveController.getAllleaves);
-router.post("/demo-test", LeaveController.demoTest);
+
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //HolidayController
@@ -110,9 +110,7 @@ router.route('/personal-details').post(UserController.addPersonalDetails);
 router.route('/bank-details').post(UserController.addBankDetails);
 router.route('/add-education').post(UserController.addUserEducation);
 router.post("/upload-documents", upload.array('documents', 10), moveImage, UserController.documentsUpload);
-router.route('/update-personal-details/:id').post(UserController.updatePersonalDetails);
-router.route('/update-bank-details/:id').post(UserController.updateBankDetails);
-router.route('/update-education-details/:id').post(UserController.updateUserEducation);
+
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

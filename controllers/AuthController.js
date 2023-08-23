@@ -219,14 +219,11 @@ module.exports.login = async function (req, res) {
       last_name: user.last_name,
       gender: user.gender,
       dob: user.dob,
-      religion: user.religion,
       email: user.email,
       user_image: user.user_image,
-      contact_no: user.contact_no,
       designation: user.designation,
       role: user.role,
       status: user.status,
-      guardian_name: user.guardian_name,
     };
 
     helper.generateJwt(payload);

@@ -526,7 +526,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
             users.map(async (user) => {
                 // Retrieve approved applied leaves for the user
                 const approvedLeaves = await UserLeave.findAll({
-                    where: { user_id: user.id, status: 'approved' },
+                    where: { user_id: user.id, status: 'Approved' },
                 });
 
                 const appliedLeavesCount = approvedLeaves.length;
@@ -589,7 +589,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
 
 module.exports.getAlluserDetails = async (req, res) => {
     try {
-        const { user_id } = req.params;
+        const { user_id } = req.body;
         const user = await UserModel.findByPk(user_id, {
             include: [
                 {

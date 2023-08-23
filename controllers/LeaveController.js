@@ -409,29 +409,3 @@ module.exports.getAllleaves = async (req, res) => {
 };
 
 
-
-module.exports.demoTest = async (req, res) => {
-    const { user_id } = req.body;
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
-
-    // Calculate the first and last date of the current month
-    const firstDateOfMonth = new Date(currentYear, currentMonth - 1, 1); // Months are 0-indexed
-    const lastDateOfMonth = new Date(currentYear, currentMonth, 0); // The 0th day of the next month is the last day of the current month
-
-    try {
-        const userPaidLeavesThisMonth = await UserLeave.count({
-            where: {
-                user_id: user_id,
-                leave_type: "Paid",
-                status: "Approved",
-                start_date: {
-                    [Op.between]: [firstDateOfMonth, lastDateOfMonth],
-                },
-            },
-        });
-        res.json(userPaidLeavesThisMonth);
-    } catch (error) {
-        res.json(error.message);
-    }
-};

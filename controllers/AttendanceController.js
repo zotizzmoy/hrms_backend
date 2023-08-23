@@ -83,7 +83,7 @@ module.exports.addAttendance = async function (req, res) {
           status: req.body.status,
           in_time: time,
           attendance_status: 'present',
-          in_office:req.body.in_office,
+          in_office: req.body.in_office,
           msg: msg,
           created_at: new Date(),
         };
@@ -124,7 +124,7 @@ module.exports.addAttendance = async function (req, res) {
                 out_time: time,
                 out_distance: req.body.out_distance,
                 activity: req.body.activity,
-                out_office:req.body.out_office,
+                out_office: req.body.out_office,
 
                 updated_at: new Date(),
               };
@@ -283,32 +283,42 @@ module.exports.listAttendance = async function (req, res) {
   }
 };
 
+
 module.exports.addActivities = async function (req, res) {
   try {
-    for (let i = 0; i < (req.body.activity).length; i++) {
-      if (req.body.activity[i]) {
+    const { user_id, activity } = req.body;
+
+    for (let i = 0; i < activity.length; i++) {
+      if (activity[i]) {
         const object = {
-          user_id: req.body.user_id,
+          user_id: user_id,
           date: moment().format("YYYY-MM-DD"),
-          activity: req.body.activity[i],
+          activity: activity[i],
         };
-        created_user = await UserActivity.create(object);
+        activitiesToCreate.push(object);
       } else {
-        console.log('null')
+        console.log('null');
       }
     }
-    res.status(200).json({
-      data: await UserActivity.findOne({
-        where: { user_id: req.body.user_id },
-      }),
+
+    if (activitiesToCreate.length > 0) {
+      await UserActivity.bulkCreate(activitiesToCreate);
+    }
+
+    const userActivities = await UserActivity.findOne({
+      where: { user_id },
     });
 
-
+    res.status(200).json({
+      data: userActivities,
+    });
 
   } catch (error) {
     res.status(500).send(error.message);
   }
 };
+
+
 
 module.exports.countAttendanceBymonth = async function (req, res) {
   const { user_id, year, month } = req.body;

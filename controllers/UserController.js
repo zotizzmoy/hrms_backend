@@ -53,24 +53,7 @@ module.exports.addPersonalDetails = async (req, res) => {
     }
 };
 
-module.exports.updatePersonalDetails = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const [updatedRowsCount, updatedRows] = await personalDetails.update(req.body, {
-            where: { id },
-            returning: true,
-        });
 
-        if (updatedRowsCount === 0) {
-            res.status(404).json({ error: 'Personal detail not found' });
-        } else {
-            res.status(200).json(updatedRows[0]);
-        }
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-
-};
 
 module.exports.addBankDetails = async (req, res) => {
     try {
@@ -81,22 +64,7 @@ module.exports.addBankDetails = async (req, res) => {
     }
 };
 
-module.exports.updateBankDetails = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const bank = await bankDetails.findByPk(id);
-        if (bank) {
-            await bankDetails.update(req.body)
-        } else {
-            return res.status(404).json({ message: "No Bank found" });
-        }
-        res.status(200).json(await bankDetails.findOne({
-            where: { id }
-        }));
-    } catch (error) {
-        res.status(500).json(error.message);
-    }
-};
+
 
 module.exports.addUserEducation = async (req, res) => {
     try {
@@ -120,19 +88,3 @@ module.exports.addUserEducation = async (req, res) => {
 
 };
 
-module.exports.updateUserEducation = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const education = await educationDetails.findByPk(id);
-        if (education) {
-            await educationDetails.update(req.body)
-        } else {
-            return res.status(404).json({ message: "No eduation details found" });
-        }
-        res.status(200).json(await educationDetails.findOne({
-            where: { id }
-        }));
-    } catch (error) {
-        res.status(500).json(error.message);
-    }
-}
