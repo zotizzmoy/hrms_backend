@@ -13,7 +13,7 @@ const UserLeave = require('../models/UsersLeave');
 // Middlewares
 const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
-const eventEmitter = require('./eventEmitter');
+
 
 
 module.exports.applyForLeave = async (req, res) => {
