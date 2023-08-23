@@ -572,10 +572,9 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     emp_id: user.emp_id,
                     first_name: user.first_name,
                     last_name: user.last_name,
-                    remaining_paid_leaves: remainingPaidLeaves + " days",
-                    total_paid_leaves: user.paid_leaves + " days",
-                    total_casual_leaves: totalCasualLeaves + " days",
-                    total_medical_leaves: totalMedicalLeaves + " days",
+                    remaining_paid_leaves: remainingPaidLeaves,
+                    total_casual_leaves: totalCasualLeaves ,
+                    total_medical_leaves: totalMedicalLeaves ,
                 };
             })
         );

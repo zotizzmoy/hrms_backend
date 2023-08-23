@@ -1,5 +1,6 @@
 const multer = require('multer');
 const fs = require('fs');
+const sharp = require('sharp'); // Import the sharp library for image compression
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -18,7 +19,6 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-// Add a file size limiter (e.g., 2MB)
 const fileSizeLimit = 1 * 1024 * 1024; // 1MB in bytes
 
 const upload = multer({
@@ -29,27 +29,35 @@ const upload = multer({
     }
 });
 
-const moveImage = (req, res, next) => {
+const moveAndCompressImage = async (file, outputFilename) => {
+    const destinationPath = 'public/uploads/' + outputFilename;
+
+    await sharp(file.path)
+        .resize(800) // Resize the image to a maximum width of 800 pixels (you can adjust this value)
+        .toFile(destinationPath);
+
+    fs.unlinkSync(file.path); // Remove the original uncompressed image
+
+    return outputFilename;
+};
+
+const moveAndCompressImages = async (files) => {
+    const compressedFiles = [];
+
+    for (const file of files) {
+        const outputFilename = await moveAndCompressImage(file, file.filename);
+        compressedFiles.push(outputFilename);
+    }
+
+    return compressedFiles;
+};
+
+const moveImage = async (req, res, next) => {
     if (req.file) {
-        const file = req.file;
-        const outputFilename = file.filename;
-
-        const destinationPath = 'public/uploads/' + outputFilename;
-        fs.renameSync(file.path, destinationPath);
-
-        req.compressedFiles = [outputFilename];
+        req.compressedFiles = [await moveAndCompressImage(req.file, req.file.filename)];
         next();
     } else if (req.files && req.files.length > 0) {
-        req.compressedFiles = [];
-
-        req.files.forEach(file => {
-            const outputFilename = file.filename;
-            const destinationPath = 'public/uploads/' + outputFilename;
-            fs.renameSync(file.path, destinationPath);
-
-            req.compressedFiles.push(outputFilename);
-        });
-
+        req.compressedFiles = await moveAndCompressImages(req.files);
         next();
     } else {
         next();
