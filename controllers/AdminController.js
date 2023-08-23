@@ -521,51 +521,39 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         // Retrieve all users
         const users = await UserModel.findAll();
 
+        // Get the current year
+        const currentYear = new Date().getFullYear();
+
         // Calculate leaves for each user
         const leaveCalculations = await Promise.all(
             users.map(async (user) => {
                 // Retrieve approved applied leaves for the user
                 const approvedLeaves = await UserLeave.findAll({
-                    where: { user_id: user.id, status: 'Approved' },
+                    where: {
+                        user_id: user.id,
+                        status: 'Approved',
+                        start_date: { [Op.gte]: new Date(`${currentYear}-01-01`) },
+                        end_date: { [Op.lte]: new Date(`${currentYear}-12-31`) },
+                    },
                 });
 
-                const appliedLeavesCount = approvedLeaves.length;
+                // Separate different types of leaves
+                const paidLeaves = approvedLeaves.filter(leave => leave.leave_type === 'Paid');
+                const casualLeaves = approvedLeaves.filter(leave => leave.leave_type === 'Casual');
+                const medicalLeaves = approvedLeaves.filter(leave => leave.leave_type === 'Medical');
 
-                // Retrieve total leaves for the user
-                const totalLeaves = user.leave_balance;
-
-                // Calculate remaining leaves
-                let remainingLeaves = totalLeaves;
-
-                const leaveDurations = approvedLeaves.map((leave) => {
-                    const startDate = new Date(leave.start_date);
-                    const endDate = new Date(leave.end_date);
-                    const duration = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Difference in days
-
-                    // Check if the leave is a half-day leave
-                    if (leave.is_half_day === 'yes') {
-                        remainingLeaves -= 0.5;
-                    } else {
-                        remainingLeaves -= duration;
-                    }
-
-                    return {
-                        leaveId: leave.id,
-                        startDate: leave.start_date,
-                        endDate: leave.end_date,
-                        duration: duration,
-                        isHalfDay: leave.is_half_day
-                    };
-                });
+                // Retrieve paid_leaves leaves for the user
+                const remaining_paid_leaves = user.paid_leaves - approvedLeaves.length;
 
                 return {
                     user_id: user.id,
                     emp_id: user.emp_id,
                     first_name: user.first_name,
                     last_name: user.last_name,
-                    total_leaves: totalLeaves,
-                    approved_leaves: appliedLeavesCount,
-                    available_leaves: remainingLeaves + " days",
+                    remaining_paid_leaves: remaining_paid_leaves,
+                    paid_leaves: paidLeaves.length,
+                    casual_leaves: casualLeaves.length,
+                    medical_leaves: medicalLeaves.length,
                 };
             })
         );
@@ -576,6 +564,8 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+
 
 
 
