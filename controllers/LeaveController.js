@@ -9,9 +9,11 @@ const UserModel = require('../models/Users');
 const UserLeave = require('../models/UsersLeave');
 
 
+
 // Middlewares
 const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
+const eventEmitter = require('./eventEmitter');
 
 
 module.exports.applyForLeave = async (req, res) => {
@@ -119,6 +121,9 @@ module.exports.applyForLeave = async (req, res) => {
             document: "N/A",
         });
 
+        eventEmitter.emit('leaveCreated', leaveEntry.id);   // Emit the event with leaveEntry.id
+
+
         const user = await UserModel.findOne({
             where: {
                 id: userId
@@ -224,30 +229,27 @@ module.exports.calculateLeaves = async (req, res) => {
 
 
 module.exports.uploadDocument = async (req, res) => {
-    try {
+    eventEmitter.on('leaveCreated', async (leaveId) => {
+        try {
+            const update = {
+                document: req.file.filename
+            };
 
+            await UserLeave.update(update, {
+                where: { id: leaveId },
+            });
 
-
-        const update = {
-            document: req.file.filename
+            res.status(200).json({
+                data: await UserLeave.findOne({ where: { id: leaveId } })
+            });
+        } catch (error) {
+            res.status(422).json({
+                error: error.message
+            });
         }
-        created_user = await UserLeave.update(update, {
-            where:
-                { user_id: req.body.user_id },
+    });
+}
 
-        });
-        res.status(200).json({
-            data: await UserLeave.findOne({ where: { user_id: req.body.user_id, leave_type: "Medical" } })
-        });
-
-    } catch (error) {
-        res.status(422).json({
-            error: error.message
-        })
-
-    }
-
-};
 
 
 module.exports.changeStatus = async (req, res) => {
