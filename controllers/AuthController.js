@@ -268,6 +268,7 @@ module.exports.register = async function (req, res) {
       status: "Active",
       role: 0,
       dob: req.body.dob,
+      date_of_joining: req.body.date_of_joining,
       label: req.body.label,
       gender: req.body.gender,
       paid_leaves: req.body.paid_leaves,

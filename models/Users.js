@@ -51,11 +51,12 @@ const UserModel = sequelize_db.define(
     dob: {
       type: DataTypes.STRING
     },
+    date_of_joining:{
+      type: DataTypes.STRING
+    },
     gender: {
       type: DataTypes.STRING
     },
-    
-
     status: {
       type: DataTypes.STRING,
     },
