@@ -634,7 +634,7 @@ module.exports.getAlluserDetails = async (req, res) => {
 
 
 module.exports.updateAllUserDetails = async (req, res) => {
-    const user_id = req.params;
+    const { user_id } = req.params;
     try {
         const user = await UserModel.findByPk(user_id);
 
