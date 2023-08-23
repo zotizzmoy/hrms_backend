@@ -9,13 +9,18 @@ const helper = require("../helper/helper");
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//Model
+//Models
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const UserModel = require('../models/Users');
 const UserAttendence = require('../models/UsersAttendence');
 const UserActivity = require('../models/UsersActivity');
 const AdminModel = require('../models/Admin');
 const UserLeave = require("../models/UsersLeave");
+const UsersPersonalDetail = require('../models/UsersPersonalDetail');
+const UsersEducationDetail = require('../models/UsersEducation');
+const UsersDocument = require('../models/UsersDocument');
+const UsersBankDetail = require('../models/UsersBankDetail');
+const UserSalaryStructure = require('../models/UsersSalaryStructure');
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Route Login
@@ -277,7 +282,7 @@ module.exports.deleteUser = async function (req, res) {
         }
 
         const update = {
-            deleted_at:  Date.now()
+            deleted_at: Date.now()
         }
         // Implementing soft delete
         await UserModel.update(update, { where: { id: id } });
@@ -576,3 +581,53 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
 
 
 
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//User Admin part starts 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+module.exports.getAlluserDetails = async (req, res) => {
+    try {
+        const { user_id } = req.params;
+        const user = await UserModel.findByPk(user_id, {
+            include: [
+                {
+                    model: UsersPersonalDetail,
+                    as: 'personal_details',
+                },
+                {
+                    model: UsersEducationDetail,
+                    as: 'education_details',
+                },
+                {
+                    model: UsersDocument,
+                    as: 'user_documents',
+                },
+                {
+                    model: UsersBankDetail,
+                    as: 'bank_details',
+                },
+                {
+                    model: UserSalaryStructure,
+                    as: 'salary_structure',
+                },
+
+
+
+            ],
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        return res.status(200).json({ user })
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error' });
+
+    }
+
+};

@@ -229,26 +229,25 @@ module.exports.calculateLeaves = async (req, res) => {
 
 
 module.exports.uploadDocument = async (req, res) => {
-    eventEmitter.on('leaveCreated', async (leaveId) => {
-        try {
-            const update = {
-                document: req.file.filename
-            };
+    try {
+        const update = {
+            document: req.file.filename
+        };
 
-            await UserLeave.update(update, {
-                where: { id: leaveId },
-            });
+        await UserLeave.update(update, {
+            where: { user_id: req.body.user_id },
+        });
 
-            res.status(200).json({
-                data: await UserLeave.findOne({ where: { id: leaveId } })
-            });
-        } catch (error) {
-            res.status(422).json({
-                error: error.message
-            });
-        }
-    });
-}
+        res.status(200).json({
+            data: await UserLeave.findOne({ where: { id: req.body.user_id, leave_type: "Medical" } })
+        });
+    } catch (error) {
+        res.status(422).json({
+            error: error.message
+        });
+    }
+};
+
 
 
 
