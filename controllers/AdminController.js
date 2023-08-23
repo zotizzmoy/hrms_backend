@@ -537,23 +537,45 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     },
                 });
 
-                // Separate different types of leaves
-                const paidLeaves = approvedLeaves.filter(leave => leave.leave_type === 'Paid');
-                const casualLeaves = approvedLeaves.filter(leave => leave.leave_type === 'Casual');
-                const medicalLeaves = approvedLeaves.filter(leave => leave.leave_type === 'Medical');
+                // Calculate leave durations for different types of leaves
+                const leaveDurations = approvedLeaves.map(leave => {
+                    const startDate = new Date(leave.start_date);
+                    const endDate = new Date(leave.end_date);
+                    const duration = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Difference in days
+                    return {
+                        duration: duration,
+                        leaveType: leave.leave_type,
+                    };
+                });
 
-                // Retrieve paid_leaves leaves for the user
-                const remaining_paid_leaves = user.paid_leaves - approvedLeaves.length;
+                // Calculate remaining paid leaves for the user
+                let remainingPaidLeaves = user.paid_leaves;
+                leaveDurations.forEach(leaveDuration => {
+                    if (leaveDuration.leaveType === 'Paid') {
+                        remainingPaidLeaves -= leaveDuration.duration;
+                    }
+                });
+
+                // Calculate total leaves for other types
+                let totalCasualLeaves = 0;
+                let totalMedicalLeaves = 0;
+                leaveDurations.forEach(leaveDuration => {
+                    if (leaveDuration.leaveType === 'Casual') {
+                        totalCasualLeaves += leaveDuration.duration;
+                    } else if (leaveDuration.leaveType === 'Medical') {
+                        totalMedicalLeaves += leaveDuration.duration;
+                    }
+                });
 
                 return {
                     user_id: user.id,
                     emp_id: user.emp_id,
                     first_name: user.first_name,
                     last_name: user.last_name,
-                    remaining_paid_leaves: remaining_paid_leaves,
-                    paid_leaves: paidLeaves.length,
-                    casual_leaves: casualLeaves.length,
-                    medical_leaves: medicalLeaves.length,
+                    remaining_paid_leaves: remainingPaidLeaves + " days",
+                    total_paid_leaves: user.paid_leaves + " days",
+                    total_casual_leaves: totalCasualLeaves + " days",
+                    total_medical_leaves: totalMedicalLeaves + " days",
                 };
             })
         );
@@ -564,6 +586,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 
 
