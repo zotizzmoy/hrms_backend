@@ -1,6 +1,7 @@
 const multer = require('multer');
 const fs = require('fs');
 const sharp = require('sharp');
+const async = require('async');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -29,35 +30,47 @@ const upload = multer({
     }
 });
 
-const compressImage = async (file) => {
+const compressAndMoveImage = async (file, callback) => {
     const outputFilename = 'compressed-' + file.filename;
-    const destinationPath = 'public/uploads/compressed/' + outputFilename;
+    const destinationPath = 'public/uploads/' + outputFilename;
 
     await sharp(file.path)
         .resize(800) // Resize the image to a maximum width of 800 pixels (you can adjust this value)
         .toFile(destinationPath);
 
-    return outputFilename;
+    callback(null, outputFilename);
 };
 
-const moveAndCompressImages = async (files) => {
+const moveAndCompressImages = async (files, callback) => {
     const compressedFiles = [];
 
-    for (const file of files) {
-        const outputFilename = await compressImage(file);
+    const queue = async.queue(async (file, queueCallback) => {
+        const outputFilename = await compressAndMoveImage(file);
         compressedFiles.push(outputFilename);
-    }
+        queueCallback();
+    });
 
-    return compressedFiles;
+    queue.drain(() => {
+        callback(null, compressedFiles);
+    });
+
+    queue.push(files);
 };
 
 const moveImage = async (req, res, next) => {
     if (req.file) {
-        req.compressedFiles = [await compressImage(req.file)];
+        req.compressedFiles = [await compressAndMoveImage(req.file)];
         next();
     } else if (req.files && req.files.length > 0) {
-        req.compressedFiles = await moveAndCompressImages(req.files);
-        next();
+        moveAndCompressImages(req.files, (err, compressedFiles) => {
+            if (err) {
+                console.error(err);
+                req.compressedFiles = [];
+            } else {
+                req.compressedFiles = compressedFiles;
+            }
+            next();
+        });
     } else {
         next();
     }
