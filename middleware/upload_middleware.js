@@ -1,6 +1,6 @@
 const multer = require('multer');
 const fs = require('fs');
-const sharp = require('sharp'); // Import the sharp library for image compression
+const sharp = require('sharp');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -29,14 +29,13 @@ const upload = multer({
     }
 });
 
-const moveAndCompressImage = async (file, outputFilename) => {
-    const destinationPath = 'public/uploads/' + outputFilename;
+const compressImage = async (file) => {
+    const outputFilename = 'compressed-' + file.filename;
+    const destinationPath = 'public/uploads/compressed/' + outputFilename;
 
     await sharp(file.path)
         .resize(800) // Resize the image to a maximum width of 800 pixels (you can adjust this value)
         .toFile(destinationPath);
-
-    fs.unlinkSync(file.path); // Remove the original uncompressed image
 
     return outputFilename;
 };
@@ -45,7 +44,7 @@ const moveAndCompressImages = async (files) => {
     const compressedFiles = [];
 
     for (const file of files) {
-        const outputFilename = await moveAndCompressImage(file, file.filename);
+        const outputFilename = await compressImage(file);
         compressedFiles.push(outputFilename);
     }
 
@@ -54,7 +53,7 @@ const moveAndCompressImages = async (files) => {
 
 const moveImage = async (req, res, next) => {
     if (req.file) {
-        req.compressedFiles = [await moveAndCompressImage(req.file, req.file.filename)];
+        req.compressedFiles = [await compressImage(req.file)];
         next();
     } else if (req.files && req.files.length > 0) {
         req.compressedFiles = await moveAndCompressImages(req.files);
