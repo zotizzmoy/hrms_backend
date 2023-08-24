@@ -1,26 +1,35 @@
 const multer = require('multer');
-const path = require('path');
+const sharp = require('sharp');
+const fs = require('fs/promises'); // Import the promises version of fs
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './public/uploads');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
+const storage = multer.memoryStorage(); // Use memory storage for processing
+const upload = multer({ storage: storage });
 
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
-        cb(null, true);
-    } else {
-        cb(new Error('Only images are allowed!'));
-    }
+const processAndCompressImage = async (file) => {
+    const compressedBuffer = await sharp(file.buffer)
+        .resize(600) // Resize the image to a desired width (adjust as needed)
+        .toBuffer();
+
+    return compressedBuffer;
 };
 
-const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter,
-});
+module.exports = upload.single('image'), async (req, res, next) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded.' });
+    }
 
-module.exports = { upload };
+    try {
+        const compressedBuffer = await processAndCompressImage(req.file);
+
+        const compressedFileName = `compressed-${Date.now()}-${req.file.originalname}`;
+        const compressedFilePath = `./public/uploads/${compressedFileName}`;
+
+        await fs.writeFile(compressedFilePath, compressedBuffer);
+
+        req.body.compressedFileName = compressedFileName;
+
+        next();
+    } catch (error) {
+        return res.status(500).json({ error: 'Image processing error.' });
+    }
+};
