@@ -2,6 +2,7 @@ const multer = require('multer');
 const fs = require('fs');
 const sharp = require('sharp');
 const async = require('async');
+const path = require('path');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -24,20 +25,23 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-   
+
 });
 
 const compressAndReplaceImage = async (file, callback) => {
     const outputFilename = file.filename;
+    const outputPath = path.join(__dirname, 'public/uploads', outputFilename); // Use path.join to get an absolute path
 
     await sharp(file.path)
-        .resize(800) // Resize the image to a maximum width of 800 pixels (you can adjust this value)
-        .toFile('public/uploads/' + outputFilename);
+        .resize(800)
+        .toFile(outputPath); // Provide the absolute path
 
-    fs.unlinkSync(file.path); // Remove the original file
+    fs.unlinkSync(file.path);
 
     callback(null, outputFilename);
 };
+
+
 
 const compressAndReplaceImages = async (files, callback) => {
     const compressedFiles = [];
