@@ -20,7 +20,7 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-const fileSizeLimit = 1 * 1024 * 1024; // 1MB in bytes
+const fileSizeLimit = 5 * 1024 * 1024; // 5MB in bytes
 
 const upload = multer({
     storage: storage,
@@ -30,22 +30,23 @@ const upload = multer({
     }
 });
 
-const compressAndMoveImage = async (file, callback) => {
-    const outputFilename = 'compressed-' + file.filename;
-    const destinationPath = 'public/uploads/' + outputFilename;
+const compressAndReplaceImage = async (file, callback) => {
+    const outputFilename = file.filename;
 
     await sharp(file.path)
         .resize(800) // Resize the image to a maximum width of 800 pixels (you can adjust this value)
-        .toFile(destinationPath);
+        .toFile('public/uploads/' + outputFilename);
+
+    fs.unlinkSync(file.path); // Remove the original file
 
     callback(null, outputFilename);
 };
 
-const moveAndCompressImages = async (files, callback) => {
+const compressAndReplaceImages = async (files, callback) => {
     const compressedFiles = [];
 
     const queue = async.queue(async (file, queueCallback) => {
-        const outputFilename = await compressAndMoveImage(file);
+        const outputFilename = await compressAndReplaceImage(file);
         compressedFiles.push(outputFilename);
         queueCallback();
     });
@@ -59,15 +60,17 @@ const moveAndCompressImages = async (files, callback) => {
 
 const moveImage = async (req, res, next) => {
     if (req.file) {
-        req.compressedFiles = [await compressAndMoveImage(req.file)];
+        req.compressedFiles = [await compressAndReplaceImage(req.file)];
+        req.body.compressedFiles = req.compressedFiles; // Update req.body with compressed file names
         next();
     } else if (req.files && req.files.length > 0) {
-        moveAndCompressImages(req.files, (err, compressedFiles) => {
+        compressAndReplaceImages(req.files, (err, compressedFiles) => {
             if (err) {
                 console.error(err);
                 req.compressedFiles = [];
             } else {
                 req.compressedFiles = compressedFiles;
+                req.body.compressedFiles = compressedFiles; // Update req.body with compressed file names
             }
             next();
         });

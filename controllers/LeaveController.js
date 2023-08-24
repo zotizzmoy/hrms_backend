@@ -121,7 +121,7 @@ module.exports.applyForLeave = async (req, res) => {
             document: "N/A",
         });
 
-        eventEmitter.emit('leaveCreated', leaveEntry.id);   // Emit the event with leaveEntry.id
+        
 
 
         const user = await UserModel.findOne({
