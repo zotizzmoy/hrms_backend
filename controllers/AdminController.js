@@ -573,8 +573,8 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     first_name: user.first_name,
                     last_name: user.last_name,
                     remaining_paid_leaves: remainingPaidLeaves,
-                    total_casual_leaves: totalCasualLeaves ,
-                    total_medical_leaves: totalMedicalLeaves ,
+                    total_casual_leaves: totalCasualLeaves,
+                    total_medical_leaves: totalMedicalLeaves,
                 };
             })
         );
@@ -646,7 +646,7 @@ module.exports.getAlluserDetails = async (req, res) => {
 
 
 module.exports.updateAllUserDetails = async (req, res) => {
-    const { user_id } = req.params;
+    const { user_id } = req.body;
     try {
         const user = await UserModel.findByPk(user_id);
 

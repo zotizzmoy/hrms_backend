@@ -71,7 +71,7 @@ router.route("/count-leave-applied").post(AdminController.leaveCountForSevenDays
 router.route("/on-leave-today").post(AdminController.onleaveCount);
 router.route("/all-leave-balance").post(AdminController.calculateAllUsersleaveBalance);
 router.route("/user-details").post(AdminController.getAlluserDetails);
-router.route("/update-user-details/:user_id").post(AdminController.updateAllUserDetails);
+router.route("/update-user-details").post(AdminController.updateAllUserDetails);
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
