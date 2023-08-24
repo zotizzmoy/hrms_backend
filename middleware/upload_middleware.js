@@ -20,14 +20,11 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-const fileSizeLimit = 5 * 1024 * 1024; // 5MB in bytes
 
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: {
-        fileSize: fileSizeLimit
-    }
+   
 });
 
 const compressAndReplaceImage = async (file, callback) => {
