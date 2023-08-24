@@ -542,28 +542,32 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     const startDate = new Date(leave.start_date);
                     const endDate = new Date(leave.end_date);
                     const duration = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Difference in days
+
+                    // Adjust for half-day leaves
+                    if (leave.is_half_day) {
+                        return {
+                            duration: duration / 2, // Half-day duration
+                            leaveType: leave.leave_type,
+                        };
+                    }
+
                     return {
                         duration: duration,
                         leaveType: leave.leave_type,
                     };
                 });
 
-                // Calculate remaining paid leaves and total paid leaves taken for the user
+                // Calculate remaining paid leaves, total paid leaves taken, and other types of leaves
                 let remainingPaidLeaves = user.paid_leaves;
-                let totalPaidLeavesTaken = 0; // Initialize the total
+                let totalPaidLeavesTaken = 0;
+                let totalCasualLeaves = 0;
+                let totalMedicalLeaves = 0;
 
                 leaveDurations.forEach(leaveDuration => {
                     if (leaveDuration.leaveType === 'Paid') {
                         remainingPaidLeaves -= leaveDuration.duration;
-                        totalPaidLeavesTaken += leaveDuration.duration; // Increment total
-                    }
-                });
-
-                // Calculate total leaves for other types
-                let totalCasualLeaves = 0;
-                let totalMedicalLeaves = 0;
-                leaveDurations.forEach(leaveDuration => {
-                    if (leaveDuration.leaveType === 'Casual') {
+                        totalPaidLeavesTaken += leaveDuration.duration;
+                    } else if (leaveDuration.leaveType === 'Casual') {
                         totalCasualLeaves += leaveDuration.duration;
                     } else if (leaveDuration.leaveType === 'Medical') {
                         totalMedicalLeaves += leaveDuration.duration;
@@ -576,7 +580,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     first_name: user.first_name,
                     last_name: user.last_name,
                     remaining_paid_leaves: remainingPaidLeaves,
-                    total_paid_leaves_taken: totalPaidLeavesTaken, // Include the new field
+                    total_paid_leaves_taken: totalPaidLeavesTaken,
                     total_casual_leaves: totalCasualLeaves,
                     total_medical_leaves: totalMedicalLeaves,
                 };
@@ -588,6 +592,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         console.error('Error calculating leaves:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+
 
 };
 
@@ -651,9 +656,9 @@ module.exports.getAlluserDetails = async (req, res) => {
 
 
 module.exports.updateAllUserDetails = async (req, res) => {
-    const { user_id } = req.body;
+    const { id } = req.body;
     try {
-        const user = await UserModel.findByPk(user_id);
+        const user = await UserModel.findByPk(id);
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
