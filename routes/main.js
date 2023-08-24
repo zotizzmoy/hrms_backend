@@ -28,7 +28,7 @@ router.route('/otp').post(AuthController.otp);
 router.route('/login').post(AuthController.login);
 router.route("/register").post(AuthController.register);
 router.route("/update").post(AuthController.update)
-router.post("/profile-img", upload.single('user_image'), moveImage, AuthController.profileImage); // Different route method is used for image upload
+router.post("/profile-img", upload.single('user_image'),  AuthController.profileImage); // Different route method is used for image upload
 router.route("/get-profile-url").post(AuthController.user_image);
 router.route('/resend-otp').post(AuthController.resend_opt);
 router.route('/change-password').post(AuthController.change_password);
@@ -79,7 +79,7 @@ router.route("/update-user-details").post(AdminController.updateAllUserDetails);
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 router.route('/apply-leave').post(LeaveController.applyForLeave);
 router.route('/calculate-leave').post(LeaveController.calculateLeaves);
-router.post("/upload-document", upload.single('document'), moveImage, LeaveController.uploadDocument); // Different route method is used for image upload
+router.post("/upload-document", upload.single('document'),  LeaveController.uploadDocument); // Different route method is used for image upload
 router.post("/approved-leave", LeaveController.changeStatus);
 router.post("/cancel-leave", LeaveController.cancelledStatus);
 router.post("/get-all-leaves", LeaveController.getAllleaves);
@@ -109,7 +109,7 @@ router.route("/export-salaries").post(SalaryController.salariesByMonthAndYear);
 router.route('/personal-details').post(UserController.addPersonalDetails);
 router.route('/bank-details').post(UserController.addBankDetails);
 router.route('/add-education').post(UserController.addUserEducation);
-router.post("/upload-documents", upload.array('documents', 10), moveImage, UserController.documentsUpload);
+router.post("/upload-documents", upload.array('documents', 10),  UserController.documentsUpload);
 
 
 
