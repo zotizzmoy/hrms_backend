@@ -548,11 +548,14 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     };
                 });
 
-                // Calculate remaining paid leaves for the user
+                // Calculate remaining paid leaves and total paid leaves taken for the user
                 let remainingPaidLeaves = user.paid_leaves;
+                let totalPaidLeavesTaken = 0; // Initialize the total
+
                 leaveDurations.forEach(leaveDuration => {
                     if (leaveDuration.leaveType === 'Paid') {
                         remainingPaidLeaves -= leaveDuration.duration;
+                        totalPaidLeavesTaken += leaveDuration.duration; // Increment total
                     }
                 });
 
@@ -573,6 +576,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     first_name: user.first_name,
                     last_name: user.last_name,
                     remaining_paid_leaves: remainingPaidLeaves,
+                    total_paid_leaves_taken: totalPaidLeavesTaken, // Include the new field
                     total_casual_leaves: totalCasualLeaves,
                     total_medical_leaves: totalMedicalLeaves,
                 };
@@ -584,6 +588,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         console.error('Error calculating leaves:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+
 };
 
 
