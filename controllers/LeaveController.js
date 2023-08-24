@@ -141,10 +141,8 @@ module.exports.applyForLeave = async (req, res) => {
             leaveType,
             reason
         );
-
-        const updatedLeaveEntry = await uploadDocument(leaveEntry.id);
-
-        res.status(201).json({ data: updatedLeaveEntry });
+            
+        res.status(201).json({ data: leaveEntry });
     }
 };
 
@@ -227,22 +225,26 @@ module.exports.calculateLeaves = async (req, res) => {
 
 
 
-module.exports.uploadDocument = async (leaveId) => {
+
+
+
+module.exports.uploadDocument = async (req, res) => {
     try {
         const update = {
             document: req.file.filename
         };
 
         await UserLeave.update(update, {
-            where: { id: leaveId, leave_type: "Medical" },
+            where: { user_id: req.body.user_id, leave_type: "Medical" },
         });
 
-        const updatedLeaveEntry = await UserLeave.findOne({ where: { id: leaveId, leave_type: "Medical" } });
-
-        return updatedLeaveEntry;
+        res.status(200).json({
+            data: await UserLeave.findOne({ where: { id: req.body.user_id, leave_type: "Medical" } })
+        });
     } catch (error) {
-
-        throw new Error(error.message);
+        res.status(422).json({
+            error: error.message
+        });
     }
 };
 
