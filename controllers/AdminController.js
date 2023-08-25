@@ -515,6 +515,10 @@ module.exports.onleaveCount = async function (req, res) {
 
 };
 
+const { Op } = require('sequelize');
+const UserModel = require('../models/UserModel'); // Replace with actual path to UserModel
+const UserLeave = require('../models/UserLeave'); // Replace with actual path to UserLeave model
+
 module.exports.calculateAllUsersleaveBalance = async function (req, res) {
     try {
         // Retrieve all users
@@ -526,9 +530,6 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         // Calculate leaves for each user
         const leaveCalculations = await Promise.all(
             users.map(async (user) => {
-                // Retrieve remaining paid leaves directly from the database
-                const remainingPaidLeaves = user.paid_leaves;
-
                 // Retrieve approved applied leaves for the user
                 const approvedLeaves = await UserLeave.findAll({
                     where: {
@@ -539,39 +540,37 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     },
                 });
 
-                // Calculate leave durations for different types of leaves
-                const leaveDurations = approvedLeaves.map(leave => {
-                    const startDate = new Date(leave.start_date);
-                    const endDate = new Date(leave.end_date);
-
-                    // Calculate the difference in days (including start and end dates)
-                    const durationInDays = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1;
-
-                    if (leave.is_half_day) {
-                        // For half-day leaves, subtract 0.5 days from the duration
-                        durationInDays -= 0.5;
-                    }
-
-                    return {
-                        duration: durationInDays,
-                        leaveType: leave.leave_type,
-                    };
-                });
-
-                // Calculate total paid leaves taken, and other types of leaves
                 let totalPaidLeavesTaken = 0;
                 let totalCasualLeaves = 0;
                 let totalMedicalLeaves = 0;
 
-                leaveDurations.forEach(leaveDuration => {
-                    if (leaveDuration.leaveType === 'Paid') {
-                        totalPaidLeavesTaken += leaveDuration.duration;
-                    } else if (leaveDuration.leaveType === 'Casual') {
-                        totalCasualLeaves += leaveDuration.duration;
-                    } else if (leaveDuration.leaveType === 'Medical') {
-                        totalMedicalLeaves += leaveDuration.duration;
+                approvedLeaves.forEach(leave => {
+                    const startDate = new Date(leave.start_date);
+                    const endDate = new Date(leave.end_date);
+
+                    // Calculate the difference in days (including start and end dates)
+                    const durationInDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+                    if (leave.is_half_day) {
+                        // For half-day leaves, add 0.5 to the appropriate leave type
+                        if (leave.leave_type === 'Paid') {
+                            totalPaidLeavesTaken += 0.5;
+                        } else if (leave.leave_type === 'Casual') {
+                            totalCasualLeaves += 0.5;
+                        } else if (leave.leave_type === 'Medical') {
+                            totalMedicalLeaves += 0.5;
+                        }
+                    } else if (leave.leave_type === 'Paid') {
+                        totalPaidLeavesTaken += durationInDays;
+                    } else if (leave.leave_type === 'Casual') {
+                        totalCasualLeaves += durationInDays;
+                    } else if (leave.leave_type === 'Medical') {
+                        totalMedicalLeaves += durationInDays;
                     }
                 });
+
+                // Calculate remaining paid leaves
+                const remainingPaidLeaves = user.paid_leaves;
 
                 return {
                     user_id: user.id,
@@ -592,6 +591,7 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 
 
