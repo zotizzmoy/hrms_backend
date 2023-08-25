@@ -220,6 +220,7 @@ module.exports.generateSalarySlips = async (req, res) => {
       };
 
       salarySlips.push(salarySlip);
+      console.log(salarySlip)
     }
 
     // Check if any salary slip data exists for any user with the given month and year
