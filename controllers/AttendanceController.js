@@ -288,6 +288,8 @@ module.exports.addActivities = async function (req, res) {
   try {
     const { user_id, activity } = req.body;
 
+    let activitiesToCreate = [];
+
     for (let i = 0; i < activity.length; i++) {
       if (activity[i]) {
         const object = {
