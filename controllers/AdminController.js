@@ -545,13 +545,15 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     const endDate = new Date(leave.end_date);
 
                     // Calculate the difference in days (including start and end dates)
-                    const durationInDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                    const durationInDays = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1;
 
-                    // Adjust for half-day leaves
-                    const duration = leave.is_half_day ? durationInDays / 2 : durationInDays;
+                    if (leave.is_half_day) {
+                        // For half-day leaves, subtract 0.5 days from the duration
+                        durationInDays -= 0.5;
+                    }
 
                     return {
-                        duration: duration,
+                        duration: durationInDays,
                         leaveType: leave.leave_type,
                     };
                 });
