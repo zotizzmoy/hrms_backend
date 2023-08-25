@@ -47,11 +47,11 @@ const UserModel = sequelize_db.define(
     user_image: {
       type: DataTypes.TEXT,
     },
-  
+
     dob: {
       type: DataTypes.STRING
     },
-    date_of_joining:{
+    date_of_joining: {
       type: DataTypes.STRING
     },
     gender: {
@@ -129,6 +129,14 @@ UserModel.hasMany(UserSalary, {
   as: "salary"
 })
 UserSalary.belongsTo(UserModel, {
+  foreignKey: "user_id",
+
+});
+UsersBankDetail.hasMany(UserSalary, {
+  foreignKey: "user_id",
+  as: "bank_details"
+})
+UserSalary.belongsTo(UsersBankDetail, {
   foreignKey: "user_id",
 
 });
