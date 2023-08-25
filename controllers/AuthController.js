@@ -231,6 +231,8 @@ module.exports.login = async function (req, res) {
       user_image: user.user_image,
       designation: user.designation,
       role: user.role,
+      date_of_joining: user.date_of_joining,
+      office:user.label,
       status: user.status,
       phone_no: personalDetails.phone_no,
     };
