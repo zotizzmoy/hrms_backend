@@ -352,7 +352,7 @@ module.exports.salariesByMonthAndYear = async (req, res) => {
         {
           model: UserBankDetail, 
           attributes: ['account_number', 'ifsc'], 
-          as: 'bank_details',
+          as: 'user_bank_detail',
         },
       ],
       raw: true,
