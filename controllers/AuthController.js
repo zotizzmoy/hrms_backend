@@ -232,7 +232,7 @@ module.exports.login = async function (req, res) {
       designation: user.designation,
       role: user.role,
       date_of_joining: user.date_of_joining,
-      office:user.label,
+      office: user.label,
       status: user.status,
       phone_no: personalDetails.phone_no,
     };
@@ -296,7 +296,6 @@ module.exports.register = async function (req, res) {
     res.status(400).json({ error: "User already exists" });
   }
 };
-
 module.exports.update = async function (req, res) {
   try {
     const userObject = {
@@ -310,11 +309,26 @@ module.exports.update = async function (req, res) {
       contact_no: req.body.contact_no,
       designation: req.body.designation,
     };
-    created_user = await UserModel.update(userObject, {
+
+    // Update user information in UserModel
+    await UserModel.update(userObject, {
       where: { id: req.body.id },
     });
+
+    // Update phone number in PersonalDetailsModel
+    await UsersPersonalDetail.update(
+      { contact_no: req.body.contact_no },
+      { where: { user_id: req.body.id } }
+    );
+
+    const updatedUser = await UserModel.findOne({ where: { id: req.body.id } });
+    const personalDetails = await UsersPersonalDetail.findOne({ where: { user_id: req.body.id } });
+
     res.status(200).json({
-      user: await UserModel.findOne({ where: { id: req.body.id } }),
+      user: {
+        ...updatedUser.toJSON(),
+        phone_no: personalDetails.phone_no,
+      },
     });
   } catch (error) {
     res.status(400).json({
@@ -322,6 +336,8 @@ module.exports.update = async function (req, res) {
     });
   }
 };
+
+
 
 module.exports.profileImage = async function (req, res, err) {
   try {
