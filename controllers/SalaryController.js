@@ -4,6 +4,7 @@ const UserAttendance = require("../models/UsersAttendence");
 const UserLeave = require("../models/UsersLeave");
 const UserSalaryStructure = require("../models/UsersSalaryStructure");
 const UserSalary = require("../models/UsersSalary");
+const UserBankDetail = require("../models/UsersBankDetail");
 const dayjs = require("dayjs");
 const { Sequelize } = require("sequelize");
 
@@ -347,6 +348,11 @@ module.exports.salariesByMonthAndYear = async (req, res) => {
           model: UserModel,
           attributes: ['first_name', 'last_name', 'email', 'emp_id', 'designation'],
           as: 'user',
+        },
+        {
+          model: UserBankDetail, 
+          attributes: ['account_number', 'ifsc'], 
+          as: 'bank_details',
         },
       ],
       raw: true,
