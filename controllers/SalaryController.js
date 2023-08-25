@@ -138,6 +138,7 @@ module.exports.generateSalarySlips = async (req, res) => {
 
       // Calculate the total leaves taken by the user in the specified month
       let leavesTaken = 0;
+      let halfDayLeavesTaken = 0; // Keep track of half-day leaves separately
 
       if (leaves && leaves.length > 0) {
         for (const leave of leaves) {
