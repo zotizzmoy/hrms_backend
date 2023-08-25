@@ -20,6 +20,7 @@ const { generateJwt } = require("../helper/helper.js");
 const sendMail = require("../middleware/sendMail.js");
 const sendResetMail = require("../middleware/sendResetMail.js");
 const ResetToken = require("../models/ResetToken.js");
+const UsersPersonalDetail = require("./UsersPersonalDetail");
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -210,6 +211,13 @@ module.exports.login = async function (req, res) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    // Find the associated personal details
+    const personalDetails = await UsersPersonalDetail.findOne({ where: { user_id: user.id } });
+
+    if (!personalDetails) {
+      return res.status(404).json({ message: "Server error" });
+    }
+
 
     // Create and send JWT token
     const payload = {
@@ -224,13 +232,14 @@ module.exports.login = async function (req, res) {
       designation: user.designation,
       role: user.role,
       status: user.status,
+      phone_no: personalDetails.phone_no,
     };
 
     helper.generateJwt(payload);
 
-    const data = await UserModel.findOne({ where: { emp_id } });
 
-    res.status(200).json({ token: helper.generateJwt(payload), user: data });
+
+    res.status(200).json({ token: helper.generateJwt(payload), user: payload });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
