@@ -526,6 +526,9 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         // Calculate leaves for each user
         const leaveCalculations = await Promise.all(
             users.map(async (user) => {
+                // Retrieve remaining paid leaves directly from the database
+                const remainingPaidLeaves = user.paid_leaves;
+
                 // Retrieve approved applied leaves for the user
                 const approvedLeaves = await UserLeave.findAll({
                     where: {
@@ -553,15 +556,13 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                     };
                 });
 
-                // Calculate remaining paid leaves, total paid leaves taken, and other types of leaves
-                let remainingPaidLeaves = user.paid_leaves;
+                // Calculate total paid leaves taken, and other types of leaves
                 let totalPaidLeavesTaken = 0;
                 let totalCasualLeaves = 0;
                 let totalMedicalLeaves = 0;
 
                 leaveDurations.forEach(leaveDuration => {
                     if (leaveDuration.leaveType === 'Paid') {
-                        remainingPaidLeaves -= leaveDuration.duration;
                         totalPaidLeavesTaken += leaveDuration.duration;
                     } else if (leaveDuration.leaveType === 'Casual') {
                         totalCasualLeaves += leaveDuration.duration;
@@ -589,7 +590,6 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 
 
 
