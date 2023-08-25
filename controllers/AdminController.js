@@ -515,9 +515,7 @@ module.exports.onleaveCount = async function (req, res) {
 
 };
 
-const { Op } = require('sequelize');
-const UserModel = require('../models/UserModel'); // Replace with actual path to UserModel
-const UserLeave = require('../models/UserLeave'); // Replace with actual path to UserLeave model
+
 
 module.exports.calculateAllUsersleaveBalance = async function (req, res) {
     try {
