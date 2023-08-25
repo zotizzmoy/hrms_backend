@@ -173,7 +173,7 @@ module.exports.generateSalarySlips = async (req, res) => {
 
 
       let leaveDays = (leavesTaken + halfDayLeavesTaken)
-      console.log(leaveDays + "leaveDays")
+
 
       let lateDaysDeduction =
         Math.floor(basic / daysInCurrentMonth) * Math.floor(lateDays / 3);
@@ -220,7 +220,7 @@ module.exports.generateSalarySlips = async (req, res) => {
       };
 
       salarySlips.push(salarySlip);
-      console.log(salarySlip)
+
     }
 
     // Check if any salary slip data exists for any user with the given month and year
