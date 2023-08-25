@@ -653,49 +653,27 @@ module.exports.getAlluserDetails = async (req, res) => {
 
 
 module.exports.updateAllUserDetails = async (req, res) => {
-    const { id, user_id } = req.body;
+    const { id, user, personal_details, bank_details, salary_structure } = req.body;
     try {
-        const user = await UserModel.findByPk(id);
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+        // Validate user input data
+        const existingUser = await UserModel.findByPk(id);
+        if (!existingUser) {
+            return res.status(404).json({ error: 'User not found.' });
         }
 
-        // Update user details
-        await user.update(req.body.user);
+        // Update user data
+        await UserModel.update(user, { where: { id } });
 
-        // Update personal details
-        if (req.body.personal_details) {
-            const personalDetails = await UsersPersonalDetail.findOne({
-                where: { user_id: user_id },
-            });
-            await personalDetails.update(req.body.personal_details);
-        }
+        // Update user personal details
+        await UsersPersonalDetail.update(personal_details, { where: { user_id: id } });
 
-        // Update bank details
-        if (req.body.bank_details) {
-            const bankDetails = await UsersBankDetail.findOne({
-                where: { user_id: user_id },
-            });
-            await bankDetails.update(req.body.bank_details);
-        }
+        // Update user bank details
+        await UsersBankDetail.update(bank_details, { where: { user_id: id } });
 
-        // update education details 
-        if (req.body.education_details) {
-            const education_details = await UsersEducationDetail.findOne({
-                where: { user_id: user_id },
-            });
-            await education_details.update(req.body.bank_details);
-        }
-        //  update salary structure
-        if (req.body.salary_structure) {
-            const salary_structure = await UserSalaryStructure.findOne({
-                where: { user_id: user_id },
-            });
-            await salary_structure.update(req.body.salary_structure);
-        }
+        // Update user salary structure
+        await UserSalaryStructure.update(salary_structure, { where: { user_id: id } });
 
-        return res.status(200).json({ message: 'User details updated successfully' });
+        res.status(200).json({ message: 'User details updated successfully.' });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Server error' });
