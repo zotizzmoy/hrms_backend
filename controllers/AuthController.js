@@ -306,7 +306,7 @@ module.exports.update = async function (req, res) {
       religion: req.body.religion,
       address: req.body.address,
       dob: req.body.dob,
-      contact_no: req.body.contact_no,
+      phone_no: req.body.contact_no,
       designation: req.body.designation,
     };
 
@@ -317,7 +317,7 @@ module.exports.update = async function (req, res) {
 
     // Update phone number in PersonalDetailsModel
     await UsersPersonalDetail.update(
-      { contact_no: req.body.contact_no },
+      { phone_no: req.body.phone_no },
       { where: { user_id: req.body.id } }
     );
 
