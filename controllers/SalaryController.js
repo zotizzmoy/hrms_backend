@@ -154,7 +154,7 @@ module.exports.generateSalarySlips = async (req, res) => {
 
             if (leave.is_half_day) {
               halfDayLeavesTaken += 0.5;// Increment by 0.5 for each half-day leave
-              console.log(halfDayLeavesTaken + "hd")
+             
             } else {
               leavesTaken += leaveDuration; // Increment by the total duration for full-day leaves
             }
@@ -170,6 +170,7 @@ module.exports.generateSalarySlips = async (req, res) => {
 
       let leaveDaysDeduction = (leavesTaken + halfDayLeavesTaken) * (basic / daysInCurrentMonth);
       console.log(leavesTaken)
+      console.log(halfDayLeavesTaken + "hd")
 
 
 
