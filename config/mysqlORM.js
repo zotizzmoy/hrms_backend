@@ -23,7 +23,7 @@ try {
 
 
 // Use this to  print the sql query on the terminal
-// sequelize_db.options.logging = console.log;
+sequelize_db.options.logging = console.log;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 module.exports = sequelize_db;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
