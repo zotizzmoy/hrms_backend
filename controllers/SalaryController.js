@@ -168,7 +168,7 @@ module.exports.generateSalarySlips = async (req, res) => {
 
       let daysInCurrentMonth = dayjs(month, "MM").daysInMonth();
 
-      let leaveDaysDeduction = (leavesTaken + halfDayLeavesTaken) * Math.floor(basic / daysInCurrentMonth)
+      let leaveDaysDeduction = (leavesTaken + halfDayLeavesTaken) * (basic / daysInCurrentMonth);
 
 
 
