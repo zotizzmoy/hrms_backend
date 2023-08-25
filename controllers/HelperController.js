@@ -6,7 +6,7 @@ module.exports.getLeaveDeductions = async (req, res) => {
     const { userId, startDate, endDate, usePaidLeave, isHalfDay } = req.body;
 
     try {
-        // Assuming you have the 'basic' salary and 'numberofdaysinmonth' available
+
         const Salary = await userSalaryStructure.findOne({
             where: {
                 user_id: userId
@@ -24,7 +24,7 @@ module.exports.getLeaveDeductions = async (req, res) => {
         // Calculate leave deduction based on usePaidLeave flag and isHalfDay
         let leaveDeduction;
         if (isHalfDay) {
-            leaveDeduction = 0.5 * (basicSalary / daysInStartMonth);
+            Math.round(leaveDeduction = 0.5 * (basicSalary / daysInStartMonth));
         } else if (usePaidLeave) {
             leaveDeduction = 0; // No deductions if leave is paid
         } else {
@@ -32,7 +32,7 @@ module.exports.getLeaveDeductions = async (req, res) => {
             leaveDeduction = Math.round((basicSalary / daysInStartMonth)) * durationInDays;
         }
 
-        
+
         res.status(200).json({ leaveDeduction });
     } catch (error) {
         console.error('An error occurred:', error);
