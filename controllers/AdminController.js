@@ -515,8 +515,6 @@ module.exports.onleaveCount = async function (req, res) {
 
 };
 
-
-
 module.exports.calculateAllUsersleaveBalance = async function (req, res) {
     try {
         // Retrieve all users
@@ -542,7 +540,9 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
                 const leaveDurations = approvedLeaves.map(leave => {
                     const startDate = new Date(leave.start_date);
                     const endDate = new Date(leave.end_date);
-                    const durationInDays = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Difference in days
+
+                    // Calculate the difference in days (including start and end dates)
+                    const durationInDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
                     // Adjust for half-day leaves
                     const duration = leave.is_half_day ? durationInDays / 2 : durationInDays;
@@ -589,6 +589,8 @@ module.exports.calculateAllUsersleaveBalance = async function (req, res) {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+
 
 
 
