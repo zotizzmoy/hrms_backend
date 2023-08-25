@@ -25,11 +25,12 @@ module.exports.getLeaveDeductions = async (req, res) => {
         let leaveDeduction;
         if (isHalfDay) {
             leaveDeduction = Math.round(0.5 * (basicSalary / daysInStartMonth));
-        } else if (usePaidLeave) {
-            leaveDeduction = 0; // No deductions if leave is paid
         } else {
             const startMonth = dayjs(startDate).format('MM');
             leaveDeduction = Math.round((basicSalary / daysInStartMonth)) * durationInDays;
+        }
+        if (usePaidLeave) {
+            leaveDeduction = 0; // No deductions if leave is paid
         }
 
 
