@@ -20,7 +20,7 @@ const { generateJwt } = require("../helper/helper.js");
 const sendMail = require("../middleware/sendMail.js");
 const sendResetMail = require("../middleware/sendResetMail.js");
 const ResetToken = require("../models/ResetToken.js");
-const UsersPersonalDetail = require("./UsersPersonalDetail");
+const UsersPersonalDetail = require("../models/UsersPersonalDetail.js");
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
