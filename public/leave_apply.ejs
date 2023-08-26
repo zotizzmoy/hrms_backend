@@ -116,7 +116,8 @@
                 <table width="100%">
                     <tr>
                         <td>
-                            <img src="https://aws-codestar-ap-northeast-1-797544575430.s3.ap-northeast-1.amazonaws.com/gratia_banner.webp" alt="banner" width="100%" />
+                            <img src="https://aws-codestar-ap-northeast-1-797544575430.s3.ap-northeast-1.amazonaws.com/gratia_banner.webp"
+                                alt="banner" width="100%" />
                         </td>
                     </tr>
                 </table>
@@ -130,16 +131,25 @@
                         <td>
                             <p class="email_heading">Leave Request - Admin</p>
                             <p class="leave_details">
-                                <strong>Name:</strong> <%=first_name%> <%=last_name%><br>
-                                <strong>Employee ID:</strong> <%=emp_id%><br>
-                                <strong>From:</strong> <%=start_date%><br>
-                                <strong>To:</strong> <%=end_date%><br>
-                                <strong>Half Day:</strong> <%=is_half_day%><br>
-                                <strong>Leave Type:</strong> <%=leave_type%><br>
-                                <strong>Reason:</strong> <%=reason%><br>
-                                
+                                <strong>Name:</strong>
+                                <%=first_name%>
+                                    <%=last_name%><br>
+                                        <strong>Employee ID:</strong>
+                                        <%=emp_id%><br>
+                                            <strong>From:</strong>
+                                            <%=start_date%><br>
+                                                <strong>To:</strong>
+                                                <%=end_date%><br>
+                                                    <strong>Half Day:</strong>
+                                                    <%= is_half_day===1 ? true : false %><br>
+                                                        <strong>Leave Type:</strong>
+                                                        <%=leave_type%><br>
+                                                            <strong>Reason:</strong>
+                                                            <%=reason%><br>
+
                             </p>
-                            <p class="para_1">The above employee has requested leave. Please review the details below:</p>
+                            <p class="para_1">The above employee has requested leave. Please review the details below:
+                            </p>
                         </td>
                     </tr>
                 </table>

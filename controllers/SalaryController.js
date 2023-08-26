@@ -109,7 +109,13 @@ module.exports.generateSalarySlips = async (req, res) => {
     };
 
     if (label) {
-      usersQuery.where = { label };
+      if (!usersQuery.where) {
+        usersQuery.where = {};
+      }
+      usersQuery.where[Sequelize.Op.and] = [
+        usersQuery.where,
+        { label: label }
+      ];
     }
 
     const users = await UserModel.findAll(usersQuery);
@@ -350,8 +356,8 @@ module.exports.salariesByMonthAndYear = async (req, res) => {
           as: 'user',
         },
         {
-          model: UserBankDetail, 
-          attributes: ['account_number', 'ifsc'], 
+          model: UserBankDetail,
+          attributes: ['account_number', 'ifsc'],
           as: 'user_bank_detail',
         },
       ],
