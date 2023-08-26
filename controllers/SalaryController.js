@@ -112,11 +112,9 @@ module.exports.generateSalarySlips = async (req, res) => {
       if (!usersQuery.where) {
         usersQuery.where = {};
       }
-      usersQuery.where[Sequelize.Op.and] = [
-        usersQuery.where,
-        { label: label }
-      ];
+      usersQuery.where.label = label;
     }
+
 
     const users = await UserModel.findAll(usersQuery);
 
