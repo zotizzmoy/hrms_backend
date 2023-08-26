@@ -109,10 +109,9 @@ module.exports.generateSalarySlips = async (req, res) => {
     };
 
     if (label) {
-      if (!usersQuery.where) {
-        usersQuery.where = {};
-      }
-      usersQuery.where.label = label;
+      usersQuery.where = {
+        label: label,
+      };
     }
 
 
