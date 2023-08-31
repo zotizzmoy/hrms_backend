@@ -22,7 +22,6 @@ const sendResetMail = require("../middleware/sendResetMail.js");
 const ResetToken = require("../models/ResetToken.js");
 const UsersPersonalDetail = require("../models/UsersPersonalDetail.js");
 
-
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Route OTP
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -212,12 +211,13 @@ module.exports.login = async function (req, res) {
     }
 
     // Find the associated personal details
-    const personalDetails = await UsersPersonalDetail.findOne({ where: { user_id: user.id } });
+    const personalDetails = await UsersPersonalDetail.findOne({
+      where: { user_id: user.id },
+    });
 
     if (!personalDetails) {
       return res.status(404).json({ message: "Server error" });
     }
-
 
     // Create and send JWT token
     const payload = {
@@ -238,8 +238,6 @@ module.exports.login = async function (req, res) {
     };
 
     helper.generateJwt(payload);
-
-
 
     res.status(200).json({ token: helper.generateJwt(payload), user: payload });
   } catch (error) {
@@ -262,6 +260,13 @@ module.exports.register = async function (req, res) {
     numbers: true,
   });
   let now = dayjs();
+  const dateOfJoining = dayjs(req.body.date_of_joining); // Convert the date of joining to a dayjs object
+  const currentDate = dayjs();
+
+  const daysInYear = 365; // Considering a non-leap year for simplicity
+  const proRataLeaveEntitlement = Math.round(
+    ((daysInYear - dateOfJoining.dayOfYear()) / daysInYear) * 12 // Assuming 12 days of casual leave per year
+  );
 
   if (!user) {
     const userObject = {
@@ -276,19 +281,19 @@ module.exports.register = async function (req, res) {
       status: "Active",
       role: 0,
       dob: req.body.dob,
-      date_of_joining: req.body.date_of_joining,
+      date_of_joining: dateOfJoining.format("YYYY-MM-DD"),
       label: req.body.label,
       gender: req.body.gender,
-      paid_leaves: req.body.paid_leaves,
+      paid_leaves: proRataLeaveEntitlement,
       created_at: now.format("YYYY-MM-DD HH:mm:ss"),
-      updated_at: now.format("YYYY-MM-DD HH:mm:ss")
+      updated_at: now.format("YYYY-MM-DD HH:mm:ss"),
     };
 
     const user = await UserModel.create(userObject);
 
     res.status(201).json({
       message: "1st step completed",
-      user_id: user.id
+      user_id: user.id,
     });
 
     await sendMail(user.first_name, user.emp_id, user.email, autoPassword);
@@ -322,7 +327,9 @@ module.exports.update = async function (req, res) {
     );
 
     const updatedUser = await UserModel.findOne({ where: { id: req.body.id } });
-    const personalDetails = await UsersPersonalDetail.findOne({ where: { user_id: req.body.id } });
+    const personalDetails = await UsersPersonalDetail.findOne({
+      where: { user_id: req.body.id },
+    });
 
     res.status(200).json({
       user: {
@@ -336,8 +343,6 @@ module.exports.update = async function (req, res) {
     });
   }
 };
-
-
 
 module.exports.profileImage = async function (req, res, err) {
   try {
@@ -432,7 +437,7 @@ module.exports.resetPassword = async (req, res) => {
       user_id: user.id,
       expires_at: expiresAt,
     });
-    await sendResetMail(email, user.first_name, resetToken)
+    await sendResetMail(email, user.first_name, resetToken);
     // Return success response
     res
       .status(200)
@@ -455,18 +460,20 @@ module.exports.updatePasswordusingToken = async (req, res) => {
     // Find the reset token in the database
     const resetTokenEntry = await ResetToken.findOne({ where: { token } });
     if (!resetTokenEntry) {
-      return res.status(404).json({ error: 'Invalid reset token' });
+      return res.status(404).json({ error: "Invalid reset token" });
     }
 
     // Check if the reset token has expired
     if (resetTokenEntry.expiresAt < new Date()) {
-      return res.status(400).json({ error: 'Reset token has expired' });
+      return res.status(400).json({ error: "Reset token has expired" });
     }
 
     // Find the user based on the user_id associated with the reset token
-    const user = await UserModel.findOne({ where: { id: resetTokenEntry.user_id } });
+    const user = await UserModel.findOne({
+      where: { id: resetTokenEntry.user_id },
+    });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Update the user's password
@@ -478,10 +485,9 @@ module.exports.updatePasswordusingToken = async (req, res) => {
     await resetTokenEntry.destroy();
 
     // Return success response
-    res.status(200).json({ message: 'Password reset successful' });
+    res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
-    console.error('Error updating password:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error updating password:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-}
+};
