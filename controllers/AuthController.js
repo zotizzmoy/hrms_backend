@@ -249,7 +249,6 @@ module.exports.login = async function (req, res) {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Route Register
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 module.exports.register = async function (req, res) {
   const user = await UserModel.findOne({ where: { email: req.body.email } });
   const saltRounds = 10;
@@ -259,13 +258,15 @@ module.exports.register = async function (req, res) {
     length: 6,
     numbers: true,
   });
-  let now = dayjs();
-  const dateOfJoining = dayjs(req.body.date_of_joining); // Convert the date of joining to a dayjs object
-  const currentDate = dayjs();
 
-  const daysInYear = 365; // Considering a non-leap year for simplicity
+  const now = new Date(); // Current date
+  const yearStart = new Date(now.getFullYear(), 0, 1); // Start of the year
+  const millisecondsInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+
+  const daysElapsed = Math.floor((now - yearStart) / millisecondsInDay);
+  const daysInYear = 365; // Number of days in a non-leap year
   const proRataLeaveEntitlement = Math.round(
-    ((daysInYear - dateOfJoining.dayOfYear()) / daysInYear) * 12 // Assuming 12 days of casual leave per year
+    ((daysInYear - daysElapsed) / daysInYear) * 12
   );
 
   if (!user) {
@@ -281,26 +282,32 @@ module.exports.register = async function (req, res) {
       status: "Active",
       role: 0,
       dob: req.body.dob,
-      date_of_joining: dateOfJoining.format("YYYY-MM-DD"),
+      date_of_joining: req.body.date_of_joining,
       label: req.body.label,
       gender: req.body.gender,
-      paid_leaves: proRataLeaveEntitlement,
-      created_at: now.format("YYYY-MM-DD HH:mm:ss"),
-      updated_at: now.format("YYYY-MM-DD HH:mm:ss"),
+      paid_leaves: proRataLeaveEntitlement, // Use the calculated pro rata value
+      created_at: now.toISOString(),
+      updated_at: now.toISOString(),
     };
 
-    const user = await UserModel.create(userObject);
+    const newUser = await UserModel.create(userObject);
 
     res.status(201).json({
       message: "1st step completed",
-      user_id: user.id,
+      user_id: newUser.id,
     });
 
-    await sendMail(user.first_name, user.emp_id, user.email, autoPassword);
+    await sendMail(
+      newUser.first_name,
+      newUser.emp_id,
+      newUser.email,
+      autoPassword
+    );
   } else {
     res.status(400).json({ error: "User already exists" });
   }
 };
+
 module.exports.update = async function (req, res) {
   try {
     const userObject = {
