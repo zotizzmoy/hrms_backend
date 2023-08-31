@@ -265,10 +265,14 @@ module.exports.register = async function (req, res) {
     const dateOfJoining = new Date(req.body.date_of_joining);
     const millisecondsInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
-    const daysElapsed = Math.floor((now - dateOfJoining) / millisecondsInDay);
+    const daysRemaining =
+      Math.floor(
+        (new Date(dateOfJoining.getFullYear(), 11, 31) - dateOfJoining) /
+          millisecondsInDay
+      ) + 1;
     const daysInYear = 365; // Number of days in a non-leap year
     const proRataLeaveEntitlement = Math.round(
-      ((daysInYear - daysElapsed) / daysInYear) * 12
+      (daysRemaining / daysInYear) * 12
     );
 
     const userObject = {
