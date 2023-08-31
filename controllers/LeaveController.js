@@ -38,12 +38,14 @@ module.exports.applyForLeave = async (req, res) => {
       .json({ error: "Cannot apply for more than 3 days of casual leave." });
   }
 
-  // Check if the user has worked for at least a year
+  // Check if the user has worked for at least a year before applying for earned leave
   const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
-  if (user.date_of_joining > oneYearAgo && leaveType === "Earned") {
-    return res.status(400).json({
-      error: "You must work for at least a year to apply for earned leave.",
-    });
+  if (leaveType === "Earned" && user.date_of_joining > oneYearAgo) {
+    return res
+      .status(400)
+      .json({
+        error: "You must work for at least a year to apply for earned leave.",
+      });
   }
 
   // Apply leave type-specific rules
