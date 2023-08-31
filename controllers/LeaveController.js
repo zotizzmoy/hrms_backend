@@ -10,10 +10,6 @@ const UserLeave = require("../models/UsersLeave");
 const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
 
-const UserModel = require("../models/UserModel"); // Import your User model
-const UserLeave = require("../models/UserLeave"); // Import your UserLeave model
-const sendLeaveMail = require("../utils/sendLeaveMail"); // Import your email sending utility
-const dayjs = require("dayjs"); // Import dayjs or any date library you're using
 
 module.exports.applyForLeave = async (req, res) => {
   const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
