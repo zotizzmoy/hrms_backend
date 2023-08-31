@@ -260,16 +260,17 @@ module.exports.register = async function (req, res) {
   });
 
   const now = new Date(); // Current date
-  const yearStart = new Date(now.getFullYear(), 0, 1); // Start of the year
-  const millisecondsInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
-
-  const daysElapsed = Math.floor((now - yearStart) / millisecondsInDay);
-  const daysInYear = 365; // Number of days in a non-leap year
-  const proRataLeaveEntitlement = Math.round(
-    ((daysInYear - daysElapsed) / daysInYear) * 12
-  );
 
   if (!user) {
+    const dateOfJoining = new Date(req.body.date_of_joining);
+    const millisecondsInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+
+    const daysElapsed = Math.floor((now - dateOfJoining) / millisecondsInDay);
+    const daysInYear = 365; // Number of days in a non-leap year
+    const proRataLeaveEntitlement = Math.round(
+      ((daysInYear - daysElapsed) / daysInYear) * 12
+    );
+
     const userObject = {
       emp_id: req.body.emp_id,
       first_name: req.body.first_name,
