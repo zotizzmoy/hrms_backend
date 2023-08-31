@@ -10,10 +10,18 @@ const UserLeave = require("../models/UsersLeave");
 const sendLeaveMail = require("../middleware/sendLeaveMail");
 const sendMailresponse = require("../middleware/sendMailresponse");
 
+const UserModel = require("../models/UserModel"); // Import your User model
+const UserLeave = require("../models/UserLeave"); // Import your UserLeave model
+const sendLeaveMail = require("../utils/sendLeaveMail"); // Import your email sending utility
+const dayjs = require("dayjs"); // Import dayjs or any date library you're using
+
 module.exports.applyForLeave = async (req, res) => {
   const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
 
- 
+  // Validation and error handling
+  if (!userId || !leaveType || !startDate || !endDate || !reason) {
+    return res.status(400).json({ error: "Incomplete request data." });
+  }
 
   // Calculate leave duration
   const leaveDurationInDays = calculateLeaveDuration(
@@ -33,31 +41,34 @@ module.exports.applyForLeave = async (req, res) => {
     return res.status(400).json({ error: "User not found." });
   }
 
-  // Check if the leave duration is greater than 3 days for casual leave
+  // Convert date_of_joining to Date object for comparison
+  const dateOfJoining = new Date(user.date_of_joining);
+
+  // Check if the user has worked for at least a year before applying for earned leave
+  const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
+  if (leaveType === "Earned" && dateOfJoining > oneYearAgo) {
+    return res
+      .status(400)
+      .json({
+        error: "You must work for at least a year to apply for earned leave.",
+      });
+  }
+
+  // Check if the user is applying for more than 3 consecutive days of casual leave
   if (leaveType === "Casual" && leaveDurationInDays > 3) {
     return res
       .status(400)
-      .json({ error: "Cannot apply for more than 3 days of casual leave." });
+      .json({
+        error: "Cannot apply for more than 3 consecutive days of casual leave.",
+      });
   }
 
   // Apply leave type-specific rules
-  let appliedOn = new Date().toLocaleString("en-US", {
-    timeZone: "Asia/Kolkata",
-  }); // Indian current time
-
   if (leaveType === "Casual") {
     // Apply other rules for casual leave
   } else if (leaveType === "Medical") {
     // Apply rules for medical leave
   } else if (leaveType === "Earned") {
-    // Check if the user has worked for at least a year before applying for earned leave
-    const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
-    if (user.date_of_joining > oneYearAgo) {
-      return res.status(400).json({
-        error: "You must work for at least a year to apply for earned leave.",
-      });
-    }
-
     // Apply rules for earned leave
   } else {
     return res.status(400).json({ error: "Invalid leave type." });
@@ -68,7 +79,7 @@ module.exports.applyForLeave = async (req, res) => {
     user_id: userId,
     leave_type: leaveType,
     is_half_day: isHalfDay,
-    applied_on: appliedOn,
+    applied_on: dayjs().format("YYYY-MM-DD HH:mm:ss"), 
     start_date: startDate,
     end_date: endDate,
     duration: leaveDurationInDays,
