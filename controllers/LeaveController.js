@@ -13,10 +13,7 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 module.exports.applyForLeave = async (req, res) => {
   const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
 
-  // Validation and error handling
-  if (!userId || !leaveType || !startDate || !endDate || !reason) {
-    return res.status(400).json({ error: "Incomplete request data." });
-  }
+ 
 
   // Calculate leave duration
   const leaveDurationInDays = calculateLeaveDuration(
@@ -43,23 +40,24 @@ module.exports.applyForLeave = async (req, res) => {
       .json({ error: "Cannot apply for more than 3 days of casual leave." });
   }
 
-  // Check if the user has worked for at least a year before applying for earned leave
-  const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
-  if (leaveType === "Earned" && user.date_of_joining > oneYearAgo) {
-    return res.status(400).json({
-      error: "You must work for at least a year to apply for earned leave.",
-    });
-  } else if (leaveType === "Earned" && user.date_of_joining <= oneYearAgo) {
-    // Continue processing for applying earned leave
-    // Apply rules for earned leave
-  }
-
   // Apply leave type-specific rules
+  let appliedOn = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Kolkata",
+  }); // Indian current time
+
   if (leaveType === "Casual") {
     // Apply other rules for casual leave
   } else if (leaveType === "Medical") {
     // Apply rules for medical leave
   } else if (leaveType === "Earned") {
+    // Check if the user has worked for at least a year before applying for earned leave
+    const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
+    if (user.date_of_joining > oneYearAgo) {
+      return res.status(400).json({
+        error: "You must work for at least a year to apply for earned leave.",
+      });
+    }
+
     // Apply rules for earned leave
   } else {
     return res.status(400).json({ error: "Invalid leave type." });
@@ -70,7 +68,7 @@ module.exports.applyForLeave = async (req, res) => {
     user_id: userId,
     leave_type: leaveType,
     is_half_day: isHalfDay,
-    applied_on: req.body.applied_on,
+    applied_on: appliedOn,
     start_date: startDate,
     end_date: endDate,
     duration: leaveDurationInDays,
@@ -100,6 +98,7 @@ module.exports.applyForLeave = async (req, res) => {
 
   res.status(201).json({ data: leaveEntry });
 };
+
 //Helper function to calculate leave duration
 
 const calculateLeaveDuration = (startDate, endDate, isHalfDay) => {
