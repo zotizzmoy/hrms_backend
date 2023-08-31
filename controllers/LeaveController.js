@@ -13,11 +13,6 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 module.exports.applyForLeave = async (req, res) => {
   const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
 
-  // Validation and error handling
-  if (!userId || !leaveType || !startDate || !endDate || !reason) {
-    return res.status(400).json({ error: "Incomplete request data." });
-  }
-
   // Calculate leave duration
   const leaveDurationInDays = calculateLeaveDuration(
     startDate,
@@ -46,11 +41,9 @@ module.exports.applyForLeave = async (req, res) => {
   // Check if the user has worked for at least a year
   const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
   if (user.date_of_joining > oneYearAgo && leaveType === "Earned") {
-    return res
-      .status(400)
-      .json({
-        error: "You must work for at least a year to apply for earned leave.",
-      });
+    return res.status(400).json({
+      error: "You must work for at least a year to apply for earned leave.",
+    });
   }
 
   // Apply leave type-specific rules
@@ -69,7 +62,7 @@ module.exports.applyForLeave = async (req, res) => {
     user_id: userId,
     leave_type: leaveType,
     is_half_day: isHalfDay,
-    applied_on: dayjs.format("YYYY-MM-DD HH:mm:ss"),
+    applied_on: req.body.applied_on,
     start_date: startDate,
     end_date: endDate,
     duration: leaveDurationInDays,
