@@ -14,10 +14,8 @@ const sendMailresponse = require("../middleware/sendMailresponse");
 module.exports.applyForLeave = async (req, res) => {
   const { userId, leaveType, startDate, endDate, isHalfDay, reason } = req.body;
 
-  // Validation and error handling
-  if (!userId || !leaveType || !startDate || !endDate || !reason) {
-    return res.status(400).json({ error: "Incomplete request data." });
-  }
+
+
 
   // Calculate leave duration
   const leaveDurationInDays = calculateLeaveDuration(
@@ -221,7 +219,7 @@ module.exports.changeStatus = async (req, res) => {
       return res.status(400).json({ error: "User leave balance not found." });
     }
 
-    if (leaveEntry.leave_type === "Paid" && leaveEntry.status === "Awaiting") {
+    if (leaveEntry.leave_type === "Casual" && leaveEntry.status === "Awaiting") {
       const leaveDurationInDays = leaveEntry.is_half_day
         ? 0.5
         : leaveEntry.duration; // Adjust the leave duration
